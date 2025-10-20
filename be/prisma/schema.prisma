@@ -1,0 +1,128 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  Int                   @id @default(autoincrement())
+  email               String                @unique
+  password            String
+  firstName           String
+  lastName            String?
+  studij              String?
+  currentStudyYear    Int?
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  isAdmin             Boolean               @default(false)
+  isVerified          Boolean               @default(false)
+  Post                Post[]
+  CommentOnProffessor CommentOnProffessor[]
+  CommentOnSubject    CommentOnSubject[]
+  File                File[]
+  Folder              Folder[]
+  RefreshToken        RefreshToken[]
+}
+
+model Subject {
+  id                 Int                @id @default(autoincrement())
+  title              String
+  ratingExpectations Float              @default(0)
+  ratingPracticality Float              @default(0)
+  ratingDifficulty   Float              @default(0)
+  idNositelja        Int
+  nositelj           Professor          @relation("NositeljRelation", fields: [idNositelja], references: [id])
+  idAuditornih       Int?
+  auditorne          Professor?         @relation("AuditorneRelation", fields: [idAuditornih], references: [id])
+  comments           CommentOnSubject[]
+}
+
+model Professor {
+  id                Int                   @id @default(autoincrement())
+  firstName         String
+  lastName          String
+  specialization    String
+  education         String
+  email             String
+  rating            Float                 @default(0)
+  comments          CommentOnProffessor[]
+  SubjectAsNositelj Subject[]             @relation("NositeljRelation")
+  SubjectsAsAuditor Subject[]             @relation("AuditorneRelation")
+}
+
+model CommentOnProffessor {
+  id          Int       @id @default(autoincrement())
+  content     String
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id])
+  professorId Int
+  professor   Professor @relation(fields: [professorId], references: [id])
+  createdAt   DateTime  @default(now())
+  rating      Float     @default(0)
+}
+
+model CommentOnSubject {
+  id                Int      @id @default(autoincrement())
+  content           String
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  subjectId         Int
+  subject           Subject  @relation(fields: [subjectId], references: [id])
+  createdAt         DateTime @default(now())
+  ratingExceptions  Float    @default(0)
+  ratingPracicality Float    @default(0)
+  ratingDiffuculty  Float    @default(0)
+}
+
+model Folder {
+  id             Int      @id @default(autoincrement())
+  name           String
+  parentFolderId Int?
+  parentFolder   Folder?  @relation("FolderHierarchy", fields: [parentFolderId], references: [id])
+  subFolders     Folder[] @relation("FolderHierarchy")
+  files          File[]   @relation("FileToFolder")
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  updatedAt      DateTime @updatedAt
+}
+
+model File {
+  id             Int      @id @default(autoincrement())
+  name           String
+  parentFolderId Int?
+  parentFolder   Folder?  @relation("FileToFolder", fields: [parentFolderId], references: [id])
+  userId         Int
+  user           User     @relation(fields: [userId], references: [id])
+  url            String
+  updatedAt      DateTime @updatedAt
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model RefreshToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  isrevoked Boolean  @default(false)
+}
