@@ -1,18 +1,24 @@
 import { Controller } from '@nestjs/common';
 import {AuthService} from "./auth.service";
 import {Body, Post} from "@nestjs/common";
-import {RegisterDto,LoginDto} from './dtos'
+import {RegisterDto,LoginDto,RefreshTokenDto} from './dtos'
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly AuthService:AuthService) {}
     @Post('register')
-    async register(@Body() dto: RegisterDto) {
-        return this.AuthService.register(dto)
+    async register(@Body() registerDto: RegisterDto) {
+        return this.AuthService.register(registerDto)
     }
 
     @Post('login')
-    async login(@Body() dto: LoginDto) {
-        return this.AuthService.login(dto)
+    async login(@Body() loginDto: LoginDto) {
+        return this.AuthService.login(loginDto)
     }
+
+    @Post('refresh')
+    async refreshToken(@Body() refreshTokenDto:RefreshTokenDto) {
+        return this.AuthService.refreshToken(refreshTokenDto.refreshToken)
+    }
+
 }
