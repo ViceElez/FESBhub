@@ -8,5 +8,6 @@ export class AuthController {
     constructor(private readonly AuthService:AuthService) {}
     @Post('register')
     async register(@Body() dto: RegisterDto) {
+        return this.AuthService.register(dto)
     }
 }
