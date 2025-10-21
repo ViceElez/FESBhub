@@ -3,6 +3,7 @@ import {PrismaService} from "../prisma/prisma.service";
 import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
+import {v4 as uuid} from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -60,9 +61,12 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const accessToken=await this.generateUserToken(loggedUser.id,loggedUser.email);
+        const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id,loggedUser.email);
 
-        return {accessToken};
+        return {
+            accessToken,
+            refreshToken
+        };
     }
 
     async generateUserToken(userId:number,email:string){
@@ -70,6 +74,23 @@ export class AuthService {
         const accessToken=await this.jwtService.signAsync(payload,{
             expiresIn:'15m'
         });
-        return accessToken;
+        const refreshToken=uuid();
+        await this.storeRefreshToken(userId,refreshToken);
+        return {
+            accessToken,
+            refreshToken
+        }
+    }
+
+    async storeRefreshToken(userId:number,refreshToken:string){
+        const expirationDate=new Date();
+        expirationDate.setDate(expirationDate.getDate()+7);
+        await this.prisma.refreshToken.create({
+            data:{
+                token:refreshToken,
+                userId,
+                expiresAt:expirationDate
+            }
+        })
     }
 }
