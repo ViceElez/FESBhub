@@ -4,6 +4,7 @@ import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
+import {jwtDecode} from "jwt-decode";
 
 @Injectable()
 export class AuthService {
@@ -68,7 +69,21 @@ export class AuthService {
             refreshToken
         };
     }
-    
+
+    async logout(loggedOutUserId: number){
+        await this.prisma.refreshToken.updateMany({
+            where:{
+                userId:loggedOutUserId,
+                isrevoked:false
+            },
+            data:{
+                isrevoked:true
+            }
+        });
+
+        return { message: "User logged out successfully",loggedOutUserId };
+    }
+
     async generateUserToken(userId:number,email:string,isRefreshed:boolean,oldTokenString?:string){
 
         if(isRefreshed&&oldTokenString !== undefined){
@@ -82,7 +97,7 @@ export class AuthService {
             });
         }
 
-        const payload={sub:userId,email};
+        const payload={sub:userId};
         const accessToken=await this.jwtService.signAsync(payload,{
             expiresIn:'15m'
         });
