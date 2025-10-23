@@ -62,7 +62,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id,loggedUser.email,false);
+        const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id);
 
         return {
             accessToken,
@@ -71,31 +71,12 @@ export class AuthService {
     }
 
     async logout(loggedOutUserId: number){
-        await this.prisma.refreshToken.updateMany({
-            where:{
-                userId:loggedOutUserId,
-                isrevoked:false
-            },
-            data:{
-                isrevoked:true
-            }
-        });
-
+        await this.revokeActiveRefreshTokens(loggedOutUserId);
         return { message: "User logged out successfully",loggedOutUserId };
     }
 
-    async generateUserToken(userId:number,email:string,isRefreshed:boolean,oldTokenString?:string){
-
-        if(isRefreshed&&oldTokenString !== undefined){
-            await this.prisma.refreshToken.update({
-                where:{
-                    token:oldTokenString
-                },
-                data:{
-                    isrevoked:true
-                }
-            });
-        }
+    async generateUserToken(userId:number){
+        await this.revokeActiveRefreshTokens(userId);
 
         const payload={sub:userId};
         const accessToken=await this.jwtService.signAsync(payload,{
@@ -121,5 +102,17 @@ export class AuthService {
                 expiresAt:expirationDate
             }
         })
+    }
+
+    async revokeActiveRefreshTokens(userId: number): Promise<void> {
+        await this.prisma.refreshToken.updateMany({
+            where: {
+                userId,
+                isrevoked: false,
+            },
+            data: {
+                isrevoked: true,
+            },
+        });
     }
 }
