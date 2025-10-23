@@ -1,6 +1,6 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
-import {RegisterDto,LoginDto,RefreshTokenDto} from "./dtos";
+import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
@@ -12,12 +12,11 @@ export class AuthService {
     ) {}
 
     async register(dto:RegisterDto){
-        const existingUser=await this.prisma.user.findUnique({
+        const existingUser=await this.prisma.user.findFirst({
             where:{
                 email:dto.email
             }
         });
-        const sss=this.prisma.commentOnProffessor
         if(existingUser){
             throw new BadRequestException('User already exists');
         }
@@ -69,40 +68,18 @@ export class AuthService {
             refreshToken
         };
     }
-
-    async refreshToken(refreshToken:string){
-        const storedToken=await this.prisma.refreshToken.findUnique({
-            where:{
-                token:refreshToken,
-                expiresAt:{gte:new Date()},
-                isrevoked:false
-            }
-        });
-        if(!storedToken){
-            throw new UnauthorizedException('Invalid refresh token');
-        }
-        const findUser=await this.prisma.user.findUnique({
-            where:{
-                id:storedToken.userId
-            }
-        });
-        if(!findUser){
-            throw new UnauthorizedException('User not found');
-        }
-        return this.generateUserToken(findUser.id,findUser.email,true,refreshToken);
-    }
-
+    
     async generateUserToken(userId:number,email:string,isRefreshed:boolean,oldTokenString?:string){
 
         if(isRefreshed&&oldTokenString !== undefined){
-            const oldToken= await this.prisma.refreshToken.update({
+            await this.prisma.refreshToken.update({
                 where:{
                     token:oldTokenString
                 },
                 data:{
                     isrevoked:true
                 }
-            })
+            });
         }
 
         const payload={sub:userId,email};
