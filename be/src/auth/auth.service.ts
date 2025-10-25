@@ -22,7 +22,7 @@ export class AuthService {
             throw new BadRequestException('User already exists');
         }
 
-        const passwordForHashing=dto.password+process.env.HASHING_SECRET;
+        const passwordForHashing=dto.password+process.env.HASHING_SECRET; //eventualno promini ovu logiku da je nie samo appendaje, ista stvar u login metodi
         const hashedPassword=await argon.hash(passwordForHashing);
 
         const newUser=await this.prisma.user.create({
@@ -64,10 +64,7 @@ export class AuthService {
 
         const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id);
 
-        return {
-            accessToken,
-            refreshToken
-        };
+        return accessToken
     }
 
     async logout(loggedOutUserId: number){
