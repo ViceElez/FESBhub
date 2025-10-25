@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export async function loginApi(email:string,password:string){
-    const route=import.meta.env.VITE_BE_ROUTE;
+    const route="http://localhost:3000";
     await axios.post(route+'/auth/login',{
         email,
         password

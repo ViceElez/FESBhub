@@ -44,7 +44,7 @@ export class AuthService {
             currentStudyYear:newUser.currentStudyYear
 
         })
-    }
+    }//triba kreirat acc token i refresh
 
     async login(dto:LoginDto){
         const loggedUser=await this.prisma.user.findUnique({

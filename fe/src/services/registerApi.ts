@@ -7,7 +7,7 @@ export async function registerApi(email:string,password:string,firstName:string,
     if (year=='Necu reci'){
         year=undefined;
     }
-    const route=import.meta.env.VITE_BE_ROUTE;
+    const route="http://localhost:3000";
     await axios.post(route+'/auth/register',{
         email,
         password,
