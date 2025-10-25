@@ -1,18 +1,17 @@
 import {loginApi} from "../services";
 
 export const LoginPage =()=>{
-    const handleSubmit=(event:any)=>{
+    const handleLoginSubmit=(event:any)=>{
         event.preventDefault();
         const formData=new FormData(event.target);
-        const email=formData.get('email');
-        const password=formData.get('password');
-        const response=loginApi(email as string,password as string )
-        console.log(response)
+        const email=formData.get('email') as string;
+        const password=formData.get('password') as string;
+        loginApi(email,password)
     }
     return(
         <div>
             <form
-            onSubmit={handleSubmit}>
+            onSubmit={handleLoginSubmit}>
                 <h1>Login Page</h1>
                 <label>
                     Email:
@@ -32,6 +31,7 @@ export const LoginPage =()=>{
                 <br />
                 <button type="submit">Login</button>
             </form>
+            <button>Register</button>
         </div>
     )
 }
