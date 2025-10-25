@@ -4,13 +4,13 @@ import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
-import {jwtDecode} from "jwt-decode";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly prisma:PrismaService,private jwtService:JwtService
     ) {}
+
 
     async register(dto:RegisterDto){
         const existingUser=await this.prisma.user.findFirst({
@@ -22,7 +22,7 @@ export class AuthService {
             throw new BadRequestException('User already exists');
         }
 
-        const passwordForHashing=dto.password+process.env.HASHING_SECRET; //eventualno promini ovu logiku da je nie samo appendaje, ista stvar u login metodi
+        const passwordForHashing=await this.pepperPassword(dto.password)
         const hashedPassword=await argon.hash(passwordForHashing);
 
         const newUser=await this.prisma.user.create({
@@ -35,16 +35,13 @@ export class AuthService {
                 currentStudyYear:dto.currentStudyYear
             }
         });
-        return ({
-            id:newUser.id,
-            email:newUser.email,
-            firstName:newUser.firstName,
-            lastName:newUser.lastName,
-            studij:newUser.studij,
-            currentStudyYear:newUser.currentStudyYear
+        const {accessToken,refreshToken}=await this.generateUserToken(newUser.id);
 
-        })
-    }//triba kreirat acc token i refresh
+        return {
+            accessToken,
+            email:newUser.email
+        }
+    }
 
     async login(dto:LoginDto){
         const loggedUser=await this.prisma.user.findUnique({
@@ -56,7 +53,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const passwordForVerification=dto.password+process.env.HASHING_SECRET;
+        const passwordForVerification=await this.pepperPassword(dto.password);
         const isPasswordValid=await argon.verify(loggedUser.password,passwordForVerification);
         if(!isPasswordValid){
             throw new UnauthorizedException('Invalid credentials');
@@ -111,5 +108,10 @@ export class AuthService {
                 isrevoked: true,
             },
         });
+    }
+
+    async pepperPassword(password:string):Promise<string>{
+        const crypto= await import('node:crypto');
+        return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
     }
 }
