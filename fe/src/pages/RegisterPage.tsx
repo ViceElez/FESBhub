@@ -8,14 +8,15 @@ export const RegisterPage=()=>{
     const studyYear=["1","2","3","4","5","Necu reci"];
     const [year,setYear]=useState(studyYear[0]);
 
-    const handleRegisterSubmit=(event:any)=>{
+    const handleRegisterSubmit=async(event:any)=>{
         event.preventDefault();
         const formData=new FormData(event.target);
         const email=formData.get("email") as string;
         const password=formData.get("password") as string;
         const firstName=formData.get("firstName") as string;
         const lastName=formData.get("lastName") as string;
-        registerApi(email,password,firstName,study,year,lastName);
+        const response=await registerApi(email,password,firstName,study,year,lastName);
+        console.log("this is from react register",response?.data);
     }
     return(
         <div>

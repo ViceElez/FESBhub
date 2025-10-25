@@ -1,12 +1,13 @@
 import {loginApi} from "../services";
 
 export const LoginPage =()=>{
-    const handleLoginSubmit=(event:any)=>{
+    const handleLoginSubmit=async(event:any)=>{
         event.preventDefault();
         const formData=new FormData(event.target);
         const email=formData.get('email') as string;
         const password=formData.get('password') as string;
-        loginApi(email,password)
+        const response= await loginApi(email,password)
+        console.log('this is from react',response?.data);
     }
     return(
         <div>
