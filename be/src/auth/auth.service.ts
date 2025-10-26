@@ -105,13 +105,20 @@ export class AuthService {
             })
         }
 
-        const payload={sub:userId,email};
-        const accessToken=await this.jwtService.signAsync(payload,{
-            expiresIn:'15m'
+        // include isAdmin in the access token payload so guards can use a fast-path
+        const userRecord = await this.prisma.user.findUnique({
+            where: { id: userId },
+            select: { isAdmin: true }
+        });
+        const isAdmin = !!userRecord?.isAdmin;
+
+        const payload = { sub: userId, email, isAdmin };
+        const accessToken = await this.jwtService.signAsync(payload, {
+            expiresIn: '15m'
         });
 
-        const refreshToken=uuid();
-        await this.storeRefreshToken(userId,refreshToken);
+    const refreshToken=uuid();
+    await this.storeRefreshToken(userId,refreshToken);
 
         return {
             accessToken,

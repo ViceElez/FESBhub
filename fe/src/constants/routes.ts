@@ -2,7 +2,8 @@ type Routes={
     [key:string]:string
 };
 export const routes:Routes={
-    LOGIN : '',
+    ROOT: '/',
+    LOGIN : '/login',
     REGISTER : '/register',
     NEWSPAGE: '/news',
     MATERIALSPAGE: '/material',
