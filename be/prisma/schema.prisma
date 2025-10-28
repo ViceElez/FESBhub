@@ -68,6 +68,7 @@ model CommentOnProffessor {
   professor   Professor @relation(fields: [professorId], references: [id])
   createdAt   DateTime  @default(now())
   rating      Float     @default(0)
+  verified    Boolean   @default(false)
 }
 
 model CommentOnSubject {
@@ -81,6 +82,7 @@ model CommentOnSubject {
   ratingExceptions  Float    @default(0)
   ratingPracicality Float    @default(0)
   ratingDiffuculty  Float    @default(0)
+  verified    Boolean   @default(false)
 }
 
 model Folder {
