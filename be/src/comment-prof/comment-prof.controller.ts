@@ -12,23 +12,5 @@ export class CommentProfController {
     return this.commentProfService.create(createCommentProfDto);
   }
 
-  @Get()
-  findAll() {
-    return this.commentProfService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentProfService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentProfDto: UpdateCommentProfDto) {
-    return this.commentProfService.update(+id, updateCommentProfDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentProfService.remove(+id);
-  }
 }
+
