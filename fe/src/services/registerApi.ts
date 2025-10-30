@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export async function registerApi(email:string,password:string,firstName:string,study:string|undefined,year:string|undefined, lastName?:string){
-    if (!email.endsWith("@fesb.hr")){
-        alert("Invalid data provided, make sure the email is a fesb.hr address");
-        return;
-    }
+    // if (!email.endsWith("@fesb.hr")){
+    //     alert("Invalid data provided, make sure the email is a fesb.hr address");
+    //     return;
+    // }
     if(password.length<6){
         alert("Password must be at least 6 characters long");
         return;

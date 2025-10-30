@@ -12,7 +12,12 @@ export async function loginApi(email:string,password:string):Promise<any>{
         alert("Login successful");
         console.log("Login successful:", response.data);
         return response;
-    } catch {
-        alert("Invalid credentials");
+    } catch (error:any) {
+        if(error.response.status===400){
+            alert("Please verify your email before logging in");
+            return
+        }
+        alert('Invalid credentials, please try again');
+        console.error("Login failed:", error);
     }
 }

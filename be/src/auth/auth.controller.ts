@@ -1,6 +1,6 @@
 import {Controller, UseGuards} from '@nestjs/common';
 import {AuthService} from "./auth.service";
-import {Body, Post,Req} from "@nestjs/common";
+import {Body, Post,Req,Get,Query} from "@nestjs/common";
 import {RegisterDto,LoginDto} from './dtos'
 import {UserGuard} from "../guards/user.guard";
 
@@ -22,4 +22,5 @@ export class AuthController {
     async logout(@Req() req) {
         return this.AuthService.logout(req.user?.sub)
     }
+
 }
