@@ -22,5 +22,4 @@ export class AuthController {
     async logout(@Req() req) {
         return this.AuthService.logout(req.user?.sub)
     }
-
 }

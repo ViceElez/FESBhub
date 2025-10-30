@@ -17,6 +17,9 @@ export const RegisterPage=()=>{
         const lastName=formData.get("lastName") as string;
         const response=await registerApi(email,password,firstName,study,year,lastName);
         console.log("this is from react register",response?.data);
+        localStorage.setItem("accessToken",response?.data.accessToken);
+        //redirect to verify email page
+        window.location.href="/verify-email";
     }
     return(
         <div>

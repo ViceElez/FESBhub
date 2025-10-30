@@ -4,12 +4,13 @@ import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
-import {createTransport} from "nodemailer";
+import {EmailService} from "../email/email.service";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly prisma:PrismaService,private jwtService:JwtService
+        private readonly prisma:PrismaService,private jwtService:JwtService,
+        private emailService:EmailService
     ) {}
 
 
@@ -37,7 +38,7 @@ export class AuthService {
             }
         });
         const {accessToken,refreshToken}=await this.generateUserToken(newUser.id);
-        await this.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
+        await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
         return {
             accessToken,
@@ -121,48 +122,5 @@ export class AuthService {
         return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
     }
 
-    async sendVerificationEmail(userId:number,userEmail:string,userFirstName:string){
-        const {transporter,verificationToken}=await this.createVerificationEmail(userId);
-        try{
-            await transporter.sendMail({
-                from:process.env.EMAIL_FROM,
-                to:userEmail,
-                subject:"Please verify your email",
-                html:`<h1>Hello, ${userFirstName}!</h1>
-                   <p>Thank you for registering. Please verify your email by clicking the link below:</p>
-                   <a href="${process.env.FRONTEND_URL}/verify-email?token=${verificationToken}&id=${userId}">Verify Email</a>
-                   <p>This link will expire in 10 minutes.</p>`
-            })
-        }catch (error){
-            console.error("Error sending verification email:",error);
-        }
-    }
-
-    async createVerificationEmail(userId:number){
-        const transporter=createTransport({
-            host:process.env.EMAIL_HOST,
-            auth:{
-                user:process.env.EMAIL_USER,
-                pass:process.env.EMAIL_PASS
-            }
-        })
-
-        const verificationToken=uuid();
-        const verificationTokenForHashing=await this.pepperPassword(verificationToken);
-        const hashedVerificationToken=await argon.hash(verificationTokenForHashing);
-
-        const expirationDate=new Date();
-        expirationDate.setHours(expirationDate.getHours()+10*60*1000);
-
-        await this.prisma.emailVerificationToken.create({
-            data:{
-                token:hashedVerificationToken,
-                userId,
-                expiresAt:expirationDate
-            }
-        });
-
-        return {transporter,verificationToken};
-    }
 
 }
