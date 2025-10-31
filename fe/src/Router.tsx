@@ -7,7 +7,7 @@ export const Router =()=> {
         <BrowserRouter>
             <Routes>
                 <Route element={<Layout />}>
-                    <Route path={routes.ROOT} element={<RegisterPage />} />
+                    <Route path={routes.ROOT} element={<AdminSettingsPage />} />
                     <Route path={routes.LOGIN} element={<LoginPage />} />
                     <Route path={routes.REGISTER} element={<RegisterPage />} />
                     <Route path={routes.NEWSPAGE} element={<NewsPage />} />
