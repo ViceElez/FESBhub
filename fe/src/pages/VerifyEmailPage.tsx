@@ -1,3 +1,4 @@
+// fe/src/pages/VerifyEmailPage.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
 
@@ -5,6 +6,9 @@ export function VerifyEmailPage() {
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [isResending, setIsResending] = useState(false);
+
+    const route = "http://localhost:3000";
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -17,17 +21,41 @@ export function VerifyEmailPage() {
         setMessage('');
 
         try {
-            const route="http://localhost:3000";
-            const response = await axios.post(`${route}/email/verify`, { code },{
-                headers:{
-                    Authorization:`Bearer ${localStorage.getItem("accessToken")}`
+            const response = await axios.post(
+                `${route}/email/verify`,
+                { code },
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                    }
                 }
-            });
+            );
             setMessage(response.data.message || '✅ Email verified successfully!');
         } catch (error: any) {
             setMessage(error.response?.data?.message || '❌ Invalid or expired code.');
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleResend = async () => {
+        setIsResending(true);
+        setMessage('');
+        try {
+            const response = await axios.post(
+                `${route}/email/resend-verification`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                    }
+                }
+            );
+            setMessage(response.data.message || '✅ Verification token sent.');
+        } catch (error: any) {
+            setMessage(error.response?.data?.message || '❌ Could not send verification token.');
+        } finally {
+            setIsResending(false);
         }
     };
 
@@ -54,10 +82,19 @@ export function VerifyEmailPage() {
 
                     <button
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isLoading || isResending}
                         className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition disabled:opacity-50"
                     >
                         {isLoading ? 'Verifying...' : 'Verify Code'}
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={handleResend}
+                        disabled={isResending || isLoading}
+                        className="w-full mt-2 bg-gray-200 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-300 transition disabled:opacity-50"
+                    >
+                        {isResending ? 'Sending...' : 'Resend verification token'}
                     </button>
                 </form>
 

@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, Query, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
 import { EmailService } from './email.service';
 import {UserGuard} from "../guards/user.guard";
 
@@ -12,8 +12,10 @@ export class EmailController {
         return this.EmailService.verifyEmail(req.user?.sub, code)
     }
 
-    @Get('resend-verification')
-    async resendVerificationEmail(@Query('email') email: string) {
-        return this.EmailService.resendVerificationEmail(email)
+    @UseGuards(UserGuard)
+    @Post('resend-verification')
+    async resendVerificationEmail(@Req() req) {
+        console.log("Resend verification email for user:", req.user?.sub)
+        return this.EmailService.resendVerificationEmail(req.user?.sub)
     }
 }
