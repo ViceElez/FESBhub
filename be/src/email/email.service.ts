@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
 import {JwtService} from "@nestjs/jwt";
 import * as argon from "argon2";
@@ -67,8 +67,9 @@ export class EmailService {
 
         console.log(findRegisteredUsersEmailToken)
         const isCodeValid=await argon.verify(findRegisteredUsersEmailToken.token,code);
+
         if(!isCodeValid){
-            throw new Error('Invalid or expired verification code');
+            throw new UnauthorizedException('Invalid verification code❌');
         }
 
         if(findRegisteredUsersEmailToken.expiresAt < new Date()){
@@ -83,7 +84,7 @@ export class EmailService {
                 isEmailVerified:true
             }
         });
-       return {message:'✅ Email verified successfully111111!'};
+       return {message:'✅ Email verified successfully!'};
     }
 
     async resendVerificationEmail(userId:number){
@@ -107,4 +108,5 @@ export class EmailService {
 
 //nesmi se u local storage spramat jwt
 //ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
-//boolji erro handiling kad se upisre krivi kod za emia verifikaciju
+//zablokirat register botiun da user nemoze 50 puta udrit
+//ako se uspjesno verificira samo nazad na login ga poslat

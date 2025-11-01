@@ -38,7 +38,7 @@ export class AuthService {
             }
         });
         const {accessToken,refreshToken}=await this.generateUserToken(newUser.id);
-        //await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
+        await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
         return {
             accessToken,

@@ -31,7 +31,9 @@ export function VerifyEmailPage() {
                     }
                 }
             );
+            alert('Email verified successfully!');
             setMessage(response.data.message || '✅ Email verified successfully!');
+            window.location.href = routes.LOGIN;
         } catch (error: any) {
             setMessage(error.response?.data?.message || '❌ Invalid or expired code.');
         } finally {
