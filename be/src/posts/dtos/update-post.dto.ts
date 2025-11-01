@@ -1,15 +1,8 @@
 import { IsOptional, IsString, MinLength } from 'class-validator';
 
 export class UpdatePostDto {
-    @IsOptional()
-    @IsString()
-    @MinLength(1, { message: 'Title cannot be empty' })
     title?: string;
-
-    @IsOptional()
-    @IsString()
-    @MinLength(1, { message: 'Content cannot be empty' })
     content?: string;
 }
-
-// Note: ValidationPipe must be enabled (it is in main.ts). The decorators above prevent empty strings.
+//odi dodat jos stvari jer moze img,datoteke dodavat i provjera jeli prazno ili nije
+// novi komentar
