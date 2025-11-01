@@ -25,8 +25,6 @@ export async function registerApi(email:string,password:string,firstName:string,
             studij:study,
             currentStudyYear:year
         });
-        alert("Registration successful");
-        console.log("Registration successful:", response.data);
         return response;
     }
     catch{

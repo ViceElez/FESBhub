@@ -107,6 +107,4 @@ export class EmailService {
 
 //nesmi se u local storage spramat jwt
 //ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
-//ili u bazi stavit da je token iskorsiten(u slucaju da se desi sranje pa mora opet slat kod) ili na svaki kod request ili uspjesan login obrisat sve stare tokene za usera
-//nakon nuspjesnog registra usre nebi tria ic na verifiation token page
 //boolji erro handiling kad se upisre krivi kod za emia verifikaciju

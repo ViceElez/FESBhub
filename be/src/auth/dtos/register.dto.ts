@@ -27,5 +27,4 @@ export class RegisterDto{
     @Min(1)
     @Max(5)
     currentStudyYear?: number;
-
 }

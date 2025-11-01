@@ -2,7 +2,6 @@ import {useState} from "react";
 import {registerApi} from "../services";
 import {Link} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
-
 export const RegisterPage=()=>{
     const studies=["Racunarstvo","Elektrotehnika","Strojarstvo","Brodogradnja","Necu Reci"];
     const [study,setStudy]=useState(studies[0]);
@@ -18,10 +17,11 @@ export const RegisterPage=()=>{
         const firstName=formData.get("firstName") as string;
         const lastName=formData.get("lastName") as string;
         const response=await registerApi(email,password,firstName,study,year,lastName);
-        console.log("this is from react register",response?.data);
         localStorage.setItem("accessToken",response?.data.accessToken);
-        //redirect to verify email page
-        window.location.href="/verify-email";
+        if(response?.status===201){
+            alert('Registration successful! Please verify your email.');
+            window.location.href=routes.VERIFYEMAILPAGE;
+        }
     }
     return(
         <div>
