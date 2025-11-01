@@ -1,6 +1,7 @@
-// fe/src/pages/VerifyEmailPage.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
+import {Link} from "react-router-dom";
+import {routes} from "../constants/routes.ts";
 
 export function VerifyEmailPage() {
     const [code, setCode] = useState('');
@@ -97,6 +98,10 @@ export function VerifyEmailPage() {
                         {isResending ? 'Sending...' : 'Resend verification token'}
                     </button>
                 </form>
+
+                <Link to={routes.LOGIN}>
+                    <button>Back To Login</button>
+                </Link>
 
                 {message && (
                     <p

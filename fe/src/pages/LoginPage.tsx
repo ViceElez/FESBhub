@@ -1,4 +1,6 @@
 import {loginApi} from "../services";
+import {Link} from "react-router-dom";
+import {routes} from "../constants/routes.ts";
 
 export const LoginPage =()=>{
     const handleLoginSubmit=async(event:any)=>{
@@ -32,7 +34,9 @@ export const LoginPage =()=>{
                 <br />
                 <button type="submit">Login</button>
             </form>
-            <button>Register</button>
+            <Link to={routes.REGISTER}>
+                <button>Register</button>
+            </Link>
         </div>
     )
 }

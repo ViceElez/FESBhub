@@ -1,5 +1,7 @@
 import {useState} from "react";
 import {registerApi} from "../services";
+import {Link} from "react-router-dom";
+import {routes} from "../constants/routes.ts";
 
 export const RegisterPage=()=>{
     const studies=["Racunarstvo","Elektrotehnika","Strojarstvo","Brodogradnja","Necu Reci"];
@@ -77,6 +79,9 @@ export const RegisterPage=()=>{
                 <br />
                 <button type="submit">Register</button>
             </form>
+            <Link to={routes.LOGIN}>
+                <button>Login</button>
+            </Link>
         </div>
     )
 }
