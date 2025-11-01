@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {Link} from "react-router-dom";
-import {routes} from "../constants/routes.ts";
+import { Link } from "react-router-dom";
+import { routes } from "../constants/routes.ts";
 
 export function VerifyEmailPage() {
     const [code, setCode] = useState('');
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
+    const [cooldown, setCooldown] = useState(0); // 👈 seconds remaining
 
     const route = "http://localhost:3000";
 
+    // ⏲️ Countdown timer effect
+    useEffect(() => {
+        if (cooldown > 0) {
+            const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
+            return () => clearTimeout(timer);
+        }
+    }, [cooldown]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (code.length !== 6) {
             setMessage('Please enter a 6-digit code.');
             return;
@@ -37,13 +47,16 @@ export function VerifyEmailPage() {
         } catch (error: any) {
             setMessage(error.response?.data?.message || '❌ Invalid or expired code.');
         } finally {
-            setIsLoading(false);
+            setIsLoading(false); // 👈 re-enable Verify button
         }
     };
 
     const handleResend = async () => {
+        if (cooldown > 0) return; // safety check
+
         setIsResending(true);
         setMessage('');
+
         try {
             const response = await axios.post(
                 `${route}/email/resend-verification`,
@@ -55,6 +68,9 @@ export function VerifyEmailPage() {
                 }
             );
             setMessage(response.data.message || '✅ Verification token sent.');
+
+            // ⏲️ Start cooldown (30 seconds)
+            setCooldown(30);
         } catch (error: any) {
             setMessage(error.response?.data?.message || '❌ Could not send verification token.');
         } finally {
@@ -68,6 +84,7 @@ export function VerifyEmailPage() {
                 <h1 className="text-2xl font-semibold text-center mb-6">
                     Email Verification
                 </h1>
+
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -80,9 +97,11 @@ export function VerifyEmailPage() {
                             onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
                             className="w-full border border-gray-300 rounded-lg px-4 py-2 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="------"
+                            disabled={isLoading} // disable typing while verifying
                         />
                     </div>
 
+                    {/* ✅ Verify button — disabled while waiting for response */}
                     <button
                         type="submit"
                         disabled={isLoading || isResending}
@@ -91,18 +110,25 @@ export function VerifyEmailPage() {
                         {isLoading ? 'Verifying...' : 'Verify Code'}
                     </button>
 
+                    {/* ✅ Resend button — disabled during cooldown */}
                     <button
                         type="button"
                         onClick={handleResend}
-                        disabled={isResending || isLoading}
+                        disabled={isResending || cooldown > 0 || isLoading}
                         className="w-full mt-2 bg-gray-200 text-gray-800 py-2 rounded-lg font-medium hover:bg-gray-300 transition disabled:opacity-50"
                     >
-                        {isResending ? 'Sending...' : 'Resend verification token'}
+                        {isResending
+                            ? 'Sending...'
+                            : cooldown > 0
+                                ? `Resend available in ${cooldown}s`
+                                : 'Resend verification token'}
                     </button>
                 </form>
 
                 <Link to={routes.LOGIN}>
-                    <button>Back To Login</button>
+                    <button className="mt-4 w-full text-sm text-blue-600 hover:underline">
+                        Back To Login
+                    </button>
                 </Link>
 
                 {message && (

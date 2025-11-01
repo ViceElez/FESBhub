@@ -9,7 +9,7 @@ export const LoginPage =()=>{
         const email=formData.get('email') as string;
         const password=formData.get('password') as string;
         const response= await loginApi(email,password)
-        if(response?.status===200){
+        if(response?.status===201){
             localStorage.setItem("accessToken",response.data.accessToken);
             alert('Login successful!');
             window.location.href=routes.HOMEPAGE; //odi se ide na hojmepage, ako tria slat jwt u localStorageu je zasad
@@ -36,7 +36,10 @@ export const LoginPage =()=>{
                     />
                 </label>
                 <br />
-                <button type="submit">Login</button>
+                <button
+                    type="submit"
+                    id="login-button"
+                >Login</button>
             </form>
             <Link to={routes.REGISTER}>
                 <button>Register</button>

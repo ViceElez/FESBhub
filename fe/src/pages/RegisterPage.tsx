@@ -77,7 +77,10 @@ export const RegisterPage=()=>{
                     ))}
                 </select>
                 <br />
-                <button type="submit">Register</button>
+                <button
+                    type="submit"
+                    id="register-button"
+                >Register</button>
             </form>
             <Link to={routes.LOGIN}>
                 <button>Login</button>

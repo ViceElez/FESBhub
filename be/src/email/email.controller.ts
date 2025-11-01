@@ -15,7 +15,6 @@ export class EmailController {
     @UseGuards(UserGuard)
     @Post('resend-verification')
     async resendVerificationEmail(@Req() req) {
-        console.log("Resend verification email for user:", req.user?.sub)
         return this.EmailService.resendVerificationEmail(req.user?.sub)
     }
 }

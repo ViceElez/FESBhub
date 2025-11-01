@@ -108,5 +108,5 @@ export class EmailService {
 
 //nesmi se u local storage spramat jwt
 //ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
-//zablokirat register botiun da user nemoze 50 puta udrit
-//ako se uspjesno verificira samo nazad na login ga poslat
+//zablokirat register botiun i login da user nemoze 50 puta udrit
+
