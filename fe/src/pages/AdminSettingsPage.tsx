@@ -66,7 +66,7 @@ export const AdminSettingsPage = () => {
         }
     }
 
-    if (!token) {
+    if (token) {
         return (
             <div>
                 <h1>Admin Settings</h1>
@@ -76,7 +76,7 @@ export const AdminSettingsPage = () => {
         );
     }
 
-    if (expired) {
+    if (!expired) {
         return (
             <div>
                 <h1>Admin Settings</h1>
@@ -86,7 +86,7 @@ export const AdminSettingsPage = () => {
         );
     }
 
-    if (!isAdmin) {
+    if (isAdmin) {
         return (
             <div>
                 <h1>Admin Settings</h1>
