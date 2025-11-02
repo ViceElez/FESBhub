@@ -1,4 +1,4 @@
-import {IsInt, IsNumber, IsEmail, IsNotEmpty, IsString, Max, Min} from 'class-validator';
+import {IsNumber, IsEmail, IsNotEmpty, IsString, Max, Min} from 'class-validator';
 
 export class CreateProfDto {
     @IsString()
@@ -20,6 +20,4 @@ export class CreateProfDto {
     @IsEmail()
     @IsNotEmpty()
     email: string;
-
-        
 }

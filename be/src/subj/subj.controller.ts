@@ -8,8 +8,8 @@ export class SubjController {
   constructor(private readonly subjService: SubjService) {}
   
   @Patch('verifyComment7/:idUser/:idSubj')
-  NewRatingAfterVerification(@Param('idUser') idUser: string, @Param('idSubj') idSubj: string) {
-    return this.subjService.updateAfterAdminVerification(+idUser, +idSubj);
+  NewRatingAfterVerification(@Param('idUser') idUser: string, @Param('idSubj') idSubj: string, @Body() updateSubjDto: UpdateSubjDto) {
+    return this.subjService.updateAfterAdminVerification(+idUser, +idSubj, updateSubjDto);
   }
 
   @Patch('deleteComment/:idSubj/:oldRatingExceptions/:oldRatingDiffuculty/:oldRatingPracicality')

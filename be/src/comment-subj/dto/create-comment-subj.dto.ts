@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsInt, Min, Max, IsNotEmpty } from 'class-validator';
+import { IsString, IsInt, IsNumber, Min, Max, IsNotEmpty } from 'class-validator';
 
 export class CreateCommentSubjDto {
     @IsString()
@@ -18,15 +18,18 @@ export class CreateCommentSubjDto {
         @IsNumber()
         @Min(1)
         @Max(5)
+        @IsNotEmpty()
         ratingExpectation: number;
 
         @IsNumber()
         @Min(1)
         @Max(5)
+        @IsNotEmpty()
         ratingDifficulty: number;
 
         @IsNumber()
         @Min(1)
         @Max(5)
+        @IsNotEmpty()
         ratingPracticality: number;
 }

@@ -1,9 +1,4 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateSubjDto } from './create-subj.dto';
-import { IsNotEmpty } from 'class-validator/types/decorator/common/IsNotEmpty';
-import { Min } from 'class-validator/types/decorator/number/Min';
-import { Max } from 'class-validator/types/decorator/number/Max';
-import { IsNumber } from 'class-validator/types/decorator/typechecker/IsNumber';
+import { IsNotEmpty, Min, Max, IsNumber } from 'class-validator';
 
 export class UpdateSubjDto{
     @IsNumber()

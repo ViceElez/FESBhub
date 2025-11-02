@@ -25,4 +25,9 @@ export class ProfController {
     return this.profService.updateTest(+id);
   } */
 
+  @Get()
+  findFirst24(){
+    return this.profService.findFirst24();
+  }
+
 }

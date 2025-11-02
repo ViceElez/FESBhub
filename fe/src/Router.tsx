@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { routes } from './constants/routes';
-import {LoginPage,RegisterPage,NewsPage,MaterialsPage,SubjectPage,ProfessorPage,AdminSettingsPage,NoPageFound,Layout} from "./pages/index.ts";
+import {LoginPage, RegisterPage, NewsPage, MaterialsPage, SubjectPage, ProfessorPage, AdminSettingsPage, NoPageFound, Layout} from "./pages/index.ts";
 
 export const Router =()=> {
     return(

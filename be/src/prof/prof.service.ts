@@ -73,5 +73,10 @@ export class ProfService {
       });
   }
 
+  async findFirst24() {
+    return this.prisma.professor.findMany({
+      take: 24,
+    });
+  }
 
 }
