@@ -22,7 +22,8 @@ export class EmailService {
                    <p>This code will expire in 10 minutes.</p>`
             })
         }catch (error){
-            console.error("Error sending verification email:",error);
+                        console.error("Error sending verification email:",error);
+            throw error;
         }
     }
 
@@ -35,11 +36,12 @@ export class EmailService {
             }
         })
 
-        const verificationToken=Math.floor(100000 + Math.random() * 900000).toString();
+        const randomInt=require('crypto')
+        const verificationToken=randomInt.randomInt(100000,999999).toString();
         const hashedVerificationToken=await argon.hash(verificationToken);
 
         const expirationDate=new Date();
-        expirationDate.setHours(expirationDate.getHours()+10*60*1000);
+                expirationDate.setMinutes(expirationDate.getMinutes() + 10);
 
         await this.prisma.emailVerificationToken.create({
             data:{
@@ -53,7 +55,7 @@ export class EmailService {
     }
 
     async verifyEmail(userId:number,code:string){
-        const findRegisteredUsersEmailToken=await this.prisma.emailVerificationToken.findFirst({
+        const verificationTokenRecord=await this.prisma.emailVerificationToken.findFirst({
             orderBy:{
                 createdAt:'desc'
             },
@@ -61,19 +63,18 @@ export class EmailService {
                 userId,
             }
         })
-        if(!findRegisteredUsersEmailToken){
+        if(!verificationTokenRecord){
             throw new Error('Invalid or expired verification code');
         }
 
-        console.log(findRegisteredUsersEmailToken)
-        const isCodeValid=await argon.verify(findRegisteredUsersEmailToken.token,code);
+        if(verificationTokenRecord.expiresAt<=new Date()){
+            throw new Error('Verification code has expired');
+        }
+
+        const isCodeValid=await argon.verify(verificationTokenRecord.token,code);
 
         if(!isCodeValid){
             throw new UnauthorizedException('Invalid verification code❌');
-        }
-
-        if(findRegisteredUsersEmailToken.expiresAt < new Date()){
-            throw new Error('Verification code has expired');
         }
 
         await this.prisma.user.update({
@@ -82,6 +83,12 @@ export class EmailService {
             },
             data:{
                 isEmailVerified:true
+            }
+        });
+
+        await this.prisma.emailVerificationToken.deleteMany({
+            where:{
+                userId
             }
         });
        return {message:'✅ Email verified successfully!'};
@@ -108,5 +115,6 @@ export class EmailService {
 
 //nesmi se u local storage spramat jwt
 //ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
-//zablokirat register botiun i login da user nemoze 50 puta udrit
+//protect fe route
+//nesto oko toga da se transprter ne pravi svaki put iznova nego da se nesto reusa
 
