@@ -92,9 +92,9 @@ export class SubjService {
     return this.prisma.subject.update({
       where: { id: idSubj },
       data: {
-        ratingExpectations: ((subj.ratingExpectations * (numberOfVerifiedComments - 1)) + subj.ratingExpectations) / numberOfVerifiedComments,
-        ratingDifficulty: ((subj.ratingDifficulty * (numberOfVerifiedComments - 1)) + subj.ratingDifficulty) / numberOfVerifiedComments,
-        ratingPracticality: ((subj.ratingPracticality * (numberOfVerifiedComments - 1)) + subj.ratingPracticality) / numberOfVerifiedComments,
+        ratingExpectations: ((subj.ratingExpectations * (numberOfVerifiedComments + 1)) - oldRatingExpectations) / numberOfVerifiedComments,
+        ratingDifficulty: ((subj.ratingDifficulty * (numberOfVerifiedComments + 1)) - oldRatingDifficulty) / numberOfVerifiedComments,
+        ratingPracticality: ((subj.ratingPracticality * (numberOfVerifiedComments + 1)) - oldRatingPracticality) / numberOfVerifiedComments,
       },
     });
   }
