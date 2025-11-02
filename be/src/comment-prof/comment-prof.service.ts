@@ -41,7 +41,7 @@ export class CommentProfService {
               isAdmin: true}
     });
     if (!user) {
-      throw new Error('User not found');
+      throw new Error('User not found or is not admin');
     }
 
     const comment = await this.prisma.commentOnProffessor.findUnique({
@@ -57,7 +57,7 @@ export class CommentProfService {
       data: { verified: true },
     });
 
-    const response = await axios.patch(`http://localhost:3000/prof/verifyComment/${idUser}/${comment.professorId}`, 
+    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${idUser}/${comment.professorId}`, 
       {rating: comment.rating,
       });
     
@@ -87,7 +87,5 @@ export class CommentProfService {
 
     return DeletedComment;
   }
-
-
 
 }

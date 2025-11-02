@@ -20,9 +20,9 @@ export class ProfController {
     return this.profService.updateAfterCommentDeletion(+idProf, +oldRating);
   }
 
-  @Patch(':id')
+  /* @Patch(':id')
   update(@Param('id') id: string) {
     return this.profService.updateTest(+id);
-  }
+  } */
 
 }

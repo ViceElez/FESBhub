@@ -7,8 +7,8 @@ import { UpdateCommentProfDto } from './dto/update-comment-prof.dto';
 export class CommentProfController {
   constructor(private readonly commentProfService: CommentProfService) {}
 
-  @Post(':idUser')
-  create(@Param('idUser') idUser: string, @Body() createCommentProfDto: CreateCommentProfDto) {
+  @Post()
+  create(@Body() createCommentProfDto: CreateCommentProfDto) {
     return this.commentProfService.create(createCommentProfDto);
   }
 

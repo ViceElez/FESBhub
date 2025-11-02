@@ -6,29 +6,15 @@ import { UpdateSubjDto } from './dto/update-subj.dto';
 @Controller('subj')
 export class SubjController {
   constructor(private readonly subjService: SubjService) {}
-
-  @Post()
-  create(@Body() createSubjDto: CreateSubjDto) {
-    return this.subjService.create(createSubjDto);
+  
+  @Patch('verifyComment7/:idUser/:idSubj')
+  NewRatingAfterVerification(@Param('idUser') idUser: string, @Param('idSubj') idSubj: string) {
+    return this.subjService.updateAfterAdminVerification(+idUser, +idSubj);
   }
 
-  @Get()
-  findAll() {
-    return this.subjService.findAll();
+  @Patch('deleteComment/:idSubj/:oldRatingExceptions/:oldRatingDiffuculty/:oldRatingPracicality')
+  NewRatingAfterDeletion(@Param('idSubj') idSubj: string, @Param('oldRatingExceptions') oldRatingExceptions: string, @Param('oldRatingDiffuculty') oldRatingDiffuculty: string, @Param('oldRatingPracicality') oldRatingPracicality: string) {
+    return this.subjService.updateAfterCommentDeletion(+idSubj, +oldRatingExceptions, +oldRatingDiffuculty, +oldRatingPracicality);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.subjService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSubjDto: UpdateSubjDto) {
-    return this.subjService.update(+id, updateSubjDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.subjService.remove(+id);
-  }
 }

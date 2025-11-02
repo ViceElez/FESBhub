@@ -12,23 +12,17 @@ export class CommentSubjController {
     return this.commentSubjService.create(createCommentSubjDto);
   }
 
-  @Get()
-  findAll() {
-    return this.commentSubjService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentSubjService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentSubjDto: UpdateCommentSubjDto) {
-    return this.commentSubjService.update(+id, updateCommentSubjDto);
+  @Patch(':idUser/:idCommentSubj')
+  update(
+    @Param('idUser') idUser: string,
+    @Param('idCommentSubj') idCommentSubj: string,
+  ) {
+    return this.commentSubjService.updateAfterVerification(+idUser, +idCommentSubj);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.commentSubjService.remove(+id);
   }
+
 }
