@@ -12,12 +12,22 @@ export class CommentProfController {
     return this.commentProfService.create(createCommentProfDto);
   }
 
-  @Patch(':idUser/:idProf')
+  @Patch(':idUser/:idCommentProf')
   update(
     @Param('idUser') idUser: string,
-    @Param('idProf') idCommentProf: string,
+    @Param('idCommentProf') idCommentProf: string,
   ) {
     return this.commentProfService.updateVerification(+idUser, +idCommentProf);
+  }
+
+  @Get()
+  findAll() {
+    return this.commentProfService.findAll();
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.commentProfService.remove(+id);
   }
 
 }

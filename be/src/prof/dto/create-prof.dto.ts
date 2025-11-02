@@ -21,9 +21,5 @@ export class CreateProfDto {
     @IsNotEmpty()
     email: string;
 
-    @IsNumber()
-    @Min(1)
-    @Max(5)
-    @IsNotEmpty()
-    rating: number;
+        
 }

@@ -13,14 +13,15 @@ export class ProfService {
       select: { isAdmin: true },
     });
 
-    if (admin == null) {
+    if (!admin) {
       throw new Error('User not found or not admin');
     }
+
     const prof = await this.prisma.professor.findUnique({
       where: { id: idProf },
     });
 
-    if (prof == null) {
+    if (!prof) {
       throw new Error('Professor not found');
     }
 
@@ -32,9 +33,45 @@ export class ProfService {
     const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
         where: { professorId: idProf, verified: true }
     });
+
     return this.prisma.professor.update({
       where: { id: idProf },
-      data: { rating: ((prof.rating * numberOfVerifiedComments) + rating) / (numberOfVerifiedComments + 1)},
+      data: { rating: ((prof.rating * (numberOfVerifiedComments - 1)) + rating) / numberOfVerifiedComments },
       });
   }
+
+  async updateAfterCommentDeletion(idProf: number, oldRating: number) {
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: idProf },
+    });
+
+    if (!prof) {
+      throw new Error('Professor not found');
+    }
+
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: idProf, verified: true }
+    });
+
+    if (numberOfVerifiedComments === 0) {
+      return this.prisma.professor.update({
+        where: { id: idProf },
+        data: { rating: 0 },
+      });
+    }
+
+    return this.prisma.professor.update({
+      where: { id: idProf },
+      data: { rating: ((prof.rating * (numberOfVerifiedComments + 1)) - oldRating) / numberOfVerifiedComments },
+      });
+  }
+
+  async updateTest(id: number) {
+    return await this.prisma.professor.update({
+      where: { id: id },
+      data: { rating: 0 },
+      });
+  }
+
+
 }
