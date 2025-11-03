@@ -6,5 +6,5 @@ export * from './AdminSettingsPage'
 export * from './NoPageFound.tsx';
 export * from './LoginPage';
 export * from './RegisterPage'
-export * from './Layout';
+export * from './PrivateRoutes.tsx';
 export * from './VerifyEmailPage';
