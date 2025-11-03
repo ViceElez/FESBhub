@@ -1,8 +1,11 @@
 import {loginApi} from "../services";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
+import {useAuth} from "../hooks";
 
 export const LoginPage =()=>{
+    const {login}=useAuth()
+    const navigate=useNavigate()
     const handleLoginSubmit=async(event:any)=>{
         event.preventDefault();
         const formData=new FormData(event.target);
@@ -12,7 +15,9 @@ export const LoginPage =()=>{
         if(response?.status===201){
             localStorage.setItem("accessToken",response.data.accessToken);
             alert('Login successful!');
-            window.location.href=routes.HOMEPAGE; //odi se ide na hojmepage, ako tria slat jwt u localStorageu je zasad
+            login();
+            navigate(routes.NEWSPAGE)
+            //odi se ide na hojmepage, ako tria slat jwt u localStorageu je zasad
         }
     }
     return(

@@ -1,6 +1,6 @@
 import {useState} from "react";
 import {registerApi} from "../services";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
 export const RegisterPage=()=>{
     const studies=["Racunarstvo","Elektrotehnika","Strojarstvo","Brodogradnja","Necu Reci"];
@@ -8,6 +8,7 @@ export const RegisterPage=()=>{
 
     const studyYear=["1","2","3","4","5","Necu reci"];
     const [year,setYear]=useState(studyYear[0]);
+    const navigate=useNavigate()
 
     const handleRegisterSubmit=async(event:any)=>{
         event.preventDefault();
@@ -20,7 +21,7 @@ export const RegisterPage=()=>{
         localStorage.setItem("accessToken",response?.data.accessToken);
         if(response?.status===201){
             alert('Registration successful! Please verify your email.');
-            window.location.href=routes.VERIFYEMAILPAGE;
+            navigate(routes.VERIFYEMAILPAGE);
         }
     }
     return(

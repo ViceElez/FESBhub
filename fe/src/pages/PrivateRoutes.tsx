@@ -1,9 +1,11 @@
 import {Outlet,Navigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
+import {useAuth} from "../hooks";
 
 export const PrivateRoutes=()=> {
-    let authenticated = {'token':true}; //TODO: replace with real authentication logic
+    const {isAuthenticated}=useAuth();
+
     return (
-        authenticated.token ? <Outlet /> : <Navigate to={routes.LOGIN} />
+        isAuthenticated? <Outlet /> : <Navigate to={routes.LOGIN} />
     );
 }

@@ -12,23 +12,26 @@ import {
     VerifyEmailPage,
     PrivateRoutes
 } from "./pages";
+import {AuthProvider} from "./context";
 
 export const Router =()=> {
     return(
-        <BrowserRouter>
-            <Routes>
-                <Route element={<PrivateRoutes />}>
-                    <Route path={routes.NEWSPAGE} element={<NewsPage />} />
-                    <Route path={routes.MATERIALSPAGE} element={<MaterialsPage />} />
-                    <Route path={routes.SUBJECTPAGE} element={<SubjectPage />} />
-                    <Route path={routes.PROFESSORPAGE} element={<ProfessorPage />} />
-                    <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage />} />
+        <AuthProvider>
+            <BrowserRouter>
+                <Routes>
+                    <Route path={routes.LOGIN} element={<LoginPage />} />
+                    <Route path={routes.REGISTER} element={<RegisterPage />} />
+                    <Route path={routes.VERIFYEMAILPAGE} element={<VerifyEmailPage />} />
                     <Route path={routes.NO_PAGE_FOUND} element={<NoPageFound />} />
-                </Route>
-                <Route path={routes.LOGIN} element={<LoginPage />} />
-                <Route path={routes.REGISTER} element={<RegisterPage />} />
-                <Route path={routes.VERIFYEMAILPAGE} element={<VerifyEmailPage />} />
-            </Routes>
-        </BrowserRouter>
+                    <Route element={<PrivateRoutes />}>
+                        <Route path={routes.NEWSPAGE} element={<NewsPage />} />
+                        <Route path={routes.MATERIALSPAGE} element={<MaterialsPage />} />
+                        <Route path={routes.SUBJECTPAGE} element={<SubjectPage />} />
+                        <Route path={routes.PROFESSORPAGE} element={<ProfessorPage />} />
+                        <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage />} />
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
     )
 }
