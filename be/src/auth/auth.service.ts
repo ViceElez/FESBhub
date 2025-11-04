@@ -5,6 +5,7 @@ import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
 import {EmailService} from "../email/email.service";
+import type {Response} from "express";
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
     ) {}
 
 
-    async register(dto:RegisterDto){
+    async register(dto:RegisterDto,response:Response){
         const existingUser=await this.prisma.user.findFirst({
             where:{
                 email:dto.email
@@ -40,13 +41,17 @@ export class AuthService {
         const {accessToken,refreshToken}=await this.generateUserToken(newUser.id);
         await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
-        return {
-            accessToken,
-            email:newUser.email
-        }
+        response.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return accessToken
     }
 
-    async login(dto:LoginDto){
+    async login(dto:LoginDto,response:Response){
         const loggedUser=await this.prisma.user.findUnique({
             where:{
                 email:dto.email,
@@ -68,6 +73,13 @@ export class AuthService {
 
         const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id);
 
+        response.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
         return accessToken
     }
 
@@ -85,7 +97,9 @@ export class AuthService {
         });
 
         const refreshToken=uuid();
-        await this.storeRefreshToken(userId,refreshToken);
+        const pepperedRefreshToken=await this.pepperPassword(refreshToken);
+        const hashedRefreshToken=await argon.hash(pepperedRefreshToken);
+        await this.storeRefreshToken(userId,hashedRefreshToken);
 
         return {
             accessToken,
@@ -120,6 +134,40 @@ export class AuthService {
     async pepperPassword(password:string):Promise<string>{
         const crypto= await import('node:crypto');
         return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
+    }
+
+    async refreshToken(oldRefreshToken:string){
+        const oldStoredRefreshToken=await this.prisma.refreshToken.findFirst({
+            where:{
+                token:oldRefreshToken,
+                isrevoked:false,
+            }
+        });
+        if(!oldStoredRefreshToken){
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const pepperedRefreshToken=await this.pepperPassword(oldRefreshToken);
+        const isRefreshTokenValid=await argon.verify(oldStoredRefreshToken.token,pepperedRefreshToken);
+        if(!isRefreshTokenValid){
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const user=await this.prisma.user.findUnique({
+            where:{
+                id:oldStoredRefreshToken.userId
+            }
+        });
+        if(!user){
+            throw new UnauthorizedException('User not found');
+        }
+
+        const {accessToken,refreshToken}=await this.generateUserToken(user.id);
+
+        return {
+            accessToken,
+            refreshToken
+        }
     }
 
 
