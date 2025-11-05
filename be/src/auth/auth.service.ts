@@ -38,7 +38,8 @@ export class AuthService {
                 currentStudyYear:dto.currentStudyYear
             }
         });
-        const {accessToken,refreshToken}=await this.generateUserToken(newUser.id);
+        const accessToken=await this.generateAccessToken(newUser.id)
+        const refreshToken=await this.generateRefreshToken(newUser.id)
         await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
         response.cookie('refreshToken', refreshToken, {
@@ -71,7 +72,8 @@ export class AuthService {
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id);
+        const accessToken=await this.generateAccessToken(loggedUser.id)
+        const refreshToken=await this.generateRefreshToken(loggedUser.id)
 
         response.cookie('refreshToken', refreshToken, {
             httpOnly: true,
@@ -88,23 +90,22 @@ export class AuthService {
         return { message: "User logged out successfully",loggedOutUserId };
     }
 
-    async generateUserToken(userId:number){
+    async generateRefreshToken(userId:number){
         await this.revokeActiveRefreshTokens(userId);
-
-        const payload={sub:userId};
-        const accessToken=await this.jwtService.signAsync(payload,{
-            expiresIn:'15m'
-        });
 
         const refreshToken=uuid();
         const pepperedRefreshToken=await this.pepperPassword(refreshToken);
         const hashedRefreshToken=await argon.hash(pepperedRefreshToken);
         await this.storeRefreshToken(userId,hashedRefreshToken);
 
-        return {
-            accessToken,
-            refreshToken
-        }
+        return refreshToken;
+    }
+
+    async generateAccessToken(userId:number){
+        const payload={sub:userId};
+        return await this.jwtService.signAsync(payload,{
+            expiresIn:'15m'
+        });
     }
 
     async storeRefreshToken(userId:number,refreshToken:string){
@@ -136,39 +137,32 @@ export class AuthService {
         return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
     }
 
-    async refreshToken(oldRefreshToken:string){
-        const oldStoredRefreshToken=await this.prisma.refreshToken.findFirst({
+    async refreshAccessToken(oldRefreshToken:string){
+        const activeStoredRefreshToken=await this.prisma.refreshToken.findFirst({
             where:{
                 token:oldRefreshToken,
                 isrevoked:false,
             }
         });
-        if(!oldStoredRefreshToken){
+        if(!activeStoredRefreshToken){
             throw new UnauthorizedException('Invalid refresh token');
         }
 
         const pepperedRefreshToken=await this.pepperPassword(oldRefreshToken);
-        const isRefreshTokenValid=await argon.verify(oldStoredRefreshToken.token,pepperedRefreshToken);
+        const isRefreshTokenValid=await argon.verify(activeStoredRefreshToken.token,pepperedRefreshToken);
         if(!isRefreshTokenValid){
             throw new UnauthorizedException('Invalid refresh token');
         }
 
         const user=await this.prisma.user.findUnique({
             where:{
-                id:oldStoredRefreshToken.userId
+                id:activeStoredRefreshToken.userId
             }
         });
         if(!user){
             throw new UnauthorizedException('User not found');
         }
 
-        const {accessToken,refreshToken}=await this.generateUserToken(user.id);
-
-        return {
-            accessToken,
-            refreshToken
-        }
+        return await this.generateAccessToken(user.id);
     }
-
-
 }

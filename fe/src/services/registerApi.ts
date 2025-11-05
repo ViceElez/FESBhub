@@ -30,7 +30,9 @@ export async function registerApi(email:string,password:string,firstName:string,
             lastName,
             studij:study,
             currentStudyYear:year
-        });
+        },{
+            withCredentials: true,
+         });
         registerButton.disabled=false;
         return response;
     }
