@@ -7,7 +7,7 @@ import {createTransport} from "nodemailer";
 @Injectable()
 export class EmailService {
     constructor(
-        private readonly prisma:PrismaService,private jwtService:JwtService
+        private readonly prisma:PrismaService
     ) {}
 
     async sendVerificationEmail(userId:number,userEmail:string,userFirstName:string){
@@ -22,9 +22,10 @@ export class EmailService {
                    <p>This code will expire in 10 minutes.</p>`
             })
         }catch (error){
-                        console.error("Error sending verification email:",error);
-            throw error;
+            console.error("Error sending verification email:",error);
+            return error;
         }
+
     }
 
     async createVerificationEmail(userId:number){
@@ -41,7 +42,7 @@ export class EmailService {
         const hashedVerificationToken=await argon.hash(verificationToken);
 
         const expirationDate=new Date();
-                expirationDate.setMinutes(expirationDate.getMinutes() + 10);
+        expirationDate.setMinutes(expirationDate.getMinutes() + 10);
 
         await this.prisma.emailVerificationToken.create({
             data:{
@@ -95,7 +96,7 @@ export class EmailService {
     }
 
     async resendVerificationEmail(userId:number){
-        const   user=await this.prisma.user.findUnique({
+        const user=await this.prisma.user.findUnique({
             where:{
                 id:userId
             }
@@ -115,6 +116,5 @@ export class EmailService {
 
 //nesmi se u local storage spramat jwt
 //ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
-//protect fe route
 //nesto oko toga da se transprter ne pravi svaki put iznova nego da se nesto reusa
 

@@ -1,25 +1,26 @@
 import React,{type ReactNode,useState,createContext} from 'react';
-interface AuthContextType{
-    isAuthenticated: boolean;
-    login: () => void;
+
+interface AuthContextType {
+    token: string | null;
+    login: (token: string) => void;
     logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [token, setToken] = useState<string | null>(null);
 
-    const login = () => {
-        setIsAuthenticated(true);
+    const login = (newToken:string) => {
+        setToken(newToken);
     };
 
     const logout = () => {
-        setIsAuthenticated(false);
+        setToken(null);
     };
 
     return (
-        <AuthContext.Provider value={{isAuthenticated, login, logout}}>
+        <AuthContext.Provider value={{token, login, logout}}>
             {children}
         </AuthContext.Provider>
     );

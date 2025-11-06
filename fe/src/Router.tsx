@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { routes } from './constants/routes';
+import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {routes} from './constants/routes';
 import {
     LoginPage,
     RegisterPage,
@@ -14,21 +14,21 @@ import {
 } from "./pages";
 import {AuthProvider} from "./context";
 
-export const Router =()=> {
-    return(
+export const Router = () => {
+    return (
         <AuthProvider>
             <BrowserRouter>
                 <Routes>
-                    <Route path={routes.LOGIN} element={<LoginPage />} />
-                    <Route path={routes.REGISTER} element={<RegisterPage />} />
-                    <Route path={routes.VERIFYEMAILPAGE} element={<VerifyEmailPage />} />
-                    <Route path={routes.NO_PAGE_FOUND} element={<NoPageFound />} />
-                    <Route element={<PrivateRoutes />}>
-                        <Route path={routes.NEWSPAGE} element={<NewsPage />} />
-                        <Route path={routes.MATERIALSPAGE} element={<MaterialsPage />} />
-                        <Route path={routes.SUBJECTPAGE} element={<SubjectPage />} />
-                        <Route path={routes.PROFESSORPAGE} element={<ProfessorPage />} />
-                        <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage />} />
+                    <Route path={routes.LOGIN} element={<LoginPage/>}/>
+                    <Route path={routes.REGISTER} element={<RegisterPage/>}/>
+                    <Route path={routes.VERIFYEMAILPAGE} element={<VerifyEmailPage/>}/>
+                    <Route path={routes.NO_PAGE_FOUND} element={<NoPageFound/>}/>
+                    <Route element={<PrivateRoutes/>}>
+                        <Route path={routes.NEWSPAGE} element={<NewsPage/>}/>
+                        <Route path={routes.MATERIALSPAGE} element={<MaterialsPage/>}/>
+                        <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
+                        <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
+                        <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>
                     </Route>
                 </Routes>
             </BrowserRouter>

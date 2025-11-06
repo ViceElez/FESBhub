@@ -2,6 +2,7 @@ import {useState} from "react";
 import {registerApi} from "../services";
 import {Link, useNavigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
+
 export const RegisterPage=()=>{
     const studies=["Racunarstvo","Elektrotehnika","Strojarstvo","Brodogradnja","Necu Reci"];
     const [study,setStudy]=useState(studies[0]);
@@ -18,10 +19,9 @@ export const RegisterPage=()=>{
         const firstName=formData.get("firstName") as string;
         const lastName=formData.get("lastName") as string;
         const response=await registerApi(email,password,firstName,study,year,lastName);
-        localStorage.setItem("accessToken",response?.data.accessToken);
         if(response?.status===201){
             alert('Registration successful! Please verify your email.');
-            navigate(routes.VERIFYEMAILPAGE);
+            navigate(routes.VERIFYEMAILPAGE+`${encodeURIComponent(email)}`);
         }
     }
     return(

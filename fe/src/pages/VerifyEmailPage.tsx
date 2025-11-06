@@ -12,7 +12,6 @@ export function VerifyEmailPage() {
 
     const route = "http://localhost:3000";
 
-    // ⏲️ Countdown timer effect
     useEffect(() => {
         if (cooldown > 0) {
             const timer = setTimeout(() => setCooldown(cooldown - 1), 1000);
@@ -66,7 +65,7 @@ export function VerifyEmailPage() {
                         Authorization: `Bearer ${localStorage.getItem("accessToken")}`
                     }
                 }
-            );
+            ); //odi triba makint local storage i iz statea vadit
             setMessage(response.data.message || '✅ Verification token sent.');
 
             // ⏲️ Start cooldown (30 seconds)

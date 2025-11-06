@@ -38,7 +38,8 @@ export class AuthService {
                 currentStudyYear:dto.currentStudyYear
             }
         });
-        const accessToken=await this.generateAccessToken(newUser.id)
+
+        await this.generateAccessToken(newUser.id)
         const refreshToken=await this.generateRefreshToken(newUser.id)
         await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
@@ -48,8 +49,6 @@ export class AuthService {
             sameSite: 'strict',
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
-
-        return accessToken
     }
 
     async login(dto:LoginDto,response:Response){

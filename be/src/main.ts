@@ -11,8 +11,9 @@ async function bootstrap() {
       })
   )
     app.enableCors({
+        credentials:true,
         origin:'http://localhost:5173'
-    })
+    }) //radi, ali nisan siguran kolko je sigurna praksa
 
     app.use(cookieParser());
   await app.listen(process.env.PORT ?? 3000);

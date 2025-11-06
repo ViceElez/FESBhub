@@ -6,15 +6,13 @@ import {UserGuard} from "../guards/user.guard";
 export class EmailController {
     constructor(private readonly EmailService: EmailService) {}
 
-    @UseGuards(UserGuard)
     @Post('verify')
     async verifyEmail(@Req() req, @Body('code') code: string) {
         return this.EmailService.verifyEmail(req.user?.sub, code)
     }
 
-    @UseGuards(UserGuard)
     @Post('resend-verification')
     async resendVerificationEmail(@Req() req) {
         return this.EmailService.resendVerificationEmail(req.user?.sub)
     }
-}
+}// triba napraivt da se ili posalje email ili nesto od usera na be tako da se moze upadeateat da je user emailVerificiran pa onda testiraj dalje, triba i za resend isto vjerojatno bit

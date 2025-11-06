@@ -3,9 +3,9 @@ import {routes} from "../constants/routes.ts";
 import {useAuth} from "../hooks";
 
 export const PrivateRoutes=()=> {
-    const {isAuthenticated}=useAuth();
+    const {token}=useAuth();
 
     return (
-        isAuthenticated? <Outlet /> : <Navigate to={routes.LOGIN} />
+        token? <Outlet /> : <Navigate to={routes.LOGIN} />
     );
 }

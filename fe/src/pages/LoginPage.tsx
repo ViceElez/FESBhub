@@ -13,11 +13,9 @@ export const LoginPage =()=>{
         const password=formData.get('password') as string;
         const response= await loginApi(email,password)
         if(response?.status===201){
-            localStorage.setItem("accessToken",response.data.accessToken);
             alert('Login successful!');
-            login();
+            login(response.data.accessToken);
             navigate(routes.NEWSPAGE)
-            //odi se ide na hojmepage, ako tria slat jwt u localStorageu je zasad
         }
     }
     return(

@@ -14,7 +14,7 @@ export async function loginApi(email:string,password:string):Promise<any>{
     const route="http://localhost:3000";
     try {
         const response=await axios.post(`${route}/auth/login`, { email, password },{
-            withCredentials: true,
+            withCredentials: true
         });
         loginButton.disabled=false;
         return response;
