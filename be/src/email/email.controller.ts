@@ -1,6 +1,5 @@
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {Body, Controller, Get, Post, Query, Req, UseGuards} from '@nestjs/common';
 import { EmailService } from './email.service';
-import {UserGuard} from "../guards/user.guard";
 
 @Controller('email')
 export class EmailController {
@@ -12,7 +11,13 @@ export class EmailController {
     }
 
     @Post('resend-verification')
-    async resendVerificationEmail(@Req() req) {
-        return this.EmailService.resendVerificationEmail(req.user?.sub)
+    async resendVerificationEmail(@Body('email') email: string) {
+        console.log(email);
+        return this.EmailService.resendVerificationEmail(email)
+    }
+
+    @Get('email-exists')
+    async checkEmailExists(@Query('email') email:string){
+        return this.EmailService.checkEmailExists(email)
     }
 }// triba napraivt da se ili posalje email ili nesto od usera na be tako da se moze upadeateat da je user emailVerificiran pa onda testiraj dalje, triba i za resend isto vjerojatno bit

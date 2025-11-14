@@ -1,6 +1,6 @@
 import {Controller, UseGuards} from '@nestjs/common';
 import {AuthService} from "./auth.service";
-import {Body, Post,Req,Res} from "@nestjs/common";
+import {Body, Post,Req,Res,Get} from "@nestjs/common";
 import {RegisterDto,LoginDto} from './dtos'
 import {UserGuard} from "../guards/user.guard";
 import type {Response,Request} from "express";

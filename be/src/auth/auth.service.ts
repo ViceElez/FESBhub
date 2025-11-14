@@ -103,7 +103,7 @@ export class AuthService {
     async generateAccessToken(userId:number){
         const payload={sub:userId};
         return await this.jwtService.signAsync(payload,{
-            expiresIn:'15m'
+            expiresIn:'1m'
         });
     }
 

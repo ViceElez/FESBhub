@@ -9,6 +9,6 @@ export const routes:Routes={
     SUBJECTPAGE: '/subject',
     PROFESSORPAGE: '/professor',
     ADMINSETTINGSPAGE: '/admin/settings',
-    VERIFYEMAILPAGE: '/verify-email/:code',
+    VERIFYEMAILPAGE: '/verify-email',
     NO_PAGE_FOUND: '*'
 }

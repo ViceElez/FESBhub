@@ -21,7 +21,7 @@ export const RegisterPage=()=>{
         const response=await registerApi(email,password,firstName,study,year,lastName);
         if(response?.status===201){
             alert('Registration successful! Please verify your email.');
-            navigate(routes.VERIFYEMAILPAGE+`${encodeURIComponent(email)}`);
+            navigate(`${routes.VERIFYEMAILPAGE}?email=${encodeURIComponent(email)}`);
         }
     }
     return(

@@ -17,6 +17,9 @@ export const LoginPage =()=>{
             login(response.data.accessToken);
             navigate(routes.NEWSPAGE)
         }
+        else if(response?.emailVerified===false){
+            navigate(`${routes.VERIFYEMAILPAGE}?email=${encodeURIComponent(email)}`);
+        }
     }
     return(
         <div>

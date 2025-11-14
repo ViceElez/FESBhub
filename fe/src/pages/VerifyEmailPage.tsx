@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { routes } from "../constants/routes.ts";
 
 export function VerifyEmailPage() {
@@ -8,7 +8,9 @@ export function VerifyEmailPage() {
     const [message, setMessage] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
-    const [cooldown, setCooldown] = useState(0); // 👈 seconds remaining
+    const [cooldown, setCooldown] = useState(0);
+    const email=useParams().email;
+
 
     const route = "http://localhost:3000";
 
@@ -33,12 +35,7 @@ export function VerifyEmailPage() {
         try {
             const response = await axios.post(
                 `${route}/email/verify`,
-                { code },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-                    }
-                }
+                { code }
             );
             alert('Email verified successfully!');
             setMessage(response.data.message || '✅ Email verified successfully!');
@@ -59,11 +56,8 @@ export function VerifyEmailPage() {
         try {
             const response = await axios.post(
                 `${route}/email/resend-verification`,
-                {},
                 {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-                    }
+                    email: email
                 }
             ); //odi triba makint local storage i iz statea vadit
             setMessage(response.data.message || '✅ Verification token sent.');
