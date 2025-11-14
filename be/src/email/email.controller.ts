@@ -6,13 +6,12 @@ export class EmailController {
     constructor(private readonly EmailService: EmailService) {}
 
     @Post('verify')
-    async verifyEmail(@Req() req, @Body('code') code: string) {
-        return this.EmailService.verifyEmail(req.user?.sub, code)
+    async verifyEmail(@Body('email') email: string, @Body('code') code: string) {
+        return this.EmailService.verifyEmail(email, code)
     }
 
     @Post('resend-verification')
     async resendVerificationEmail(@Body('email') email: string) {
-        console.log(email);
         return this.EmailService.resendVerificationEmail(email)
     }
 

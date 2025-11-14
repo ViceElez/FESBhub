@@ -55,13 +55,21 @@ export class EmailService {
         return {transporter,verificationToken};
     }
 
-    async verifyEmail(userId:number,code:string){
+    async verifyEmail(email:string,code:string){
+        const user=await this.prisma.user.findUnique({
+            where:{
+                email
+            }
+        });
+        if(!user){
+            throw new Error('User not found');
+        }
         const verificationTokenRecord=await this.prisma.emailVerificationToken.findFirst({
             orderBy:{
                 createdAt:'desc'
             },
             where:{
-                userId,
+                userId:user.id,
             }
         })
         if(!verificationTokenRecord){
@@ -80,7 +88,7 @@ export class EmailService {
 
         await this.prisma.user.update({
             where:{
-                id:userId
+                id:user.id
             },
             data:{
                 isEmailVerified:true
@@ -89,7 +97,7 @@ export class EmailService {
 
         await this.prisma.emailVerificationToken.deleteMany({
             where:{
-                userId
+                userId:user.id
             }
         });
        return {message:'✅ Email verified successfully!'};

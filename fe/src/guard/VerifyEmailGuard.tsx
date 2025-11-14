@@ -30,7 +30,7 @@ export const VerifyEmailGuard = () => {
 
     useEffect(() => {
         if(isAllowed===false){
-            navigate(routes.REGISTER);
+            navigate(routes.NEWSPAGE);
         }
     }, [isAllowed,navigate]);
 

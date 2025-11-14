@@ -58,11 +58,7 @@ export class AuthService {
             }
         });
         if(!loggedUser){
-            throw new UnauthorizedException('Invalid credentials');
-        }
-
-        if(!loggedUser.isEmailVerified){
-            throw new BadRequestException('Please verify your email before logging in');
+            throw new UnauthorizedException('Invalid dadsacredentials');
         }
 
         const passwordForVerification=await this.pepperPassword(dto.password);
@@ -70,6 +66,11 @@ export class AuthService {
         if(!isPasswordValid){
             throw new UnauthorizedException('Invalid credentials');
         }
+
+        if(!loggedUser.isEmailVerified){
+            throw new BadRequestException('Please verify your email before logging in');
+        }
+
 
         const accessToken=await this.generateAccessToken(loggedUser.id)
         const refreshToken=await this.generateRefreshToken(loggedUser.id)

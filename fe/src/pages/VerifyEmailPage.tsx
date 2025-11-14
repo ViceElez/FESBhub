@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link, useParams } from "react-router-dom";
+import {Link, useSearchParams} from "react-router-dom";
 import { routes } from "../constants/routes.ts";
 
 export function VerifyEmailPage() {
@@ -9,7 +9,8 @@ export function VerifyEmailPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [isResending, setIsResending] = useState(false);
     const [cooldown, setCooldown] = useState(0);
-    const email=useParams().email;
+    const [searchParams] = useSearchParams();
+    const email = searchParams.get("email");
 
 
     const route = "http://localhost:3000";
@@ -35,7 +36,7 @@ export function VerifyEmailPage() {
         try {
             const response = await axios.post(
                 `${route}/email/verify`,
-                { code }
+                { email:email,code }
             );
             alert('Email verified successfully!');
             setMessage(response.data.message || '✅ Email verified successfully!');

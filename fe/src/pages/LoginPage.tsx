@@ -15,11 +15,12 @@ export const LoginPage =()=>{
         if(response?.status===201){
             alert('Login successful!');
             login(response.data.accessToken);
-            navigate(routes.NEWSPAGE)
+            //triba napravit nekako da se guard ne aktivira prie nego sto se token stavi u state, jer inace nece proci
         }
         else if(response?.emailVerified===false){
             navigate(`${routes.VERIFYEMAILPAGE}?email=${encodeURIComponent(email)}`);
         }
+
     }
     return(
         <div>
@@ -53,3 +54,4 @@ export const LoginPage =()=>{
         </div>
     )
 }
+//triba testira dali access token fucnkionira kako triba(stavit da traje min i vidit oce li posli minute user moc skakat sa pagea na page)

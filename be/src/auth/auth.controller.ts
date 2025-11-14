@@ -9,6 +9,7 @@ import type {logoutRequest} from "../types";
 @Controller('auth')
 export class AuthController {
     constructor(private readonly AuthService:AuthService) {}
+
     @Post('register')
     async register(@Body() registerDto: RegisterDto,
                    @Res({ passthrough: true }) res: Response) {
