@@ -2,26 +2,36 @@ import {loginApi} from "../services";
 import {Link, useNavigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
 import {useAuth} from "../hooks";
+import {useEffect} from "react";
 
 export const LoginPage =()=>{
-    const {login}=useAuth()
+    const {token,login}=useAuth()
     const navigate=useNavigate()
+
     const handleLoginSubmit=async(event:any)=>{
         event.preventDefault();
         const formData=new FormData(event.target);
         const email=formData.get('email') as string;
         const password=formData.get('password') as string;
+
         const response= await loginApi(email,password)
         if(response?.status===201){
             alert('Login successful!');
-            login(response.data.accessToken);
-            //triba napravit nekako da se guard ne aktivira prie nego sto se token stavi u state, jer inace nece proci
+            login(response.data);
+            return
         }
         else if(response?.emailVerified===false){
             navigate(`${routes.VERIFYEMAILPAGE}?email=${encodeURIComponent(email)}`);
         }
-
     }
+
+    useEffect(() => {
+        console.log("LoginPage token:", token);
+        if (token) {
+            navigate(routes.NEWSPAGE);
+        }
+    }, [token, navigate]);
+
     return(
         <div>
             <form
@@ -54,4 +64,4 @@ export const LoginPage =()=>{
         </div>
     )
 }
-//triba testira dali access token fucnkionira kako triba(stavit da traje min i vidit oce li posli minute user moc skakat sa pagea na page)
+//iz nekog razlgga user moze nako sta istekne access token idalje pristupat rutama, vjerojatno zato sta su u pitanju route i onda se one vec renderaju
