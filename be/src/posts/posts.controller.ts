@@ -34,6 +34,7 @@ export class PostsController{
         }
         return deleted;
     }
+    //admin only editanje postova
    @UseGuards(UserGuard, AdminGuard)
     @Patch(':id')
     async update(
@@ -43,7 +44,7 @@ export class PostsController{
     try {
         return await this.postsService.update(id, dto);
     } catch (e) {
-        // If Prisma throws because not found, convert to NotFoundException
+        // ako se nenade baca ti NotFoundException
         throw new NotFoundException('Post not found');
     }
     }
