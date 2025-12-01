@@ -1,10 +1,9 @@
 import {Link} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
-import {useAuth} from "../hooks";
+
 
 export const NewsPage=()=>{
-    const {login}=useAuth()
-    console.log("Access Token in NewsPage:", login);
+
     return(
         <div>
             <h1>News Page</h1>

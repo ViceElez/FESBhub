@@ -26,7 +26,6 @@ export const LoginPage =()=>{
     }
 
     useEffect(() => {
-        console.log("LoginPage token:", token);
         if (token) {
             navigate(routes.NEWSPAGE);
         }
@@ -64,4 +63,3 @@ export const LoginPage =()=>{
         </div>
     )
 }
-//iz nekog razlgga user moze nako sta istekne access token idalje pristupat rutama, vjerojatno zato sta su u pitanju route i onda se one vec renderaju

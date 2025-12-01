@@ -165,4 +165,5 @@ export class AuthService {
 
         return await this.generateAccessToken(user.id);
     }
+
 }
