@@ -131,9 +131,6 @@ export class EmailService {
     }
 }
 
-//nesmi se u local storage spramat jwt
-//ne zaborvi vratit da mail mora bit @fesb u dto i fe registerApi.ts
 //nesto oko toga da se transprter ne pravi svaki put iznova nego da se nesto reusa
-//triba napravit da ako nie verificarian mail i ide se logirat da ga alert //posalje na verify email page i da se posalje mail
-//neki kurac crasha u routeru
+
 

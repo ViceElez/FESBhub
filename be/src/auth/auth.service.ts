@@ -43,7 +43,8 @@ export class AuthService {
         const refreshToken=await this.generateRefreshToken(newUser.id)
         await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
 
-        response.cookie('refreshToken', refreshToken, {
+        const cookieRefreshToken=newUser.id+"."+refreshToken;
+        response.cookie('refreshToken', cookieRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
@@ -75,7 +76,8 @@ export class AuthService {
         const accessToken=await this.generateAccessToken(loggedUser.id)
         const refreshToken=await this.generateRefreshToken(loggedUser.id)
 
-        response.cookie('refreshToken', refreshToken, {
+        const cookieRefreshToken=loggedUser.id+"."+refreshToken;
+        response.cookie('refreshToken', cookieRefreshToken, {
             httpOnly: true,
             secure: true,
             sameSite: 'strict',
@@ -138,6 +140,7 @@ export class AuthService {
     }
 
     async refreshAccessToken(oldRefreshToken:string){
+        console.log("Refreshing access token with refresh token: "+oldRefreshToken);
         const activeStoredRefreshToken=await this.prisma.refreshToken.findFirst({
             where:{
                 token:oldRefreshToken,

@@ -3,9 +3,10 @@ import {routes} from "../constants/routes.ts";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
 import {useEffect, useState} from "react";
+import {newAccessToken} from "../services";
 
 export const PrivateRoutesGuard = () => {
-    const { token, logout } = useAuth();
+    const { token, logout,login } = useAuth();
     const location = useLocation();
     const [isValid, setIsValid] = useState<boolean | null>(null);
 
@@ -18,8 +19,19 @@ export const PrivateRoutesGuard = () => {
         try {
             const decodedToken = jwtDecode(token) as any;
             if (Date.now() >= decodedToken.exp * 1000) {
-                logout();
-                setIsValid(false);
+                async function refreshToken() {
+                    const response = await newAccessToken();
+                    if (response?.status === 201) {
+                        setIsValid(true);
+                        //console.log("got new access token:"+response.data);
+                        //login(response.data);
+                    } else {
+                        logout();
+                        setIsValid(false);
+                        alert('Session expired, please log in again.');
+                    }
+                }
+                refreshToken();
             } else {
                 setIsValid(true);
             }
@@ -27,10 +39,10 @@ export const PrivateRoutesGuard = () => {
             logout();
             setIsValid(false);
         }
-    }, [token, location, logout]); // <-- re-runs on route change
+    }, [token, location, logout]);
 
     if (isValid === null) return <div>Loading...</div>;
-    if (!isValid) return <Navigate to={routes.LOGIN} />;
+    if (!isValid) return <Navigate to={routes.LOGIN}/>;
 
     return <Outlet />;
 };
