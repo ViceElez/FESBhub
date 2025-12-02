@@ -23,8 +23,7 @@ export const PrivateRoutesGuard = () => {
                     const response = await newAccessToken();
                     if (response?.status === 201) {
                         setIsValid(true);
-                        //console.log("got new access token:"+response.data);
-                        //login(response.data);
+                        login(response.data)
                     } else {
                         logout();
                         setIsValid(false);
