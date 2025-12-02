@@ -139,11 +139,11 @@ export class AuthService {
         return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
     }
 
-    async refreshAccessToken(oldRefreshToken:string){
-        console.log("Refreshing access token with refresh token: "+oldRefreshToken);
+    async refreshAccessToken(oldCookie:string){
+        const [userId,oldRefreshToken]=oldCookie.split('.');
         const activeStoredRefreshToken=await this.prisma.refreshToken.findFirst({
             where:{
-                token:oldRefreshToken,
+                userId:parseInt(userId),
                 isrevoked:false,
             }
         });
@@ -157,16 +157,7 @@ export class AuthService {
             throw new UnauthorizedException('Invalid refresh token');
         }
 
-        const user=await this.prisma.user.findUnique({
-            where:{
-                id:activeStoredRefreshToken.userId
-            }
-        });
-        if(!user){
-            throw new UnauthorizedException('User not found');
-        }
-
-        return await this.generateAccessToken(user.id);
+        return await this.generateAccessToken(parseInt(userId));
     }
 
 }
