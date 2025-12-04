@@ -10,27 +10,27 @@ export const PrivateRoutesGuard = () => {
     const location = useLocation();
     const [isValid, setIsValid] = useState<boolean | null>(null);
 
+    async function refreshToken() {
+        const response = await newAccessToken();
+        if (response?.status === 201) {
+            setIsValid(true);
+            login(response.data)
+        } else {
+            logout();
+            setIsValid(false);
+            alert('Session expired, please log in again.');
+        }
+    }
+    
     useEffect(() => {
         if (!token) {
             setIsValid(false);
             return;
         }
-
         try {
             const decodedToken = jwtDecode(token) as any;
             if (Date.now() >= decodedToken.exp * 1000) {
-                async function refreshToken() {
-                    const response = await newAccessToken();
-                    if (response?.status === 201) {
-                        setIsValid(true);
-                        login(response.data)
-                    } else {
-                        logout();
-                        setIsValid(false);
-                        alert('Session expired, please log in again.');
-                    }
-                }
-                refreshToken();
+                void refreshToken();
             } else {
                 setIsValid(true);
             }
