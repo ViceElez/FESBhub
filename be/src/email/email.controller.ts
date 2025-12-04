@@ -19,4 +19,4 @@ export class EmailController {
     async checkEmailExists(@Query('email') email:string){
         return this.EmailService.checkEmailExists(email)
     }
-}// triba napraivt da se ili posalje email ili nesto od usera na be tako da se moze upadeateat da je user emailVerificiran pa onda testiraj dalje, triba i za resend isto vjerojatno bit
+}

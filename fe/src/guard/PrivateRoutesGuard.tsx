@@ -47,4 +47,3 @@ export const PrivateRoutesGuard = () => {
 
     return <Outlet />;
 };
-//na be dodat da se poprati ovo vrime kad je refresh token crka

@@ -140,6 +140,9 @@ export class AuthService {
     }
 
     async refreshAccessToken(oldCookie:string){
+        if(!oldCookie){
+            throw new UnauthorizedException('No refresh token provided');
+        }
         const [userId,oldRefreshToken]=oldCookie.split('.');
         const activeStoredRefreshToken=await this.prisma.refreshToken.findFirst({
             where:{
@@ -157,6 +160,9 @@ export class AuthService {
             throw new UnauthorizedException('Invalid refresh token');
         }
 
+        if(activeStoredRefreshToken.expiresAt < new Date()){
+            throw new UnauthorizedException('Refresh token expired');
+        }
         return await this.generateAccessToken(parseInt(userId));
     }
 
