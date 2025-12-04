@@ -6,7 +6,7 @@ import {useEffect, useState} from "react";
 import {newAccessToken} from "../services";
 
 export const PrivateRoutesGuard = () => {
-    const { token, logout,login } = useAuth();
+    const { token, logout,login,loading } = useAuth();
     const location = useLocation();
     const [isValid, setIsValid] = useState<boolean | null>(null);
 
@@ -21,8 +21,10 @@ export const PrivateRoutesGuard = () => {
             alert('Session expired, please log in again.');
         }
     }
-    
+
     useEffect(() => {
+        if(loading) return;
+
         if (!token) {
             setIsValid(false);
             return;
@@ -38,10 +40,11 @@ export const PrivateRoutesGuard = () => {
             logout();
             setIsValid(false);
         }
-    }, [token, location, logout]);
+    }, [token, location, logout,loading]);
 
-    if (isValid === null) return <div>Loading...</div>;
+    if (loading || isValid === null) return <div>Loading...</div>;
     if (!isValid) return <Navigate to={routes.LOGIN}/>;
 
     return <Outlet />;
 };
+//na be dodat da se poprati ovo vrime kad je refresh token crka
