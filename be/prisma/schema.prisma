@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -15,23 +14,25 @@ datasource db {
 }
 
 model User {
-  id                  Int                   @id @default(autoincrement())
-  email               String                @unique
-  password            String
-  firstName           String
-  lastName            String?
-  studij              String?
-  currentStudyYear    Int?
-  createdAt           DateTime              @default(now())
-  updatedAt           DateTime              @updatedAt
-  isAdmin             Boolean               @default(false)
-  isVerified          Boolean               @default(false)
-  Post                Post[]
-  CommentOnProffessor CommentOnProffessor[]
-  CommentOnSubject    CommentOnSubject[]
-  File                File[]
-  Folder              Folder[]
-  RefreshToken        RefreshToken[]
+  id                     Int                      @id @default(autoincrement())
+  email                  String                   @unique
+  password               String
+  firstName              String
+  lastName               String?
+  studij                 String?
+  currentStudyYear       Int?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  isAdmin                Boolean                  @default(false)
+  isVerified             Boolean                  @default(false)
+  isEmailVerified        Boolean                  @default(false)
+  Post                   Post[]
+  CommentOnProffessor    CommentOnProffessor[]
+  CommentOnSubject       CommentOnSubject[]
+  File                   File[]
+  Folder                 Folder[]
+  RefreshToken           RefreshToken[]
+  EmailVerificationToken EmailVerificationToken[]
 }
 
 model Subject {
@@ -69,6 +70,7 @@ model CommentOnProffessor {
   professor   Professor @relation(fields: [professorId], references: [id])
   createdAt   DateTime  @default(now())
   rating      Float     @default(0)
+  verified    Boolean   @default(false)
 }
 
 model CommentOnSubject {
@@ -82,6 +84,7 @@ model CommentOnSubject {
   ratingExceptions  Float    @default(0)
   ratingPracicality Float    @default(0)
   ratingDiffuculty  Float    @default(0)
+  verified          Boolean  @default(false)
 }
 
 model Folder {
@@ -108,21 +111,38 @@ model File {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
+  id        Int         @id @default(autoincrement())
   title     String
   content   String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User        @relation(fields: [userId], references: [id])
   userId    Int
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
+  verified  Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  photos    PostImage[]
 }
 
 model RefreshToken {
   id        Int      @id @default(autoincrement())
   token     String   @unique
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   createdAt DateTime @default(now())
   expiresAt DateTime
   isrevoked Boolean  @default(false)
+}
+
+model PostImage {
+  id     Int    @id @default(autoincrement())
+  url    String
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  expiresAt DateTime
 }
