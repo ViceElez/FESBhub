@@ -1,8 +1,139 @@
-export const AdminSettingsPage=()=>{
-    return(
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { getAccessToken, tokenIsAdmin, tokenIsExpired } from '../services';
+
+export const AdminSettingsPage = () => {
+    
+    const [title, setTitle] = useState('this is the title');
+    const [content, setContent] = useState('this is the content');
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState<string | null>(null);
+    const navigate = useNavigate(); // hook za navigaciju glupu
+    const token = getAccessToken();
+    const expired = token ? tokenIsExpired(token) : true;
+    const isAdmin = token ? tokenIsAdmin(token) : false;
+
+    async function handleSubmit(e: React.FormEvent) { //.formevent guess so
+        e.preventDefault();
+        setMessage(null);
+        setLoading(true);
+
+        try {
+            const res = await fetch('http://localhost:3000/posts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ title, content }),
+            });
+
+           if (!res.ok) {
+                // bas kad nemoze fetchat
+                if (res.status === 401 || res.status === 403) {
+                    // prebacujem na login al mozda neki error 
+                    navigate('/login');
+                   // setMessage('You are not authorized. Please login.');
+                    return;
+                }
+
+                const ct = res.headers.get('content-type') ?? '';
+                let body: any = null;
+                if (ct.includes('application/json')) {
+                    body = await res.json().catch(() => null);
+                } else {
+                    const text = await res.text().catch(() => '');
+                    body = { message: text };
+                }
+
+                setMessage(`Error ${res.status}: ${body?.message ?? res.statusText}`);
+            } else {
+                // success
+                if (res.status === 204) {
+                    setMessage('Operation succeeded.');
+                } else {
+                    const data = await res.json().catch(() => null);
+                    setMessage('Post created successfully');
+                    setTitle('');
+                    setContent('');
+                    console.log('Created post', data);
+                }
+            }
+        } catch (err: any) {
+            setMessage(err?.message ?? 'Network error');
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    if (token) {
+        return (
+            <div>
+                <h1>Admin Settings</h1>
+                <p>You must be logged in to access admin settings.</p>
+                <button onClick={() => navigate('/login')}>Go to Login</button>
+            </div>
+        );
+    }
+
+    if (!expired) {
+        return (
+            <div>
+                <h1>Admin Settings</h1>
+                <p>Your session has expired. Please log in again.</p>
+                <button onClick={() => navigate('/login')}>Login</button>
+            </div>
+        );
+    }
+
+    if (isAdmin) {
+        return (
+            <div>
+                <h1>Admin Settings</h1>
+                <p>You do not have admin privileges.</p>
+            </div>
+        );
+    }
+
+    return (
         <div>
-            <h1>Admin Settings Page</h1>
-            <p>This is the admin settings page.</p>
+            <h1>Admin Settings</h1>
+            <p>Create a news post (admins only)</p>
+
+            <form onSubmit={handleSubmit} style={{ maxWidth: 700 }}>
+                <div>
+                    <label>Title</label>
+                    <input
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        required
+                        style={{ width: '100%', padding: 8, marginTop: 4 }}
+                    />
+                </div>
+
+                <div style={{ marginTop: 12 }}>
+                    <label>Content</label>
+                    <textarea
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        required
+                        rows={8}
+                        style={{ width: '100%', padding: 8, marginTop: 4 }}
+                    />
+                </div>
+
+                <div style={{ marginTop: 12 }}>
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Creating...' : 'Create Post'}
+                    </button>
+                </div>
+            </form>
+
+            {message && (
+                <div style={{ marginTop: 12, color: message.startsWith('Error') ? 'crimson' : 'red' }}>
+                    {message}
+                </div>
+            )}
         </div>
-    )
-}
+    );
+};
