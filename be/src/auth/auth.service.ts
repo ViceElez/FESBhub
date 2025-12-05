@@ -1,28 +1,31 @@
 import {BadRequestException, Injectable, UnauthorizedException} from '@nestjs/common';
 import {PrismaService} from "../prisma/prisma.service";
-import {RegisterDto,LoginDto,RefreshTokenDto} from "./dtos";
+import {RegisterDto,LoginDto} from "./dtos";
 import * as argon from 'argon2'
 import {JwtService} from "@nestjs/jwt";
 import {v4 as uuid} from 'uuid';
+import {EmailService} from "../email/email.service";
+import type {Response} from "express";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly prisma:PrismaService,private jwtService:JwtService
+        private readonly prisma:PrismaService,private jwtService:JwtService,
+        private emailService:EmailService
     ) {}
 
-    async register(dto:RegisterDto){
-        const existingUser=await this.prisma.user.findUnique({
+
+    async register(dto:RegisterDto,response:Response){
+        const existingUser=await this.prisma.user.findFirst({
             where:{
                 email:dto.email
             }
         });
-        const sss=this.prisma.commentOnProffessor
         if(existingUser){
             throw new BadRequestException('User already exists');
         }
 
-        const passwordForHashing=dto.password+process.env.HASHING_SECRET;
+        const passwordForHashing=await this.pepperPassword(dto.password)
         const hashedPassword=await argon.hash(passwordForHashing);
 
         const newUser=await this.prisma.user.create({
@@ -35,95 +38,76 @@ export class AuthService {
                 currentStudyYear:dto.currentStudyYear
             }
         });
-        return ({
-            id:newUser.id,
-            email:newUser.email,
-            firstName:newUser.firstName,
-            lastName:newUser.lastName,
-            studij:newUser.studij,
-            currentStudyYear:newUser.currentStudyYear
 
-        })
+        await this.generateAccessToken(newUser.id)
+        const refreshToken=await this.generateRefreshToken(newUser.id)
+        await this.emailService.sendVerificationEmail(newUser.id,newUser.email,newUser.firstName);
+
+        const cookieRefreshToken=newUser.id+"."+refreshToken;
+        response.cookie('refreshToken', cookieRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
     }
 
-    async login(dto:LoginDto){
+    async login(dto:LoginDto,response:Response){
         const loggedUser=await this.prisma.user.findUnique({
             where:{
-                email:dto.email
+                email:dto.email,
             }
         });
         if(!loggedUser){
-            throw new UnauthorizedException('Invalid credentials');
+            throw new UnauthorizedException('Invalid dadsacredentials');
         }
 
-        const passwordForVerification=dto.password+process.env.HASHING_SECRET;
+        const passwordForVerification=await this.pepperPassword(dto.password);
         const isPasswordValid=await argon.verify(loggedUser.password,passwordForVerification);
         if(!isPasswordValid){
             throw new UnauthorizedException('Invalid credentials');
         }
 
-        const {accessToken,refreshToken}=await this.generateUserToken(loggedUser.id,loggedUser.email,false);
+        if(!loggedUser.isEmailVerified){
+            throw new BadRequestException('Please verify your email before logging in');
+        }
 
-        return {
-            accessToken,
-            refreshToken
-        };
+
+        const accessToken=await this.generateAccessToken(loggedUser.id)
+        const refreshToken=await this.generateRefreshToken(loggedUser.id)
+
+        const cookieRefreshToken=loggedUser.id+"."+refreshToken;
+        response.cookie('refreshToken', cookieRefreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return accessToken
     }
 
-    async refreshToken(refreshToken:string){
-        const storedToken=await this.prisma.refreshToken.findUnique({
-            where:{
-                token:refreshToken,
-                expiresAt:{gte:new Date()},
-                isrevoked:false
-            }
-        });
-        if(!storedToken){
-            throw new UnauthorizedException('Invalid refresh token');
-        }
-        const findUser=await this.prisma.user.findUnique({
-            where:{
-                id:storedToken.userId
-            }
-        });
-        if(!findUser){
-            throw new UnauthorizedException('User not found');
-        }
-        return this.generateUserToken(findUser.id,findUser.email,true,refreshToken);
+    async logout(loggedOutUserId: number){
+        await this.revokeActiveRefreshTokens(loggedOutUserId);
+        return { message: "User logged out successfully",loggedOutUserId };
     }
 
-    async generateUserToken(userId:number,email:string,isRefreshed:boolean,oldTokenString?:string){
+    async generateRefreshToken(userId:number){
+        await this.revokeActiveRefreshTokens(userId);
 
-        if(isRefreshed&&oldTokenString !== undefined){
-            const oldToken= await this.prisma.refreshToken.update({
-                where:{
-                    token:oldTokenString
-                },
-                data:{
-                    isrevoked:true
-                }
-            })
-        }
+        const refreshToken=uuid();
+        const pepperedRefreshToken=await this.pepperPassword(refreshToken);
+        const hashedRefreshToken=await argon.hash(pepperedRefreshToken);
+        await this.storeRefreshToken(userId,hashedRefreshToken);
 
-        // include isAdmin in the access token payload so guards can use a fast-path
-        const userRecord = await this.prisma.user.findUnique({
-            where: { id: userId },
-            select: { isAdmin: true }
+        return refreshToken;
+    }
+
+    async generateAccessToken(userId:number){
+        const payload={sub:userId};
+        return await this.jwtService.signAsync(payload,{
+            expiresIn:'1m'
         });
-        const isAdmin = !!userRecord?.isAdmin;
-
-        const payload = { sub: userId, email, isAdmin };
-        const accessToken = await this.jwtService.signAsync(payload, {
-            expiresIn: '15m'
-        });
-
-    const refreshToken=uuid();
-    await this.storeRefreshToken(userId,refreshToken);
-
-        return {
-            accessToken,
-            refreshToken
-        }
     }
 
     async storeRefreshToken(userId:number,refreshToken:string){
@@ -137,4 +121,49 @@ export class AuthService {
             }
         })
     }
+
+    async revokeActiveRefreshTokens(userId: number): Promise<void> {
+        await this.prisma.refreshToken.updateMany({
+            where: {
+                userId,
+                isrevoked: false,
+            },
+            data: {
+                isrevoked: true,
+            },
+        });
+    }
+
+    async pepperPassword(password:string):Promise<string>{
+        const crypto= await import('node:crypto');
+        return crypto.createHmac('sha256', process.env.HASHING_SECRET!).update(password).digest('hex')
+    }
+
+    async refreshAccessToken(oldCookie:string){
+        if(!oldCookie){
+            throw new UnauthorizedException('No refresh token provided');
+        }
+        const [userId,oldRefreshToken]=oldCookie.split('.');
+        const activeStoredRefreshToken=await this.prisma.refreshToken.findFirst({
+            where:{
+                userId:parseInt(userId),
+                isrevoked:false,
+            }
+        });
+        if(!activeStoredRefreshToken){
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        const pepperedRefreshToken=await this.pepperPassword(oldRefreshToken);
+        const isRefreshTokenValid=await argon.verify(activeStoredRefreshToken.token,pepperedRefreshToken);
+        if(!isRefreshTokenValid){
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+
+        if(activeStoredRefreshToken.expiresAt < new Date()){
+            throw new UnauthorizedException('Refresh token expired');
+        }
+        return await this.generateAccessToken(parseInt(userId));
+    }
+
 }
