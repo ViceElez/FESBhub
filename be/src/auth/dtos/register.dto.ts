@@ -3,7 +3,7 @@ import {Type} from "class-transformer";
 
 export class RegisterDto{
     @IsEmail()
-    @Matches(/fesb.hr/, { message: 'Email must be a fesb.hr email address' })
+    //@Matches(/fesb.hr/, { message: 'Email must be a fesb.hr email address' })
     email:string;
 
     @IsString()
@@ -27,5 +27,4 @@ export class RegisterDto{
     @Min(1)
     @Max(5)
     currentStudyYear?: number;
-
 }

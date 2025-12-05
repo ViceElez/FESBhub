@@ -7,6 +7,7 @@ import { ProfModule } from './prof/prof.module';
 import { CommentProfModule } from './comment-prof/comment-prof.module';
 import { SubjModule } from './subj/subj.module';
 import { CommentSubjModule } from './comment-subj/comment-subj.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { CommentSubjModule } from './comment-subj/comment-subj.module';
       CommentProfModule,
       SubjModule,
       CommentSubjModule],
+      EmailModule],
   providers: [],
   controllers: [],
 })
