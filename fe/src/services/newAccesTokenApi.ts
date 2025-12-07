@@ -9,7 +9,6 @@ export async function newAccessToken():Promise<any>{
         });
     }
     catch(error){
-        console.log(error);
         return;
     }
 }

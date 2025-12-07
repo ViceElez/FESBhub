@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.user.createMany({
     data: [
-    { email: 'alice@example.com', 
+    { email: 'alice@example.com',
         firstName: 'Alice', 
         lastName: 'Anderson', 
         studij: 'Računarstvo',
@@ -13,7 +13,6 @@ async function main() {
         isAdmin: true,
         isVerified: true,
         password: '123',
-
     },
     { email: 'bob@example.com', 
         firstName: 'Bob', 

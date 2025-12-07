@@ -123,7 +123,6 @@ model RefreshToken {
   createdAt DateTime @default(now())
   expiresAt DateTime
   isrevoked Boolean  @default(false)
-  user      User     @relation(fields: [userId], references: [id])
 }
 
 model PostImage {

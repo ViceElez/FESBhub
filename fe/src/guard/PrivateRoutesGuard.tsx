@@ -1,14 +1,14 @@
 import {Outlet, Navigate, useLocation} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
 import {useAuth} from "../hooks";
-import {jwtDecode} from "jwt-decode";
 import {useEffect, useState} from "react";
-import {newAccessToken} from "../services";
+import {newAccessToken, tokenIsExpired} from "../services";
 
 export const PrivateRoutesGuard = () => {
     const { token, logout,login,loading } = useAuth();
     const location = useLocation();
     const [isValid, setIsValid] = useState<boolean | null>(null);
+    const expired = token ? tokenIsExpired(token) : true;
 
     async function refreshToken() {
         const response = await newAccessToken();
@@ -30,8 +30,7 @@ export const PrivateRoutesGuard = () => {
             return;
         }
         try {
-            const decodedToken = jwtDecode(token) as any;
-            if (Date.now() >= decodedToken.exp * 1000) {
+            if (expired) {
                 void refreshToken();
             } else {
                 setIsValid(true);

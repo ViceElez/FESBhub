@@ -1,17 +1,34 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getAccessToken, tokenIsAdmin, tokenIsExpired } from '../services';
+import { tokenIsExpired,tokenIsAdmin } from '../services';
+import {useAuth} from "../hooks";
+import {routes} from '../constants/routes';
 
 export const AdminSettingsPage = () => {
-    
     const [title, setTitle] = useState('this is the title');
     const [content, setContent] = useState('this is the content');
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const navigate = useNavigate(); // hook za navigaciju glupu
-    const token = getAccessToken();
+    const {token}=useAuth()
     const expired = token ? tokenIsExpired(token) : true;
-    const isAdmin = token ? tokenIsAdmin(token) : false;
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
+
+    useEffect(() => {
+        async function checkAdmin() {
+            if (!token) {
+                setIsAdmin(false);
+                setAdminLoaded(true);
+                return;
+            }
+
+            const result = await tokenIsAdmin(token);
+            setIsAdmin(result);
+            setAdminLoaded(true);
+        }
+        void checkAdmin();
+    }, [token]);
 
     async function handleSubmit(e: React.FormEvent) { //.formevent guess so
         e.preventDefault();
@@ -32,7 +49,7 @@ export const AdminSettingsPage = () => {
                 // bas kad nemoze fetchat
                 if (res.status === 401 || res.status === 403) {
                     // prebacujem na login al mozda neki error 
-                    navigate('/login');
+                    navigate(routes.LOGIN);
                    // setMessage('You are not authorized. Please login.');
                     return;
                 }
@@ -66,27 +83,32 @@ export const AdminSettingsPage = () => {
         }
     }
 
-    if (token) {
+    if (!token) {
         return (
             <div>
                 <h1>Admin Settings</h1>
                 <p>You must be logged in to access admin settings.</p>
-                <button onClick={() => navigate('/login')}>Go to Login</button>
+                <button onClick={() => navigate(routes.LOGIN)}>Go to Login</button>
             </div>
         );
     }
 
-    if (!expired) {
+    if (expired) {
         return (
             <div>
                 <h1>Admin Settings</h1>
                 <p>Your session has expired. Please log in again.</p>
-                <button onClick={() => navigate('/login')}>Login</button>
+                <button onClick={() => navigate(routes.LOGIN)}>Login</button>
             </div>
         );
     }
 
-    if (isAdmin) {
+
+    if (!adminLoaded) {
+        return <p>Loading...</p>;
+    }
+
+    if (!isAdmin) {
         return (
             <div>
                 <h1>Admin Settings</h1>

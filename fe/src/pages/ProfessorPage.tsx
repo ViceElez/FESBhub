@@ -1,6 +1,8 @@
 import axios from "axios"
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState} from 'react';
 import type { Professor } from '../constants/professorType';
+import {useAuth} from "../hooks";
+import {jwtDecode} from "jwt-decode";
 
 interface PopupProperties {
     isOpen: boolean
@@ -43,6 +45,12 @@ export const ProfessorCard = ({ prof }: { prof: Professor }) => {
 export const AddCommentPopup = ({isOpen, onClose}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
+    const {token}=useAuth()
+    const decode=jwtDecode(token!) as any;
+    const userId=decode?.sub
+    // const decode=decodeJwtPayload(token??undefined)
+    // const userId=decode?.sub
+
 
     if (!isOpen) return null;
 
@@ -50,7 +58,11 @@ export const AddCommentPopup = ({isOpen, onClose}: PopupProperties) => {
         <div>
             <input type = "text" name = "content" placeholder = "Ovdje upišite svoj komentar" onChange = {(e) => setContent(e.target.value)}/>
             <input type = "number" name = "rating" placeholder = "Ovdje upišite ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
-            <button onClick = {() => {axios.post('http://localhost:3000/comment-prof', {content, rating})
+            <button onClick = {() => {axios.post('http://localhost:3000/comment-prof', {content, rating,userId},{
+                headers:{
+                    Authorization: `Bearer ${token}`,
+                }
+            })
                                     onClose()}}>
                 Potvrdi
             </button>
