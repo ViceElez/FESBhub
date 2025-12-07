@@ -1,7 +1,6 @@
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
-
 const route="http://localhost:3000";
 
 export function tokenIsExpired(token?: string): boolean {

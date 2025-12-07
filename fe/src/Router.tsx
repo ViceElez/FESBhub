@@ -10,6 +10,7 @@ import {
     AdminSettingsPage,
     NoPageFound,
     VerifyEmailPage,
+    Layout
 } from "./pages";
 import {PrivateRoutesGuard, VerifyEmailGuard} from './guard';
 import {AuthProvider} from "./context";
@@ -26,11 +27,13 @@ export const Router = () => {
                         <Route path={routes.VERIFYEMAILPAGE} element={<VerifyEmailPage/>}/>
                     </Route>
                     <Route element={<PrivateRoutesGuard/>}>
-                        <Route path={routes.NEWSPAGE} element={<NewsPage/>}/>
-                        <Route path={routes.MATERIALSPAGE} element={<MaterialsPage/>}/>
-                        <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
-                        <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
-                        <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>
+                        <Route element={<Layout/>}>
+                            <Route path={routes.NEWSPAGE} element={<NewsPage/>}/>
+                            <Route path={routes.MATERIALSPAGE} element={<MaterialsPage/>}/>
+                            <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
+                            <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
+                            <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>
+                        </Route>
                     </Route>
                 </Routes>
             </BrowserRouter>

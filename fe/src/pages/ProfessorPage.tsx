@@ -45,11 +45,9 @@ export const ProfessorCard = ({ prof }: { prof: Professor }) => {
 export const AddCommentPopup = ({isOpen, onClose}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
-    const {token}=useAuth()
-    const decode=jwtDecode(token!) as any;
-    const userId=decode?.sub
-    // const decode=decodeJwtPayload(token??undefined)
-    // const userId=decode?.sub
+    const {token}=useAuth() //userov token
+    const decode=jwtDecode(token!) as any; //dekordiran token
+    const userId=decode?.sub;// userov id, takode iz dekoriranog tokena mos izvuc kad istice(ali ta funckija je vec implelmentirana u auth.ts pa to pogledaj
 
 
     if (!isOpen) return null;
