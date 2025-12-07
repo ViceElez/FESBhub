@@ -46,7 +46,8 @@ export const AddCommentPopup = ({isOpen, onClose}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
     const {token}=useAuth() //userov token
-    const decode=jwtDecode(token!) as any; //dekordiran token
+    const decode = token ? jwtDecode(token) : null;
+    //dekordiran token
     const userId=decode?.sub;// userov id, takode iz dekoriranog tokena mos izvuc kad istice(ali ta funckija je vec implelmentirana u auth.ts pa to pogledaj
 
 

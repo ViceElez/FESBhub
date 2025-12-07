@@ -10,7 +10,8 @@ import {
     AdminSettingsPage,
     NoPageFound,
     VerifyEmailPage,
-    Layout
+    Layout,
+    UserSettingsPage
 } from "./pages";
 import {PrivateRoutesGuard, VerifyEmailGuard} from './guard';
 import {AuthProvider} from "./context";
@@ -33,6 +34,8 @@ export const Router = () => {
                             <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
                             <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
                             <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>
+                            <Route path={routes.USERSETTINGSPAGE}
+                            element={<UserSettingsPage/>}/>
                         </Route>
                     </Route>
                 </Routes>

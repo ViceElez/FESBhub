@@ -16,7 +16,7 @@ export const Header = () => {
         }
     }
     const handleSettingsClick=()=>{
-        console.log('settings');
+        navigate(routes.USERSETTINGSPAGE)
     }
 
     return (

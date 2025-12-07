@@ -7,4 +7,5 @@ export * from './NoPageFound.tsx';
 export * from './LoginPage';
 export * from './RegisterPage'
 export * from './VerifyEmailPage';
+export * from './UserSettingsPage.tsx';
 export * from './Layout.tsx';
