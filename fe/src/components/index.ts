@@ -1,1 +1,4 @@
 export * from './Header.tsx'
+export * from './ProfessorCard.tsx'
+export * from './DeleteProfessorCommentPopup.tsx'
+export * from './AddProfessorCommentPopup.tsx'
