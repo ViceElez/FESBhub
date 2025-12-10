@@ -6,19 +6,19 @@ import { CreatePostDto } from './dtos/create-post.dto';
 export class PostsService{
     constructor(private readonly prisma:PrismaService){}
 
-    async create(dto:CreatePostDto,userId:number){
+    async create(dto:CreatePostDto,userId:number,isAdmin:boolean){
         const post=await this.prisma.post.create({
             data:{
                 title:dto.title,
                 content:dto.content,
                 userId,
-                // admin-created posts are verified by default
-                verified:true
+                
+                verified:isAdmin
             }
         });
         return post;
     }
-//make sure to  limit the number of posts by 10 
+
     async findAll(){
         return this.prisma.post.findMany({
             orderBy:{createdAt:'desc'},

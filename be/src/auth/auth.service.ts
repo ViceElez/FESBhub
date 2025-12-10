@@ -104,7 +104,8 @@ export class AuthService {
     }
 
     async generateAccessToken(userId:number){
-        const payload={sub:userId};
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const payload={sub:userId, isAdmin: user?.isAdmin || false};
         return await this.jwtService.signAsync(payload,{
             expiresIn:'1m'
         });

@@ -13,12 +13,14 @@ export class PostsController{
         return this.postsService.findAll();
     }
 
-    // Only authenticated admins may create posts
-    @UseGuards(UserGuard,AdminGuard)
+    // Authenticated users may create posts (admins auto-publish, users need approval)
+    @UseGuards(UserGuard)
     @Post()
     async create(@Body() dto:CreatePostDto,@Request() req){
         const userId = req.user?.sub;
-        return this.postsService.create(dto,userId);
+        const isAdmin = Boolean(req.user?.isAdmin);
+        console.log(isAdmin);
+        return this.postsService.create(dto,userId,isAdmin);
     }
 
     // Admin-only brisanje za postove
