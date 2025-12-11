@@ -49,6 +49,7 @@ export class CommentProfService {
       data: { rating: updateCommentProfDto.rating,
               content: updateCommentProfDto.content },
     });
+    return updatedComment;
   }
 
   async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
@@ -114,11 +115,6 @@ export class CommentProfService {
       where: { professorId: findUniqueDto.professorId,
                userId: findUniqueDto.userId},
     });
-
-    if (comment === null) {
-      return false;
-    }
-    return true;
-
+    return comment;
   }
 }

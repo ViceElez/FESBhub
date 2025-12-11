@@ -19,16 +19,20 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             <input type = "number" name = "rating" placeholder = "Ovdje upišite novu ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
             <button 
             disabled = {content.length === 0 || rating < 1 || rating > 5}
-            onClick = {() => {axios.patch('http://localhost:3000/comment-prof/', {
-                data: {"userId": userId, 
-                "professorId": profId, 
-                "rating": rating, 
-                "content": content
+            onClick = {() => {
+                console.log(userId, profId, content, rating);
+                axios.patch('http://localhost:3000/comment-prof/',
+                { 
+                    "userId": userId, 
+                    "professorId": profId, 
+                    "rating": rating, 
+                    "content": content
                 },
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-        })
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
                 onClose();  }}>
                 Potvrdi
             </button>

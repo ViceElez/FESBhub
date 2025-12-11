@@ -14,7 +14,19 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const {token} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
-                
+    const [existingComment, setExistingComment] = useState(false);
+
+    axios.get('http://localhost:3000/comment-prof/exists', {
+        data: {
+            "userId": userId, 
+            "professorId": profId
+        },
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    }).then((response) => {
+        setExistingComment((response.data) ? true : false);
+    });     
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
@@ -27,15 +39,15 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button onClick = {() => {setIsOpenAdd(true), setIsOpenDelete(false), setIsOpenUpdate(false)}}
-                        >
+                        disabled = {(existingComment === false) ? true : false}>
                     Dodaj komentar
                 </button>
                 <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(true), setIsOpenUpdate(false)}}
-                        >
+                        disabled = {(existingComment === false) ? false : true}>
                     Izbriši komentar
                 </button>
                 <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(false), setIsOpenUpdate(true)}}
-                        >
+                        disabled = {(existingComment === false) ? false : true}>
                     Izmjeni komentar
                 </button>
             </div>
