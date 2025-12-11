@@ -12,11 +12,7 @@ export const ProfessorPage = () => {
         axios.get<Professor[]>("http://localhost:3000/prof").then(response => {
             setProfessors(response.data);
         })
-    }, [])
-
-    const getDivId=(professorId:any)=>{
-        console.log(professorId) //odi se ispisuje id profesora, mos dalje snjin sta os
-    }
+    }, []);
 
     return(
         <div>
@@ -26,8 +22,7 @@ export const ProfessorPage = () => {
                 style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
                 {professors.map(professor => (
                     <li key={professor.id}
-                    onClick={() =>getDivId(professor.id) }
-                    ><ProfessorCard prof = {professor} /></li>
+                    ><ProfessorCard prof = {professor} profId = {professor.id}/></li>
                 ))}
             </ul>
         </div>

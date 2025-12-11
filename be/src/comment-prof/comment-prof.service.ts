@@ -1,6 +1,6 @@
 import { Body, Injectable } from '@nestjs/common';
 import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
-import { UpdateCommentProfDto } from './dto/update-comment-prof.dto';
+import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { User } from '@prisma/client';
@@ -35,29 +35,31 @@ export class CommentProfService {
     }
   }
 
-  async updateVerification(idUser: number, idCommentProf: number) {
+  async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
     const user = await this.prisma.user.findUnique({
-      where: { id: idUser,
+      where: { id: updateCommentProfDto.userId,
               isAdmin: true}
     });
     if (!user) {
       throw new Error('User not found or is not admin');
     }
 
-    const comment = await this.prisma.commentOnProffessor.findUnique({
-      where: { id: idCommentProf },
+    const comment = await this.prisma.commentOnProffessor.findFirst({
+      where: { professorId: updateCommentProfDto.professorId,
+              userId: updateCommentProfDto.userId},
     });
 
     if (!comment) {
       throw new Error('Comment not found');
     }
 
-    const updatedComment = await this.prisma.commentOnProffessor.update({
-      where: { id: idCommentProf },
+    const updatedComment = await this.prisma.commentOnProffessor.updateMany({
+      where: { professorId: updateCommentProfDto.professorId,
+               userId: updateCommentProfDto.userId},
       data: { verified: true },
     });
 
-    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${idUser}/${comment.professorId}`, 
+    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${updateCommentProfDto.userId}/${comment.professorId}`, 
       {rating: comment.rating,
       });
     
@@ -69,18 +71,21 @@ export class CommentProfService {
     return "testiranje123";
   }
 
-  async remove(id: number) {
-    const comment = await this.prisma.commentOnProffessor.findUnique({
-      where: { id: id },
+  async remove(@Body() deleteCommentProfDto: DeleteCommentProfDto) {
+    const comment = await this.prisma.commentOnProffessor.findFirst({
+      where: { professorId: deleteCommentProfDto.professorId,
+               userId: deleteCommentProfDto.userId},
     });
+
     if (!comment) {
       throw new Error('Comment not found');
     }
 
     const oldRating = comment.rating;
 
-    const DeletedComment = await this.prisma.commentOnProffessor.delete({
-      where: { id: id },
+    const DeletedComment = await this.prisma.commentOnProffessor.deleteMany({
+      where: { professorId: deleteCommentProfDto.professorId,
+                userId: deleteCommentProfDto.userId},
     });
 
     const request = await axios.patch(`http://localhost:3000/prof/deleteComment/${comment.professorId}/${oldRating}`);
@@ -89,3 +94,4 @@ export class CommentProfService {
   }
 
 }
+
