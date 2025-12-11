@@ -9,13 +9,18 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
 
-    if(!isOpen) return <div></div>;
+    if(!isOpen) return null;
 
     return (
         <div>
             <button onClick = {() => {axios.delete('http://localhost:3000/comment-prof/', {
-                data: {userId, profId}, 
-                headers: {Authorization: `Bearer ${token}`,}
+                data: {
+                    "userId": userId, 
+                    "professorId": profId
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
         })
                 onClose();  }}>
                 Potvrdi
@@ -23,3 +28,5 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
         </div>
     )
 }
+
+

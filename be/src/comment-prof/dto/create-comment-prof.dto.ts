@@ -1,10 +1,6 @@
 import { IsString, IsNumber, IsInt, Min, Max, IsNotEmpty } from 'class-validator';
 
 export class CreateCommentProfDto {
-    @IsString()
-    @IsNotEmpty()
-    content: string;
-
     @IsInt()
     @Min(1)
     @IsNotEmpty()
@@ -19,4 +15,8 @@ export class CreateCommentProfDto {
     @Min(1)
     @Max(5)
     rating: number;
+
+    @IsString()
+    @IsNotEmpty()
+    content: string;
 }

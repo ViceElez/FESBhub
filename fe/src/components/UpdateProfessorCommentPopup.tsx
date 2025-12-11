@@ -11,7 +11,7 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
 
-    if(!isOpen) <div></div>;
+    if(!isOpen) return null;
 
     return (
         <div>
@@ -20,8 +20,14 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             <button 
             disabled = {content.length === 0 || rating < 1 || rating > 5}
             onClick = {() => {axios.patch('http://localhost:3000/comment-prof/', {
-                data: {userId, profId, content, rating}, 
-                headers: {Authorization: `Bearer ${token}`,}
+                data: {"userId": userId, 
+                "professorId": profId, 
+                "rating": rating, 
+                "content": content
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
         })
                 onClose();  }}>
                 Potvrdi
@@ -29,3 +35,5 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
         </div>
     )
 }
+
+

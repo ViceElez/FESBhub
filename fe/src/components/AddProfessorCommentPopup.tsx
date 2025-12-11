@@ -11,21 +11,28 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId}: PopupPropert
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
 
-
-    if (!isOpen)
-        return <div></div>;
+    if ((!isOpen))
+        return null;
 
     return (
         <div>
-            <input type = "text" name = "content" placeholder = "Ovdje upišite svoj komentar" onChange = {(e) => setContent(e.target.value)}/>
-            <input type = "number" name = "rating" placeholder = "Ovdje upišite ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
+            <input type = "text" name = "content" placeholder = "Ovdje upišite prvi komentar" onChange = {(e) => setContent(e.target.value)}/>
+            <input type = "number" name = "rating" placeholder = "Ovdje upišite prvu ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
             <button
             disabled = {content.length === 0 || rating < 1 || rating > 5}
-            onClick = {() => {axios.post('http://localhost:3000/comment-prof', {
-                data: {userId, profId, rating, content}, 
-                headers: {Authorization: `Bearer ${token}`,}
-        })
-                onClose()}}>
+            onClick = {() => {console.log(userId, profId, content, rating);
+                axios.post('http://localhost:3000/comment-prof', {
+                    "userId": userId, 
+                    "professorId": profId, 
+                    "rating": rating, 
+                    "content": content
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+                onClose()
+                }}>
                 Potvrdi
             </button>
         </div>

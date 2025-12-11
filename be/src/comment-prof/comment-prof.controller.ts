@@ -1,27 +1,37 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
 import { CommentProfService } from './comment-prof.service';
 import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
 import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
+import { UserGuard, AdminGuard } from '../guards';
 
 @Controller('comment-prof')
 export class CommentProfController {
   constructor(private readonly commentProfService: CommentProfService) {}
 
+  @UseGuards(UserGuard)
   @Post()
   create(@Body() createCommentProfDto: CreateCommentProfDto) {
     return this.commentProfService.create(createCommentProfDto);
   }
 
+  @UseGuards(UserGuard)
   @Patch()
   update(@Body() updateCommentProfDto: CreateCommentProfDto) {
-    return this.commentProfService.updateVerification(updateCommentProfDto);
+    return this.commentProfService.updateComment(updateCommentProfDto);
+  }
+
+  @UseGuards(UserGuard)
+  @Get('exists')
+  findUnique(@Body() findUniqueDto: DeleteCommentProfDto) {
+    return this.commentProfService.Exists(findUniqueDto);
   }
 
   @Get()
   findAll() {
     return this.commentProfService.findAll();
   }
-
+  
+  @UseGuards(UserGuard, AdminGuard)
   @Delete()
   remove(@Body() deleteCommentProfDto: DeleteCommentProfDto) {
     return this.commentProfService.remove(deleteCommentProfDto);

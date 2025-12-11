@@ -26,13 +26,29 @@ export class CommentProfService {
       const { content, userId, professorId, rating } = createCommentProfDto;
       return this.prisma.commentOnProffessor.create({
         data: {
-          content,
           userId,
           professorId,
           rating,
+          content,
         },
       });
     }
+  }
+
+  async updateComment(@Body() updateCommentProfDto: CreateCommentProfDto) {
+    const comment = await this.prisma.commentOnProffessor.findFirst({
+      where: { professorId: updateCommentProfDto.professorId,
+               userId: updateCommentProfDto.userId},
+    });
+    if (!comment) {
+      throw new Error('Comment not found');
+    }
+    const updatedComment = await this.prisma.commentOnProffessor.updateMany({
+      where: { professorId: updateCommentProfDto.professorId,
+               userId: updateCommentProfDto.userId},
+      data: { rating: updateCommentProfDto.rating,
+              content: updateCommentProfDto.content },
+    });
   }
 
   async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
@@ -93,5 +109,16 @@ export class CommentProfService {
     return DeletedComment;
   }
 
-}
+  async Exists(@Body() findUniqueDto: DeleteCommentProfDto) {
+    const comment = await this.prisma.commentOnProffessor.findFirst({
+      where: { professorId: findUniqueDto.professorId,
+               userId: findUniqueDto.userId},
+    });
 
+    if (comment === null) {
+      return false;
+    }
+    return true;
+
+  }
+}
