@@ -110,11 +110,18 @@ export class CommentProfService {
     return DeletedComment;
   }
 
-  async Exists(@Body() findUniqueDto: DeleteCommentProfDto) {
+  async Exists(professorId: number, userId: number): Promise<boolean> {
+    console.log(professorId, userId);
+    const findUniqueDto: DeleteCommentProfDto = {
+      professorId: professorId,
+      userId: userId
+    };
     const comment = await this.prisma.commentOnProffessor.findFirst({
       where: { professorId: findUniqueDto.professorId,
                userId: findUniqueDto.userId},
     });
-    return comment;
+    return (comment === null) ? false : true;
   }
 }
+
+

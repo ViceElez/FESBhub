@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query} from '@nestjs/common';
 import { CommentProfService } from './comment-prof.service';
 import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
 import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
@@ -22,8 +22,8 @@ export class CommentProfController {
 
   @UseGuards(UserGuard)
   @Get('exists')
-  findUnique(@Body() findUniqueDto: DeleteCommentProfDto) {
-    return this.commentProfService.Exists(findUniqueDto);
+  findUnique(@Query('profId') profId: number, @Query('userId') userId: number) {
+    return this.commentProfService.Exists(+profId, +userId);
   }
 
   @Get()

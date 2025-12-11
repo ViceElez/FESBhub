@@ -16,17 +16,15 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const userId = decode?.sub;
     const [existingComment, setExistingComment] = useState(false);
 
-    axios.get('http://localhost:3000/comment-prof/exists', {
-        data: {
-            "userId": userId, 
-            "professorId": profId
-        },
+    const E = axios.get(`http://localhost:3000/comment-prof/exists?profId=${profId}&userId=${userId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then((response) => {
-        setExistingComment((response.data) ? true : false);
-    });     
+        setExistingComment(!response.data);
+    });
+
+    console.log(E)
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
@@ -38,16 +36,17 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <p>Ocjena: {prof.rating}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
-                <button onClick = {() => {setIsOpenAdd(true), setIsOpenDelete(false), setIsOpenUpdate(false)}}
-                        disabled = {(existingComment === false) ? true : false}>
+                <button 
+                disabled = {(existingComment === true) ? false: true}
+                onClick = {() => {setIsOpenAdd(true), setIsOpenDelete(false), setIsOpenUpdate(false)}}>
                     Dodaj komentar
                 </button>
                 <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(true), setIsOpenUpdate(false)}}
-                        disabled = {(existingComment === false) ? false : true}>
+                        disabled = {(existingComment === true) ? true: false}>
                     Izbriši komentar
                 </button>
                 <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(false), setIsOpenUpdate(true)}}
-                        disabled = {(existingComment === false) ? false : true}>
+                        disabled = {(existingComment === true) ? true: false}>
                     Izmjeni komentar
                 </button>
             </div>
