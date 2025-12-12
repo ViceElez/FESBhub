@@ -1,6 +1,5 @@
 import type { CommentProfessor } from "../constants";
 import {useState} from "react";
-import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import axios from "axios";
 
