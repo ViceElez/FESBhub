@@ -1,5 +1,5 @@
 import type {CardProperties} from "../constants";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
@@ -16,15 +16,16 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const userId = decode?.sub;
     const [existingComment, setExistingComment] = useState(false);
 
-    const E = axios.get(`http://localhost:3000/comment-prof/exists?profId=${profId}&userId=${userId}`, {
+
+    //ovo baca authization error na momente neman blage zasto, jer dosl radi par puta skroz normalno sve i onda samo baci error
+    useEffect(() => {
+        axios.get(`http://localhost:3000/comment-prof/exists?profId=${profId}&userId=${userId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     }).then((response) => {
         setExistingComment(!response.data);
-    });
-
-    console.log(E)
+    })});
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >

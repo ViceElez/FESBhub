@@ -53,13 +53,6 @@ export class CommentProfService {
   }
 
   async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: updateCommentProfDto.userId,
-              isAdmin: true}
-    });
-    if (!user) {
-      throw new Error('User not found or is not admin');
-    }
 
     const comment = await this.prisma.commentOnProffessor.findFirst({
       where: { professorId: updateCommentProfDto.professorId,
@@ -77,7 +70,8 @@ export class CommentProfService {
     });
 
     const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${updateCommentProfDto.userId}/${comment.professorId}`, 
-      {rating: comment.rating,
+      { rating: comment.rating,
+        content: comment.content
       });
     
     return updatedComment;
@@ -121,6 +115,13 @@ export class CommentProfService {
                userId: findUniqueDto.userId},
     });
     return (comment === null) ? false : true;
+  }
+
+  async findUnverified() {
+    const comments = await this.prisma.commentOnProffessor.findMany({
+      where: { verified: false },
+    });
+    return comments;
   }
 }
 

@@ -4,6 +4,9 @@ import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
+import { CPCard } from '../components/CommentOnProfessorCardForValidation';
+import type { CommentProfessor } from '../constants';
+import axios from 'axios';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
@@ -11,6 +14,7 @@ export const AdminSettingsPage = () => {
     const expired = token ? tokenIsExpired(token) : true;
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
+    const [comments, setComment] = useState<CommentProfessor[]>([]);
 
     useEffect(() => {
         async function checkAdmin() {
@@ -60,6 +64,12 @@ export const AdminSettingsPage = () => {
         );
     }
 
+    useEffect(() => {
+        axios.get<CommentProfessor[]>("http://localhost:3000/comment-prof/all").then(response => {
+            setComment(response.data);
+        })
+    }, []);
+
     return (
         <div>
             <h1>Admin Settings</h1>
@@ -68,6 +78,15 @@ export const AdminSettingsPage = () => {
             <Link to={routes.NEWSPAGE}>
                 <button>Go to News Page</button>
             </Link>
+            <ul
+                style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+                {comments.map(comment => (
+                    <li key={comment.id}>
+                        <CPCard {...comment}/>
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 };
+
