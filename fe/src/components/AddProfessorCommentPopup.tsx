@@ -1,18 +1,47 @@
 import {useState} from "react";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
-import axios from "axios";
 import type {PopupProperties} from "../constants";
+import {addProfessorComment, newAccessToken, tokenIsExpired} from "../services";
+import {useNavigate} from "react-router-dom";
+import {routes} from "../constants/routes.ts";
 
 export const AddProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
-    const {token} = useAuth()
+    let {token,logout,login} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
+    const navigate=useNavigate()
 
     if ((!isOpen))
         return null;
+
+    const handleCommentSubmit =async () => {
+        const expired = token ? tokenIsExpired(token) : true;
+        if(expired){
+            const newAccessTokenResponse=await newAccessToken()
+            if(newAccessTokenResponse?.status!==201){
+                alert('Please login again')
+                logout()
+                onClose()
+                navigate(routes.LOGIN)
+            }
+            else{
+                login(newAccessTokenResponse.data)
+                token=newAccessTokenResponse.data
+            }
+        }
+        const response=await addProfessorComment(profId,rating,content,token,userId)
+        if(response?.status===201)
+            alert('Success')
+
+        else {
+            alert("Error")
+            console.log(response)
+        }
+        onClose()
+    }
 
     return (
         <div>
@@ -20,19 +49,7 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId}: PopupPropert
             <input type = "number" name = "rating" placeholder = "Ovdje upišite prvu ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
             <button
             disabled = {content.length === 0 || rating < 1 || rating > 5}
-            onClick = {() => {console.log(userId, profId, content, rating);
-                axios.post('http://localhost:3000/comment-prof', {
-                    "userId": userId, 
-                    "professorId": profId, 
-                    "rating": rating, 
-                    "content": content
-                }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                })
-                onClose()
-                }}>
+            onClick = {handleCommentSubmit}>
                 Potvrdi
             </button>
         </div>

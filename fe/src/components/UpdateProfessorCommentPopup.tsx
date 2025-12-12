@@ -1,17 +1,49 @@
-import axios from "axios";
 import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useState} from "react";
+import {editProfessorComments, newAccessToken, tokenIsExpired} from "../services";
+import {useNavigate} from "react-router-dom";
+import {routes} from "../constants/routes.ts"
 
 export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
-    const {token} = useAuth()
+    let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
+    const navigate=useNavigate()
 
     if(!isOpen) return null;
+
+    const handleCommentUpdate=async ()=>{
+        const expired=token?tokenIsExpired(token):true;
+        if(expired){
+            console.log('isteka')
+            const newAccessTokenResponse=await newAccessToken()
+            if(newAccessTokenResponse?.status!==201){
+                alert('Please login again')
+                logout()
+                onClose()
+                navigate(routes.LOGIN)
+            }
+            else{
+                login(newAccessTokenResponse.data)
+                token=newAccessTokenResponse.data
+                console.log('stavia novi')
+            }
+        }
+        console.log('usa odi')
+        const response=await editProfessorComments(profId,rating,content,token,userId)
+        if(response?.status===200)
+            alert('Success')
+        else {
+            alert("Error")
+            console.log(response)
+        }
+        onClose();
+
+    }
 
     return (
         <div>
@@ -19,25 +51,12 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             <input type = "number" name = "rating" placeholder = "Ovdje upišite novu ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
             <button 
             disabled = {content.length === 0 || rating < 1 || rating > 5}
-            onClick = {() => {
-                console.log(userId, profId, content, rating);
-                axios.patch('http://localhost:3000/comment-prof/',
-                { 
-                    "userId": userId, 
-                    "professorId": profId, 
-                    "rating": rating, 
-                    "content": content
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                onClose();  }}>
+            onClick = {handleCommentUpdate}>
                 Potvrdi
             </button>
         </div>
     )
 }
+//fix delete nesto, i fixat kad se botun za dodoat kometar za profa stisne(vjerojanto ista stvar s acces tokenon)
 
 
