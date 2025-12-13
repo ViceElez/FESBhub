@@ -1,9 +1,7 @@
-import { Body, Injectable } from '@nestjs/common';
-import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
-import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { User } from '@prisma/client';
+import {Body, Injectable} from '@nestjs/common';
+import {CreateCommentProfDto} from './dto/create-comment-prof.dto';
+import {DeleteCommentProfDto} from './dto/delete-comment-prof.dto';
+import {PrismaService} from '../prisma/prisma.service';
 import axios from 'axios';
 
 @Injectable()
@@ -43,13 +41,16 @@ export class CommentProfService {
     if (!comment) {
       throw new Error('Comment not found');
     }
-    const updatedComment = await this.prisma.commentOnProffessor.updateMany({
-      where: { professorId: updateCommentProfDto.professorId,
-               userId: updateCommentProfDto.userId},
-      data: { rating: updateCommentProfDto.rating,
-              content: updateCommentProfDto.content },
+      return this.prisma.commentOnProffessor.updateMany({
+        where: {
+            professorId: updateCommentProfDto.professorId,
+            userId: updateCommentProfDto.userId
+        },
+        data: {
+            rating: updateCommentProfDto.rating,
+            content: updateCommentProfDto.content
+        },
     });
-    return updatedComment;
   }
 
   async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
@@ -69,11 +70,11 @@ export class CommentProfService {
       data: { verified: true },
     });
 
-    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${updateCommentProfDto.userId}/${comment.professorId}`, 
+    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${updateCommentProfDto.userId}/${comment.professorId}`,
       { rating: comment.rating,
         content: comment.content
       });
-    
+
     return updatedComment;
   }
 
@@ -99,7 +100,8 @@ export class CommentProfService {
                 userId: deleteCommentProfDto.userId},
     });
 
-    const request = await axios.patch(`http://localhost:3000/prof/deleteComment/${comment.professorId}/${oldRating}`);
+    await axios.patch(`http://localhost:3000/prof/deleteComment/${comment.professorId}/${oldRating}`);
+    //odi dependecy injection
 
     return DeletedComment;
   }
@@ -114,14 +116,13 @@ export class CommentProfService {
       where: { professorId: findUniqueDto.professorId,
                userId: findUniqueDto.userId},
     });
-    return (comment === null) ? false : true;
+    return (comment !== null);
   }
 
   async findUnverified() {
-    const comments = await this.prisma.commentOnProffessor.findMany({
-      where: { verified: false },
-    });
-    return comments;
+      return this.prisma.commentOnProffessor.findMany({
+          where: {verified: false},
+      });
   }
 }
 

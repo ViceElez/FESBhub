@@ -19,7 +19,6 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
     const handleCommentUpdate=async ()=>{
         const expired=token?tokenIsExpired(token):true;
         if(expired){
-            console.log('isteka')
             const newAccessTokenResponse=await newAccessToken()
             if(newAccessTokenResponse?.status!==201){
                 alert('Please login again')
@@ -30,10 +29,8 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             else{
                 login(newAccessTokenResponse.data)
                 token=newAccessTokenResponse.data
-                console.log('stavia novi')
             }
         }
-        console.log('usa odi')
         const response=await editProfessorComments(profId,rating,content,token,userId)
         if(response?.status===200)
             alert('Success')
@@ -42,7 +39,6 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             console.log(response)
         }
         onClose();
-
     }
 
     return (

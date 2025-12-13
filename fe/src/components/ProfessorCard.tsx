@@ -3,29 +3,47 @@ import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import axios from "axios";
-import { CheckIfCommentExists } from "../services/checkCommentProf";
+import {getProfessorComments, newAccessToken, tokenIsExpired,CheckIfCommentExists} from "../services";
+import {routes} from "../constants/routes.ts";
+import {useNavigate} from "react-router-dom";
 
 export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
     const [isOpenAdd, setIsOpenAdd] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
     const [isOpenUpdate, setIsOpenUpdate] = useState(false)
-    const {token} = useAuth()
+    let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
+    const navigate=useNavigate()
     const [existingComment, setExistingComment] = useState(false);
 
 
-    /* //ovo baca authization error na momente neman blage zasto, jer dosl radi par puta skroz normalno sve i onda samo baci error
     useEffect(() => {
-        axios.get(`http://localhost:3000/comment-prof/exists?profId=${profId}&userId=${userId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`
+        const fetchProfessorComments = async () => {
+            const expired = token ? tokenIsExpired(token) : true;
+            if(expired){
+                const newAccessTokenResponse=await newAccessToken()
+                if(newAccessTokenResponse?.status!==201){
+                    alert('Please login again')
+                    logout()
+                    navigate(routes.LOGIN)
+                }
+                else{
+                    login(newAccessTokenResponse.data)
+                    token=newAccessTokenResponse.data
+                }
+            }
+            const response=await getProfessorComments(profId,token,userId)
+            if(response?.status===200)
+                setExistingComment(response.data)
+
+            else
+                alert('Error')
+
         }
-    }).then((response) => {
-        setExistingComment(!response.data);
-    })}); */
+        void fetchProfessorComments()
+    },[]);
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >

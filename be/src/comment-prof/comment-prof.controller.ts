@@ -38,7 +38,7 @@ export class CommentProfController {
     return this.commentProfService.updateVerification(updateCommentProfDto);
   }
   
-  @UseGuards(UserGuard, AdminGuard)
+  @UseGuards(UserGuard)
   @Delete()
   remove(@Body() deleteCommentProfDto: DeleteCommentProfDto) {
     return this.commentProfService.remove(deleteCommentProfDto);
