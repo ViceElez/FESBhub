@@ -1,54 +1,50 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 
 @Injectable()
-export class PostsService{
-    constructor(private readonly prisma:PrismaService){}
+export class PostsService {
+    constructor(private readonly prisma: PrismaService) { }
 
-    async create(dto:CreatePostDto,userId:number,isAdmin:boolean){
-        const post=await this.prisma.post.create({
-            data:{
-                title:dto.title,
-                content:dto.content,
+    async create(dto: CreatePostDto, userId: number, isAdmin: boolean) {
+        return this.prisma.post.create({
+            data: {
+                title: dto.title,
+                content: dto.content,
                 userId,
-                
-                verified:isAdmin
-            }
+                verified: isAdmin,
+            },
         });
-        return post;
     }
 
-    async findAll(){
+    async findAll() {
         return this.prisma.post.findMany({
-            orderBy:{createdAt:'desc'},
-            include:{user:{select:{id:true,firstName:true,lastName:true}}}
-        })
+            orderBy: { createdAt: 'desc' },
+            include: { user: { select: { id: true, firstName: true, lastName: true } } },
+        });
     }
-    
-    async remove(id:number){
-        // provjera postoji li
+
+    async remove(id: number) {
+        // Check if post exists
         const existing = await this.prisma.post.findUnique({ where: { id } });
         if (!existing) return null;
         return this.prisma.post.delete({ where: { id } });
     }
-    async update(id:number, dto: Partial<{ title:string; content:string }>) {
-        // provjera postoji li
+
+    async update(id: number, dto: Partial<{ title: string; content: string }>) {
+        // Check if post exists
         const existing = await this.prisma.post.findUnique({ where: { id } });
         if (!existing) return null;
-       
-        const data: any = {};
+
+        const data: { title?: string; content?: string } = {};
+
         if (dto.title !== undefined) {
-            // defensive: reject empty or whitespace-only titles
-            if (typeof dto.title === 'string' && dto.title.trim() === '') {
-                throw new BadRequestException('Title cannot be empty');
-            }
+            if (dto.title.trim() === '') throw new BadRequestException('Title cannot be empty');
             data.title = dto.title;
         }
+
         if (dto.content !== undefined) {
-            if (typeof dto.content === 'string' && dto.content.trim() === '') {
-                throw new BadRequestException('Content cannot be empty');
-            }
+            if (dto.content.trim() === '') throw new BadRequestException('Content cannot be empty');
             data.content = dto.content;
         }
 
@@ -56,10 +52,30 @@ export class PostsService{
             throw new BadRequestException('No fields provided for update');
         }
 
-        const updated = await this.prisma.post.update({
+        return this.prisma.post.update({
             where: { id },
             data,
         });
-        return updated;
+    }
+
+    // Fetch posts created by the current user
+    async findMine(userId: number) {
+        return this.prisma.post.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            include: { user: { select: { id: true, firstName: true, lastName: true } } },
+        });
+    }
+
+    // Delete a post if it belongs to the user, or allow admins to delete any post
+    async removeMine(postId: number, userId: number, isAdmin: boolean) {
+        const existing = await this.prisma.post.findUnique({ where: { id: postId } });
+        if (!existing) return null;
+
+        if (existing.userId !== userId && !isAdmin) {
+            throw new ForbiddenException('Not allowed to delete this post');
+        }
+
+        return this.prisma.post.delete({ where: { id: postId } });
     }
 }

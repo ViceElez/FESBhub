@@ -1,23 +1,23 @@
-import {logoutApi} from "../services";
-import {routes} from "../constants/routes.ts";
-import {useNavigate} from "react-router-dom";
-import {useAuth} from "../hooks";
+import { logoutApi } from "../services";
+import { routes } from "../constants/routes.ts";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks";
 
 export const Header = () => {
-    const navigate=useNavigate();
-    const {token,logout}=useAuth()
+    const navigate = useNavigate();
+    const { token, logout } = useAuth()
 
-    const handleLogoutClick=async()=>{
-        const response=await logoutApi(token);
-        if(response?.status===201){
+    const handleLogoutClick = async () => {
+        const response = await logoutApi(token);
+        if (response?.status === 201) {
             alert('Logout successful!');
             logout();
             navigate(routes.LOGIN);
         }
     }
-    const handleSettingsClick=()=>{
-        navigate(routes.USERSETTINGSPAGE)
-    }
+    const handleSettingsClick = () => {
+        navigate(`${routes.USERSETTINGSPAGE}?tab=profile`);
+    };
 
     return (
         <header>
