@@ -21,7 +21,21 @@ export async function addProfessorComment(profId: number, rating: number, conten
     }
 }
 
-export async function deleteProfessorComment() {
+export async function deleteProfessorComment(profId: number,token?: string | null, userId?: string | undefined) {
+    try{
+        return axios.delete(`${route}/comment-prof/`,{
+            data:{
+                "userId": userId,
+                "professorId": profId
+            },
+            headers:{
+                Authorization: `Bearer ${token}`
+            }
+        })
+    }catch (e){
+        console.log(e)
+        return
+    }
 }
 
 export async function editProfessorComments(profId: number, rating: number, content: string, token?: string | null, userId?: string | undefined){
