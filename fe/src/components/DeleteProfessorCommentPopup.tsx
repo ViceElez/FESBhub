@@ -1,12 +1,11 @@
-import axios from "axios";
 import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {addProfessorComment, deleteProfessorComment, newAccessToken, tokenIsExpired} from "../services";
+import {deleteProfessorComment, newAccessToken, tokenIsExpired} from "../services";
 import {routes} from "../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
 
-export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
+export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: PopupProperties) => {
 
     let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
@@ -31,8 +30,11 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
             }
         }
         const response=await deleteProfessorComment(profId,token,userId)
-        if(response?.status===200)
+        if(response?.status===200){
             alert('Success')
+            onSuccess?.();
+            onClose()
+        }
 
         else {
             alert("Error")

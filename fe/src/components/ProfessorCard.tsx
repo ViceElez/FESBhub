@@ -3,7 +3,7 @@ import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments, newAccessToken, tokenIsExpired,CheckIfCommentExists} from "../services";
+import {getProfessorComments, newAccessToken, tokenIsExpired} from "../services";
 import {routes} from "../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
 
@@ -40,7 +40,6 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
             else
                 alert('Error')
-
         }
         void fetchProfessorComments()
     },[]);
@@ -55,28 +54,62 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <p>Ocjena: {prof.rating}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
-                <button 
-                disabled = {(userId == null || token == null) ? true : !CheckIfCommentExists(profId, +userId, token)}
-                onClick = {() => {setIsOpenAdd(true), setIsOpenDelete(false), setIsOpenUpdate(false), setExistingComment(true)}}>
+                <button
+                    disabled={!token || !userId || existingComment}
+                    onClick={() => {
+                        setIsOpenAdd(true)
+                        setIsOpenDelete(false)
+                        setIsOpenUpdate(false)
+                    }}
+                >
                     Dodaj komentar
                 </button>
-                <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(true), setIsOpenUpdate(false), setExistingComment(false)}}
-                        disabled = {(userId == null || token == null) ? true : CheckIfCommentExists(profId, +userId, token)}>
+
+                <button
+                    disabled={!token || !userId || !existingComment}
+                    onClick={() => {
+                        setIsOpenDelete(true)
+                        setIsOpenAdd(false)
+                        setIsOpenUpdate(false)
+                    }}
+                >
                     Izbriši komentar
                 </button>
-                <button onClick = {() => {setIsOpenAdd(false), setIsOpenDelete(false), setIsOpenUpdate(true), setExistingComment(true)}}
-                        disabled = {(userId == null || token == null) ? true : CheckIfCommentExists(profId, +userId, token)}>
+
+
+                <button
+                    disabled={!token || !userId || !existingComment}
+                    onClick={() => {
+                        setIsOpenUpdate(true)
+                        setIsOpenAdd(false)
+                        setIsOpenDelete(false)
+                    }}
+                >
                     Izmjeni komentar
                 </button>
             </div>
             <div>
-                <AddProfessorCommentPopup isOpen = {isOpenAdd} onClose = {() => setIsOpenAdd(false)} profId = {profId} />
+                <AddProfessorCommentPopup
+                    isOpen = {isOpenAdd}
+                    onClose = {() => setIsOpenAdd(false)}
+                    profId = {profId}
+                    onSuccess={() => setExistingComment(true)}
+                />
             </div>
             <div>
-                <DeleteProfessorCommentPopup isOpen = {isOpenDelete} onClose = {() => setIsOpenDelete(false)} profId = {profId} />
+                <DeleteProfessorCommentPopup
+                    isOpen = {isOpenDelete}
+                    onClose = {() => setIsOpenDelete(false)}
+                    profId = {profId}
+                    onSuccess={()=> setExistingComment(false)}
+                />
             </div>
             <div>
-                <UpdateProfessorCommentPopup isOpen = {isOpenUpdate} onClose = {() => setIsOpenUpdate(false)} profId = {profId} />
+                <UpdateProfessorCommentPopup
+                    isOpen = {isOpenUpdate}
+                    onClose = {() => setIsOpenUpdate(false)}
+                    profId = {profId}
+                />
             </div>
         </div>
     )

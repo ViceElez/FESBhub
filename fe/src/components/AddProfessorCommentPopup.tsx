@@ -6,7 +6,7 @@ import {addProfessorComment, newAccessToken, tokenIsExpired} from "../services";
 import {useNavigate} from "react-router-dom";
 import {routes} from "../constants/routes.ts";
 
-export const AddProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
+export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
     let {token,logout,login} = useAuth()
@@ -33,9 +33,11 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId}: PopupPropert
             }
         }
         const response=await addProfessorComment(profId,rating,content,token,userId)
-        if(response?.status===201)
+        if(response?.status===201){
             alert('Success')
-
+            onSuccess?.();
+            onClose();
+        }
         else {
             alert("Error")
             console.log(response)

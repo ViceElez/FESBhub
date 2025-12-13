@@ -1,5 +1,4 @@
 import axios from "axios";
-import {useEffect, useState} from "react";
 
 const route="http://localhost:3000";
 
@@ -70,17 +69,3 @@ export async function getProfessorComments(profId:number, token?: string | null,
         return
     }
 }
-
-export const CheckIfCommentExists = (profId: number, userId: Number, token: string) => {
-    const [exists, setExists] = useState<boolean>(false);
-
-    useEffect(() => {
-        axios.get(`${route}/comment-prof/exists?profId=${profId}&userId=${userId}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }).then((response) => {
-            setExists(!response.data);
-        })},[profId, userId, token]);
-    return exists
-};
