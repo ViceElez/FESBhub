@@ -9,8 +9,8 @@ export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [adminLoaded, setAdminLoaded] = useState(false);
 
     useEffect(() => {
         async function checkAdmin() {

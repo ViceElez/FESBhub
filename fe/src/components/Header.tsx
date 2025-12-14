@@ -1,4 +1,4 @@
-import {logoutApi} from "../services";
+import {logoutApi, tokenIsAdmin} from "../services";
 import {routes} from "../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
@@ -15,9 +15,16 @@ export const Header = () => {
             navigate(routes.LOGIN);
         }
     }
-    const handleSettingsClick=()=>{
-        navigate(routes.USERSETTINGSPAGE)
+    const handleSettingsClick=async ()=>{
+        if(!token){
+            navigate(routes.LOGIN)
+            return
+        }
+        const isAdmin=await tokenIsAdmin(token);
+        navigate(isAdmin ? routes.ADMINSETTINGSPAGE : routes.USERSETTINGSPAGE);
+
     }
+
 
     return (
         <header>
