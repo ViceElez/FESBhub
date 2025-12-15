@@ -51,4 +51,15 @@ export class PostsController{
     }
     }
 
+    // admin-only: verify a post (set verified=true)
+    @UseGuards(UserGuard, AdminGuard)
+    @Patch(':id/verify')
+    async verify(@Param('id', ParseIntPipe) id: number) {
+        const updated = await this.postsService.approve(id);
+        if (!updated) {
+            throw new NotFoundException('Post not found');
+        }
+        return updated;
+    }
+
 }

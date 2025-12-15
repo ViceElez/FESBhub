@@ -62,4 +62,14 @@ export class PostsService{
         });
         return updated;
     }
+
+    async approve(id: number) {
+        const existing = await this.prisma.post.findUnique({ where: { id } });
+        if (!existing) return null;
+        const updated = await this.prisma.post.update({
+            where: { id },
+            data: { verified: true },
+        });
+        return updated;
+    }
 }
