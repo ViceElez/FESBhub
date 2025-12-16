@@ -79,3 +79,13 @@ export class PostsService {
         return this.prisma.post.delete({ where: { id: postId } });
     }
 }
+    async approve(id: number) {
+        const existing = await this.prisma.post.findUnique({ where: { id } });
+        if (!existing) return null;
+        const updated = await this.prisma.post.update({
+            where: { id },
+            data: { verified: true },
+        });
+        return updated;
+    }
+}
