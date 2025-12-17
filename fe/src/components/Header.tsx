@@ -2,6 +2,8 @@ import {logoutApi, tokenIsAdmin} from "../services";
 import {routes} from "../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
+import '../index.css'
+import logo from '../assets/images/FESBhubLogo.png'
 
 export const Header = () => {
     const navigate=useNavigate();
@@ -27,16 +29,21 @@ export const Header = () => {
 
 
     return (
-        <header>
-            <h1>FESBHub</h1>
-            <button
-                id="logout-button"
-                onClick={handleLogoutClick}
-            >Logout</button>
-            <button
-                id="settings-button"
-                onClick={handleSettingsClick}
-            >Settings</button>
+        <header className="app-header">
+            <div className="spacer">
+                <button>Light/Dark</button>
+            </div>
+            <img src={logo} alt="FesbHub Logo"/>
+            <div>
+                <button
+                    id="logout-button"
+                    onClick={handleLogoutClick}
+                >⏻ Logout</button>
+                <button
+                    id="settings-button"
+                    onClick={handleSettingsClick}
+                >⚙️ Settings</button>
+            </div>
         </header>
     );
 }

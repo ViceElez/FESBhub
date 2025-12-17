@@ -2,8 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { tokenIsExpired, tokenIsAdmin } from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
-import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
+import '../index.css';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
@@ -19,7 +19,6 @@ export const AdminSettingsPage = () => {
                 setAdminLoaded(true);
                 return;
             }
-
             const result = await tokenIsAdmin(token);
             setIsAdmin(result);
             setAdminLoaded(true);
@@ -42,7 +41,7 @@ export const AdminSettingsPage = () => {
             <div>
                 <h1>Admin Settings</h1>
                 <p>Your session has expired. Please log in again.</p>
-                <button onClick={() => navigate(routes.LOGIN)}>Login</button>
+                <button onClick={() => navigate(routes.LOGIN)}>Login</button> //odi triba kad istekne access token ponovo vatat
             </div>
         );
     }
@@ -62,12 +61,23 @@ export const AdminSettingsPage = () => {
 
     return (
         <div>
-            <h1>Admin Settings</h1>
-            <p>Welcome, Admin!</p>
+            <section>
+                <div>
+                    <button>All Users</button>
+                </div>
+                <div>
+                    <button>All Posts</button>
+                </div>
+                <div>
+                    <button>All Comments</button>
+                </div>
+                <div>
+                    <button>All Materials</button>
+                </div>
+            </section>
+            <section>
 
-            <Link to={routes.NEWSPAGE}>
-                <button>Go to News Page</button>
-            </Link>
+            </section>
         </div>
     );
 };
