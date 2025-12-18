@@ -51,7 +51,7 @@ export const UserSettingsPage = () => {
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [bio, setBio] = useState("");
+  
 
   const [myPosts, setMyPosts] = useState<MyPost[]>([]);
   const [myPostsLoading, setMyPostsLoading] = useState(false);
@@ -114,7 +114,7 @@ export const UserSettingsPage = () => {
         setProfile(res.data);
         setFirstName(res.data.firstName ?? "");
         setLastName(res.data.lastName ?? "");
-        setBio(res.data.bio ?? "");
+       
       } catch {
         setErr("Ne mogu dohvatiti profil.");
       } finally {
@@ -129,7 +129,7 @@ export const UserSettingsPage = () => {
 
     const fn = firstName.trim();
     const ln = lastName.trim();
-    const b = bio.trim();
+   
 
     if (!fn) {
       setErr("Ime je obavezno.");
@@ -141,8 +141,7 @@ export const UserSettingsPage = () => {
       const res = await updateMyProfile(token, {
         firstName: fn,
         lastName: ln ? ln : null,
-        bio: b ? b : null,
-      });
+         });
       setProfile(res.data);
       setMsg("Spremljeno ✅");
     } catch {
@@ -263,16 +262,7 @@ export const UserSettingsPage = () => {
                   <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
                 </label>
 
-                <label>
-                  Bio
-                  <textarea
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    rows={5}
-                    placeholder="Napiši kratko o sebi..."
-                  />
-                </label>
-
+               
                 <button onClick={handleSaveProfile} disabled={saving || profileLoading}>
                   {saving ? "Spremam..." : "Spremi promjene"}
                 </button>

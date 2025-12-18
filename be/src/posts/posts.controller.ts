@@ -66,12 +66,11 @@ export class PostsController {
     async removeMine(@Param('id', ParseIntPipe) id: number, @Request() req) {
         const userId = Number(req.user?.sub);
         const isAdmin = Boolean(req.user?.isAdmin);
-
-        const deleted = await this.postsService.removeMine(id, userId, isAdmin);
+        const deleted = await this.postsService.remove(id);
         if (!deleted) throw new NotFoundException('Post not found');
         return deleted;
     }
-}
+
     // admin-only: verify a post (set verified=true)
     @UseGuards(UserGuard, AdminGuard)
     @Patch(':id/verify')

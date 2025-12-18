@@ -1,5 +1,6 @@
 import axios from "axios";
 
+const route = "http://localhost:3000";
 export interface Post {
   id: number;
   title: string;
@@ -16,7 +17,7 @@ export interface Post {
 }
 
 export async function fetchAllPosts(): Promise<Post[]> {
-  const route = "http://localhost:3000";
+  
   try {
     const response = await axios.get(`${route}/posts`);
     const posts = response.data;
@@ -33,9 +34,9 @@ export async function fetchAllPosts(): Promise<Post[]> {
 
 // Admin-only: verify a post (set verified = true)
 export async function approvePost(postId: number, token: string): Promise<Post> {
-  const route = "http://localhost:3000";
+  
   try {
-    console.log("treci")
+   
     const response = await axios.patch(
       `${route}/posts/${postId}/verify`,
       {},
@@ -53,7 +54,7 @@ export async function approvePost(postId: number, token: string): Promise<Post> 
   }
 }
 export async function deletePost(postId: number, token: string): Promise<void> {
-  const route = "http://localhost:3000";
+  
   try {
     await axios.delete(`${route}/posts/${postId}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -69,7 +70,7 @@ export async function createPost(
   dto: { title: string; content: string },
   token: string
 ): Promise<Post> {
-  const route = "http://localhost:3000";
+  
   try {
     const response = await axios.post(`${route}/posts`, dto, {
       headers: {

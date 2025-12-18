@@ -9,6 +9,18 @@ export type MyPost = {
     verified: boolean;
     createdAt: string;
 };
+export type MyProfile = {
+    id: number;
+    email: string;
+    firstName: string;
+    lastName: string | null;
+    isAdmin: boolean;
+    isVerified: boolean;
+    isEmailVerified: boolean;
+    createdAt: string;
+    updatedAt: string;
+};
+
 
 export async function fetchMyPosts(token: string): Promise<MyPost[]> {
     const res = await axios.get(`${route}/posts/me`, {
@@ -19,6 +31,19 @@ export async function fetchMyPosts(token: string): Promise<MyPost[]> {
 
 export async function deleteMyPost(token: string, postId: number) {
     return axios.delete(`${route}/posts/me/${postId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
+export async function getMyProfile(token?: string) {
+    return axios.get(`${route}/user/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+export async function updateMyProfile(
+    token: string | null,
+    data: { firstName: string; lastName: string | null; }   
+){return axios.patch(`${route}/user/me`, data, {
         headers: { Authorization: `Bearer ${token}` },
     });
 }

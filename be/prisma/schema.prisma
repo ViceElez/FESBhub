@@ -13,7 +13,6 @@ model User {
   password               String
   firstName              String
   lastName               String?
-  bio                    String?
   studij                 String?
   currentStudyYear       Int?
   createdAt              DateTime                 @default(now())
