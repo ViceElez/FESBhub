@@ -1,6 +1,4 @@
-export * from './loginApi.ts'
-export * from './registerApi.ts'
+export * from './userAuthApi.ts'
 export * from './newAccesTokenApi.ts'
 export * from './auth.ts'
-export * from './logoutApi.ts'
 export * from './professorCommentsApi.ts'

@@ -22,4 +22,8 @@ export class UserService {
         const user=await this.getUserById(userId)
         return user?.isAdmin;
     }
+
+    async getAllUsers(){
+        return this.prisma.user.findMany();
+    }
 }

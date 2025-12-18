@@ -10,8 +10,8 @@ export class UserController {
     ) {}
 
     @Get('allUsers')
-    async getAllUsers(@Req() req) {
-        return { message: 'This action returns all users', user: req.user };
+    async getAllUsers() {
+        return this.UserService.getAllUsers();
     }
 
     @Get(':id')
