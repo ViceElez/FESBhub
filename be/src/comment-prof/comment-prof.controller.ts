@@ -26,13 +26,13 @@ export class CommentProfController {
     return this.commentProfService.Exists(+profId, +userId);
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(UserGuard, AdminGuard)
   @Get('all')
   findUnverified() {
     return this.commentProfService.findUnverified();
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(UserGuard, AdminGuard)
   @Patch('verify')
   updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
     return this.commentProfService.updateVerification(updateCommentProfDto);

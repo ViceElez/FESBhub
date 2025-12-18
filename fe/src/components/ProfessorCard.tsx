@@ -3,9 +3,9 @@ import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments, newAccessToken, tokenIsExpired} from "../services";
-import {routes} from "../constants/routes.ts";
+import {getProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
+import {updateToken} from "../services/updateToken.ts";
 
 export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
@@ -15,25 +15,13 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
 
 
     useEffect(() => {
         const fetchProfessorComments = async () => {
-            const expired = token ? tokenIsExpired(token) : true;
-            if(expired){
-                const newAccessTokenResponse=await newAccessToken()
-                if(newAccessTokenResponse?.status!==201){
-                    alert('Please login again')
-                    logout()
-                    navigate(routes.LOGIN)
-                }
-                else{
-                    login(newAccessTokenResponse.data)
-                    token=newAccessTokenResponse.data
-                }
-            }
+            token = await updateToken(token!, login, logout, navigate, []);
             const response=await getProfessorComments(profId,token,userId)
             if(response?.status===200)
                 setExistingComment(response.data)

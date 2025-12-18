@@ -69,3 +69,36 @@ export async function getProfessorComments(profId:number, token?: string | null,
         return
     }
 }
+
+export async function getUnverifiedProfessorComments(token?: string | null){
+    try{
+        return axios.get(`${route}/comment-prof/all`, {
+            headers: {
+                Authorization:`Bearer ${token}`
+            }
+        })
+    }catch (e){
+        console.log(e)
+        return
+    }
+}
+
+export async function verifyProfessorComment(profId:number, userId:number, rating:number, content:string, token?: string | null){
+    try{
+        return axios.patch(`${route}/comment-prof/verify`,
+            {
+                "userId": userId,
+                "professorId": profId,
+                "rating": rating,
+                "content": content
+            }, 
+            {                    
+                headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }catch (e){
+        console.log(e)
+        return
+    }
+};

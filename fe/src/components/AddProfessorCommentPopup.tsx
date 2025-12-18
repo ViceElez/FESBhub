@@ -2,9 +2,9 @@ import {useState} from "react";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
 import type {PopupProperties} from "../constants";
-import {addProfessorComment, newAccessToken, tokenIsExpired} from "../services";
+import {addProfessorComment} from "../services";
 import {useNavigate} from "react-router-dom";
-import {routes} from "../constants/routes.ts";
+import {updateToken} from "../services/updateToken.ts";
 
 export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: PopupProperties) => {
     const [content, setContent] = useState("");
@@ -12,26 +12,14 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: Po
     let {token,logout,login} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
-    const navigate=useNavigate()
+    const navigate=useNavigate();
 
     if ((!isOpen))
         return null;
 
     const handleCommentSubmit =async () => {
-        const expired = token ? tokenIsExpired(token) : true;
-        if(expired){
-            const newAccessTokenResponse=await newAccessToken()
-            if(newAccessTokenResponse?.status!==201){
-                alert('Please login again')
-                logout()
-                onClose()
-                navigate(routes.LOGIN)
-            }
-            else{
-                login(newAccessTokenResponse.data)
-                token=newAccessTokenResponse.data
-            }
-        }
+        const funcs = [onClose];
+        token = await updateToken(token!,login,logout,navigate,funcs);
         const response=await addProfessorComment(profId,rating,content,token,userId)
         if(response?.status===201){
             alert('Success')

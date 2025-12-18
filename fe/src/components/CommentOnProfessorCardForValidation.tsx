@@ -1,7 +1,9 @@
 import type { CommentProfessor } from "../constants";
 import {useState} from "react";
 import {useAuth} from "../hooks";
-import axios from "axios";
+import {updateToken} from "../services/updateToken.ts";
+import {verifyProfessorComment} from "../services/professorCommentsApi.ts";
+import {useNavigate} from "react-router-dom";
 
 export const CPCard = (comment: CommentProfessor) => {
     const [verified, setVerified] = useState(comment.verified);
@@ -10,7 +12,8 @@ export const CPCard = (comment: CommentProfessor) => {
         return <div></div>;
     }
 
-    const {token} = useAuth();
+    let {token, login, logout} = useAuth();
+    const navigate = useNavigate();
 
 
     return (
@@ -20,17 +23,9 @@ export const CPCard = (comment: CommentProfessor) => {
                 <h2>Komentar: {comment.content}</h2>
             </div>
             <button 
-            onClick = {() => {
+            onClick = {async () => {
                 setVerified(!verified)
-                axios.patch(`http://localhost:3000/comment-prof/verify`, {
-                    professorId: comment.profId,
-                    userId: comment.userId,
-                    rating: comment.rating,
-                    content: comment.content,
-                }, {                    
-                    headers: {
-                    Authorization: `Bearer ${token}`
-                }})
+                verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, await updateToken(token!, login, logout, navigate, []));
             }}>
                 Verificiraj
             </button>
