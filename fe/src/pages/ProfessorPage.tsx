@@ -1,17 +1,25 @@
-import axios from "axios"
 import { useEffect, useState} from 'react';
 import type { Professor } from '../constants';
 import {ProfessorCard} from '../components'
+import {get24Professors} from "../services";
+import {useAuth} from "../hooks";
 
 export const ProfessorPage = () => {
-
     // Testno fetchanje profesora iz baze/backenda
     const [professors, setProfessors] = useState<Professor[]>([]);
+    const {token}=useAuth()
 
     useEffect(() => {
-        axios.get<Professor[]>("http://localhost:3000/prof").then(response => {
-            setProfessors(response.data);
-        })
+        const fetchProfessors = async () => {
+            try {
+                const response = await get24Professors(token)
+                setProfessors(response);
+            } catch (error) {
+                console.error('Error fetching professors:', error);
+            }
+        };
+
+        void fetchProfessors();
     }, []);
 
     return(

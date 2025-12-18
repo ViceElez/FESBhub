@@ -1,10 +1,10 @@
-// typescript
 import { useNavigate } from 'react-router-dom';
-import { tokenIsExpired, tokenIsAdmin } from '../services';
+import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
 import '../index.css';
+import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
@@ -16,25 +16,38 @@ export const AdminSettingsPage = () => {
     const [contentTitle, setContentTitle] = useState<string>('');
     const [contentParagraph, setContentParagraph] = useState<string>('');
 
-    const getAllUsers = () => {
+    const getAllUsers = async () => {
+        const response=await getUnverifiedUsersApi(token);
+        const response1=await getAllVerifiedUsersApi(token);
+        console.log('Unverified Users:', response);
+        console.log('Verified Users:', response1);
         setContentTitle('All Users');
         setContentParagraph('List of all users will be displayed here.');
-        console.log('Fetching all users...');
     };
-    const getAllPosts = () => {
+
+    const getAllPosts = async() => {
         setContentTitle('All Posts');
         setContentParagraph('List of all posts will be displayed here.');
         console.log('Fetching all posts...');
     };
-    const getAllComments = () => {
+
+    const getAllProfessorComments = async () => {
+        const response=await get24Professors(token);
+        console.log('Professors:', response);
         setContentTitle('All Comments');
-        setContentParagraph('List of all comments will be displayed here.');
-        console.log('Fetching all comments...');
+        setContentParagraph('List of all professor comments will be displayed here.');
     };
-    const getAllMaterials = () => {
+
+    const getAllSubjectComments = async() => {
+        const response=await get24Subjects(token);
+        console.log('Subjects:', response);
+        setContentTitle('All Comments');
+        setContentParagraph('List of all subject comments will be displayed here.');
+    };
+
+    const getAllMaterials = async() => {
         setContentTitle('All Materials');
         setContentParagraph('List of all materials will be displayed here.');
-        console.log('Fetching all materials...');
     };
 
     useEffect(() => {
@@ -95,7 +108,8 @@ export const AdminSettingsPage = () => {
                 <section className="admin-settings-buttons">
                     <button onClick={getAllUsers}>All Users</button>
                     <button onClick={getAllPosts}>All Posts</button>
-                    <button onClick={getAllComments}>All Comments</button>
+                    <button onClick={getAllProfessorComments}>All Professor Comments</button>
+                    <button onClick={getAllSubjectComments}>All Subject Comments</button>
                     <button onClick={getAllMaterials}>All Materials</button>
                 </section>
 

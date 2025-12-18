@@ -9,14 +9,26 @@ export class UserController {
         private readonly UserService: UserService,
     ) {}
 
-    @Get('allUsers')
-    async getAllUsers() {
-        return this.UserService.getAllUsers();
+    @Get('unverifiedUsers')
+    async getUnverifiedUsers() {
+        return this.UserService.getUnverifiedUsers();
+    }
+
+    @Get('verifiedUsers')
+    async getVerifiedUsers() {
+        return this.UserService.getVerifiedUsers();
     }
 
     @Get(':id')
     async getUserById(@Param('id') id: string) {
         return this.UserService.getUserById(id);
+    }
+
+    @Get('byName')
+    async getUserByName(@Req() req:any) {
+        const username=req.username;
+        console.log('Fetching user by username:', username);
+        return this.UserService.getUserByUsername(username);
     }
 
     @Get('isAdmin/:id')

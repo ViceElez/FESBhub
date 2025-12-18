@@ -23,7 +23,12 @@
 .admin-settings-content {
     width: 70%;
     background-color: #1d2d44;
-    background-image: linear-gradient(to right, #0d1321 0%, #1D2D44 100%);
+    background-image: linear-gradient(
+            to right,
+            #0d1321 0%,
+            #1D2D44 50%,
+            #0d1321 100%
+    );
     padding: 10px;
 }
 .admin-settings-buttons button {

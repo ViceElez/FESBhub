@@ -99,4 +99,15 @@ export class SubjService {
     });
   }
 
+  async getSubjById(id: string) {
+        return this.prisma.subject.findUnique({
+            where: { id: Number(id) },
+        })
+  }
+
+  async findFirst24() {
+      return this.prisma.subject.findMany({
+          take: 24,
+      });
+  }
 }

@@ -67,10 +67,10 @@ export class ProfService {
   }
 
   async updateTest(id: number) {
-    return await this.prisma.professor.update({
-      where: { id: id },
-      data: { rating: 0 },
-      });
+    return this.prisma.professor.update({
+        where: {id: id},
+        data: {rating: 0},
+    });
   }
 
   async findFirst24() {

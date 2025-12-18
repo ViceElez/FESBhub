@@ -1,4 +1,7 @@
 export * from './userAuthApi.ts'
+export * from './userApi.ts'
+export * from './professorApi.ts'
+export * from './subjectApi.ts'
 export * from './newAccesTokenApi.ts'
 export * from './auth.ts'
 export * from './professorCommentsApi.ts'

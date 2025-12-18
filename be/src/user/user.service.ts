@@ -23,7 +23,27 @@ export class UserService {
         return user?.isAdmin;
     }
 
-    async getAllUsers(){
-        return this.prisma.user.findMany();
+    async getUnverifiedUsers(){
+        return this.prisma.user.findMany({
+            where:{
+                isVerified:false
+            }
+        })
+    }
+
+    async getVerifiedUsers(){
+        return this.prisma.user.findMany({
+            where:{
+                isVerified:true
+            }
+        });
+    }
+
+    async getUserByUsername(username:string){
+        return this.prisma.user.findMany({
+            where:{
+                firstName:username
+            }
+        });
     }
 }
