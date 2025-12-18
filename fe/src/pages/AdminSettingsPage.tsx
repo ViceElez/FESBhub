@@ -1,3 +1,4 @@
+// typescript
 import { useNavigate } from 'react-router-dom';
 import { tokenIsExpired, tokenIsAdmin } from '../services';
 import { useAuth } from "../hooks";
@@ -11,6 +12,30 @@ export const AdminSettingsPage = () => {
     const expired = token ? tokenIsExpired(token) : true;
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
+
+    const [contentTitle, setContentTitle] = useState<string>('');
+    const [contentParagraph, setContentParagraph] = useState<string>('');
+
+    const getAllUsers = () => {
+        setContentTitle('All Users');
+        setContentParagraph('List of all users will be displayed here.');
+        console.log('Fetching all users...');
+    };
+    const getAllPosts = () => {
+        setContentTitle('All Posts');
+        setContentParagraph('List of all posts will be displayed here.');
+        console.log('Fetching all posts...');
+    };
+    const getAllComments = () => {
+        setContentTitle('All Comments');
+        setContentParagraph('List of all comments will be displayed here.');
+        console.log('Fetching all comments...');
+    };
+    const getAllMaterials = () => {
+        setContentTitle('All Materials');
+        setContentParagraph('List of all materials will be displayed here.');
+        console.log('Fetching all materials...');
+    };
 
     useEffect(() => {
         async function checkAdmin() {
@@ -41,7 +66,7 @@ export const AdminSettingsPage = () => {
             <div>
                 <h1>Admin Settings</h1>
                 <p>Your session has expired. Please log in again.</p>
-                <button onClick={() => navigate(routes.LOGIN)}>Login</button> //odi triba kad istekne access token ponovo vatat
+                <button onClick={() => navigate(routes.LOGIN)}>Login</button>
             </div>
         );
     }
@@ -60,25 +85,25 @@ export const AdminSettingsPage = () => {
     }
 
     return (
-        <div>
-            <section>
-                <div>
-                    <button>All Users</button>
-                </div>
-                <div>
-                    <button>All Posts</button>
-                </div>
-                <div>
-                    <button>All Comments</button>
-                </div>
-                <div>
-                    <button>All Materials</button>
-                </div>
-            </section>
-            <section>
+        <div className="admin-settings-container">
+            <div className="admin-settings-header">
+                <h2>Welcome to the Admin Settings Page</h2>
+                <p>Select an option from above to manage users, posts, comments, or materials.</p>
+            </div>
 
-            </section>
+            <div className="admin-settings-body">
+                <section className="admin-settings-buttons">
+                    <button onClick={getAllUsers}>All Users</button>
+                    <button onClick={getAllPosts}>All Posts</button>
+                    <button onClick={getAllComments}>All Comments</button>
+                    <button onClick={getAllMaterials}>All Materials</button>
+                </section>
+
+                <section className="admin-settings-content">
+                    <h3 id="admin-content-title">{contentTitle}</h3>
+                    <p id="admin-content-paragraph">{contentParagraph}</p>
+                </section>
+            </div>
         </div>
     );
 };
-

@@ -23,8 +23,7 @@ body {
     margin: 0;
 }
 .main-container main{
-    margin: 15px 10px;
-    background-color: red;
+    margin: 25px 10px;
 }
 button{
     color: white;
@@ -32,6 +31,10 @@ button{
     border: none;
     padding: 7px 12px;
     border-radius: 5px;
+    transition:
+            background-color 0.25s ease,
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
 }
 button:hover{
     background-color: #1d2d44;

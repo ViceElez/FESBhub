@@ -1,3 +1,37 @@
-h1{
-    color:black;
+.admin-settings-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.admin-settings-header {
+    width: 70%;
+    margin: auto;
+    text-align: center;
+}
+.admin-settings-body {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+
+}
+.admin-settings-buttons {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.admin-settings-content {
+    width: 70%;
+    background-color: #1d2d44;
+    background-image: linear-gradient(to right, #0d1321 0%, #1D2D44 100%);
+    padding: 10px;
+}
+.admin-settings-buttons button {
+    width: 100%;
+    padding: 20px;
+    background-color: #0d1321;
+    font-size: 1rem;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
