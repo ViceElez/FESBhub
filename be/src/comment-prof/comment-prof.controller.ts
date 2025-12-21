@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query} fr
 import { CommentProfService } from './comment-prof.service';
 import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
 import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
+import { UpdateCommentProfDto } from './dto/update-comment-prof.dto';
 import { UserGuard, AdminGuard } from '../guards';
 
 @Controller('comment-prof')
@@ -16,7 +17,7 @@ export class CommentProfController {
 
   @UseGuards(UserGuard)
   @Patch()
-  update(@Body() updateCommentProfDto: CreateCommentProfDto) {
+  update(@Body() updateCommentProfDto: UpdateCommentProfDto) {
     return this.commentProfService.updateComment(updateCommentProfDto);
   }
 

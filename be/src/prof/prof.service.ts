@@ -7,6 +7,26 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProfService {
   constructor(private prisma: PrismaService) {}
 
+  async updateNormal(profId: number, oldRating: number, newRating: number) {
+
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: profId },
+    });
+
+    if(!prof){
+      throw new Error('Professor not found');
+    }
+
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: profId, verified: true }
+    });
+
+    return this.prisma.professor.update({
+      where: { id: profId },
+      data: { rating: ((prof.rating * numberOfVerifiedComments) - oldRating + newRating) / numberOfVerifiedComments},
+      });
+  }
+
   async updateAfterAdminVerification(idAdmin: number, idProf: number, updateProfDto: UpdateProfDto) {
     const admin = await this.prisma.user.findUnique({
       where: { id: idAdmin },

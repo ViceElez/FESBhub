@@ -5,7 +5,6 @@ import { routes } from '../constants/routes';
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
-import type { GoofyahhBOOL } from '../constants';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
@@ -13,7 +12,7 @@ export const AdminSettingsPage = () => {
     const expired = token ? tokenIsExpired(token) : true;
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
     const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
-    const [CommentsProf, setCommentsProf] = useState<GoofyahhBOOL>({goofyahh: false});
+    const [CommentsProf, setCommentsProf] = useState<boolean>(false);
 
     useEffect(() => {
         async function checkAdmin() {
@@ -72,11 +71,11 @@ export const AdminSettingsPage = () => {
                 <button>Go to News Page</button>
             </Link>
             <button
-                onClick = {() => setCommentsProf({goofyahh: !CommentsProf.goofyahh})}
+                onClick = {() => setCommentsProf(!CommentsProf)}
             >
                 Professor Comments
             </button>
-            <ShowUnverifiedProfComments {...CommentsProf}/>
+            <ShowUnverifiedProfComments show = {CommentsProf}/>
         </div>
     );
 };

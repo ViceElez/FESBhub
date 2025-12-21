@@ -1,19 +1,30 @@
 import type { CommentProfessor } from "../constants";
 import {useState} from "react";
-import {useAuth} from "../hooks";
-import {updateToken} from "../services/updateToken.ts";
-import {verifyProfessorComment} from "../services/professorCommentsApi.ts";
-import {useNavigate} from "react-router-dom";
+import { verifyProfessorComment } from "../services/professorCommentsApi";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks";
+import { updateToken } from "../services/updateToken.ts";
+
 
 export const CPCard = (comment: CommentProfessor) => {
     const [verified, setVerified] = useState(comment.verified);
+
+    let {token, login, logout} = useAuth();
+    const navigate = useNavigate();
 
     if (verified === true) {
         return <div></div>;
     }
 
-    let {token, login, logout} = useAuth();
-    const navigate = useNavigate();
+    const handleVerify = async () => {
+        token = await updateToken(token!, login, logout, navigate, []);
+        const response = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, token);
+        if (response?.status === 200) {
+            //nemoze se vise prikazivat samo
+            setVerified(!verified);
+            console.log("Comment verified successfully");
+        }
+    }
 
 
     return (
@@ -23,10 +34,7 @@ export const CPCard = (comment: CommentProfessor) => {
                 <h2>Komentar: {comment.content}</h2>
             </div>
             <button 
-            onClick = {async () => {
-                setVerified(!verified)
-                verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, await updateToken(token!, login, logout, navigate, []));
-            }}>
+            onClick = { handleVerify }>
                 Verificiraj
             </button>
         </div>

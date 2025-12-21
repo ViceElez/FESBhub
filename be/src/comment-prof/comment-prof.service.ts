@@ -1,12 +1,16 @@
 import {Body, Injectable} from '@nestjs/common';
 import {CreateCommentProfDto} from './dto/create-comment-prof.dto';
 import {DeleteCommentProfDto} from './dto/delete-comment-prof.dto';
+import {UpdateCommentProfDto} from './dto/update-comment-prof.dto';
 import {PrismaService} from '../prisma/prisma.service';
-import axios from 'axios';
+import { ProfService } from 'src/prof/prof.service';
 
 @Injectable()
 export class CommentProfService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly profService: ProfService
+  ) {}
 
   async create(@Body() createCommentProfDto: CreateCommentProfDto) {
 
@@ -33,7 +37,7 @@ export class CommentProfService {
     }
   }
 
-  async updateComment(@Body() updateCommentProfDto: CreateCommentProfDto) {
+  async updateComment(@Body() updateCommentProfDto: UpdateCommentProfDto) {
     const comment = await this.prisma.commentOnProffessor.findFirst({
       where: { professorId: updateCommentProfDto.professorId,
                userId: updateCommentProfDto.userId},
@@ -41,16 +45,21 @@ export class CommentProfService {
     if (!comment) {
       throw new Error('Comment not found');
     }
-      return this.prisma.commentOnProffessor.updateMany({
-        where: {
-            professorId: updateCommentProfDto.professorId,
-            userId: updateCommentProfDto.userId
-        },
-        data: {
-            rating: updateCommentProfDto.rating,
-            content: updateCommentProfDto.content
-        },
+    updateCommentProfDto.oldRating = comment.rating;
+    updateCommentProfDto.oldContent = comment.content;
+    const updatedComment = await this.prisma.commentOnProffessor.updateMany({
+      where: {
+          professorId: updateCommentProfDto.professorId,
+          userId: updateCommentProfDto.userId
+      },
+      data: {
+          rating: updateCommentProfDto.newRating,
+          content: updateCommentProfDto.newContent
+      },
     });
+
+    const change = await this.profService.updateNormal(updateCommentProfDto.professorId, updateCommentProfDto.oldRating, updateCommentProfDto.newRating);
+    return updatedComment;
   }
 
   async updateVerification(@Body() updateCommentProfDto: CreateCommentProfDto) {
@@ -70,11 +79,13 @@ export class CommentProfService {
       data: { verified: true },
     });
 
-    const request = await axios.patch(`http://localhost:3000/prof/verifyComment/${updateCommentProfDto.userId}/${comment.professorId}`,
+    const change = await this.profService.updateAfterAdminVerification(
+      updateCommentProfDto.userId,
+      updateCommentProfDto.professorId,
       { rating: comment.rating,
-        content: comment.content
-      });
-
+      }
+    );
+    
     return updatedComment;
   }
 
@@ -100,8 +111,10 @@ export class CommentProfService {
                 userId: deleteCommentProfDto.userId},
     });
 
-    await axios.patch(`http://localhost:3000/prof/deleteComment/${comment.professorId}/${oldRating}`);
-    //odi dependecy injection
+    const change = this.profService.updateAfterCommentDeletion(
+      deleteCommentProfDto.professorId,
+      oldRating
+    );
 
     return DeletedComment;
   }

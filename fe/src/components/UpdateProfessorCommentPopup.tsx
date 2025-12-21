@@ -40,6 +40,5 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
         </div>
     )
 }
-//fix delete nesto, i fixat kad se botun za dodoat kometar za profa stisne(vjerojanto ista stvar s acces tokenon)
 
 

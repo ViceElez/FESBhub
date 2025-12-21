@@ -1,4 +1,0 @@
-export function verifyCommentProfBtn() {
-    return;
-}
-
