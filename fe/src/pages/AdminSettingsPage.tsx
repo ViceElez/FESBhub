@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
-import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects, updateToken} from '../services';
+import {tokenIsExpired, tokenIsAdmin, updateToken} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
-import { ShowUnverifiedProfComments } from '../components';
+import {AdminProfessorCommentsCard, ShowUnverifiedProfComments} from '../components';
 import '../index.css';
-import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
 import { AdminUsersCard } from '../components';
 
 type AdminView =
@@ -25,26 +24,33 @@ export const AdminSettingsPage = () => {
     const [adminLoaded, setAdminLoaded] = useState(false);
     const[activeView,setActiveView]=useState<AdminView>(null);
 
-    const getAllProfessorComments = async () => {
-        token = await updateToken(token!, login, logout, navigate, []);
-        const response=await get24Professors(token);
-        console.log('Professors:', response);
-    };
+    const setUsersView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('users');
+    }
 
-    const getAllSubjectComments = async() => {
-        token = await updateToken(token!, login, logout, navigate, []);
-        const response=await get24Subjects(token);
-        console.log('Subjects:', response);
-    };
+    const setPostsView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('posts');
+    }
 
-    const getAllMaterials = async() => {
-        token = await updateToken(token!, login, logout, navigate, []);
-    };
+    const setProfCommentsView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('profComments');
+    }
+    const setSubCommentsView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('subComments');
+    }
+
+    const setMaterialsView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('materials');
+    }
 
     useEffect(() => {
         async function checkAdmin() {
             token = await updateToken(token!, login, logout, navigate, []);
-            console.log('Checking admin status with token:', token);
             if (!token) {
                 setIsAdmin(false);
                 setAdminLoaded(true);
@@ -100,30 +106,34 @@ export const AdminSettingsPage = () => {
             <div className="admin-settings-body">
                 <section className="admin-settings-buttons">
                     <button
-                        onClick={() => setActiveView('users')}>
+                        onClick={setUsersView}>
                         All Users
                     </button>
 
                     <button
-                        onClick={() => setActiveView('posts')}>
+                        onClick={setPostsView}>
                         All Posts
                     </button>
                     <button
-                        onClick={() => setActiveView('profComments')}>
+                        onClick={setProfCommentsView}>
                         All Professor Comments
                     </button>
                     <button
-                        onClick={() => setActiveView('subComments')}>
+                        onClick={setSubCommentsView}>
                         All Subject Comments
                     </button>
                     <button
-                        onClick={() => setActiveView('materials')}>
+                        onClick={setMaterialsView}>
                         All Materials
                     </button>
                 </section>
               
                 <section className="admin-settings-content">
                     {activeView === 'users' && <AdminUsersCard />}
+                    {activeView === 'posts' && <AdminProfessorCommentsCard/>}
+                    {activeView === 'profComments' && <div><p>All Professor Comments Component Placeholder</p></div>}
+                    {activeView === 'subComments' && <div><p>All Subject Comments Component Placeholder</p></div>}
+                    {activeView === 'materials' && <div><p>All Materials Component Placeholder</p></div>}
                 </section>
              </div>
             <button

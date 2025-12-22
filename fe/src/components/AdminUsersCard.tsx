@@ -21,16 +21,8 @@ export const AdminUsersCard = () => {
         async function fetchUsers() {
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
-                const updatedToken = await updateToken(
-                    token!,
-                    login,
-                    logout,
-                    navigate,
-                    []
-                );
-
-                const unverified = await getUnverifiedUsersApi(updatedToken);
-                const verified = await getAllVerifiedUsersApi(updatedToken);
+                const unverified = await getUnverifiedUsersApi(token);
+                const verified = await getAllVerifiedUsersApi(token);
 
                 setUnverifiedUsers(unverified);
                 setVerifiedUsers(verified);
