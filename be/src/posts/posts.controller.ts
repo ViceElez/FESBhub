@@ -8,6 +8,7 @@ import { UserGuard, AdminGuard } from '../guards';
 export class PostsController{
     constructor(private readonly postsService:PostsService){}
 
+    //@UseGuards(UserGuard)
     @Get()
     async getAll(){
         return this.postsService.findAll();
@@ -24,7 +25,7 @@ export class PostsController{
     }
 
     // Admin-only brisanje za postove
-    @UseGuards(UserGuard, AdminGuard) 
+    @UseGuards(UserGuard, AdminGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id:number){
         const deleted = await this.postsService.remove(id);

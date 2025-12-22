@@ -1,4 +1,3 @@
-import axios from "axios"
 import { useEffect, useState} from 'react';
 import type { Professor } from '../constants';
 import {ProfessorCard} from '../components'
@@ -10,6 +9,7 @@ import { updateToken } from "../services/updateToken.ts";
 export const ProfessorPage = () => {
 
     const [professors, setProfessors] = useState<Professor[]>([]);
+    const {token}=useAuth()
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();

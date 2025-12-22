@@ -22,4 +22,28 @@ export class UserService {
         const user=await this.getUserById(userId)
         return user?.isAdmin;
     }
+
+    async getUnverifiedUsers(){
+        return this.prisma.user.findMany({
+            where:{
+                isVerified:false
+            }
+        })
+    }
+
+    async getVerifiedUsers(){
+        return this.prisma.user.findMany({
+            where:{
+                isVerified:true
+            }
+        });
+    }
+
+    async getUserByUsername(username:string){
+        return this.prisma.user.findMany({
+            where:{
+                firstName:username
+            }
+        });
+    }
 }

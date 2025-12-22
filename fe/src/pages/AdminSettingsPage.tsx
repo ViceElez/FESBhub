@@ -1,18 +1,56 @@
 import { useNavigate } from 'react-router-dom';
-import { tokenIsExpired, tokenIsAdmin } from '../services';
+import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
-import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
+import '../index.css';
+import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
-    const [CommentsProf, setCommentsProf] = useState<boolean>(false);
+    const [CommentsProf, setCommentsProf] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [adminLoaded, setAdminLoaded] = useState(false);
+
+    const [contentTitle, setContentTitle] = useState<string>('');
+    const [contentParagraph, setContentParagraph] = useState<string>('');
+
+    const getAllUsers = async () => {
+        const response=await getUnverifiedUsersApi(token);
+        const response1=await getAllVerifiedUsersApi(token);
+        console.log('Unverified Users:', response);
+        console.log('Verified Users:', response1);
+        setContentTitle('All Users');
+        setContentParagraph('List of all users will be displayed here.');
+    };
+
+    const getAllPosts = async() => {
+        setContentTitle('All Posts');
+        setContentParagraph('List of all posts will be displayed here.');
+        console.log('Fetching all posts...');
+    };
+
+    const getAllProfessorComments = async () => {
+        const response=await get24Professors(token);
+        console.log('Professors:', response);
+        setContentTitle('All Comments');
+        setContentParagraph('List of all professor comments will be displayed here.');
+    };
+
+    const getAllSubjectComments = async() => {
+        const response=await get24Subjects(token);
+        console.log('Subjects:', response);
+        setContentTitle('All Comments');
+        setContentParagraph('List of all subject comments will be displayed here.');
+    };
+
+    const getAllMaterials = async() => {
+        setContentTitle('All Materials');
+        setContentParagraph('List of all materials will be displayed here.');
+    };
 
     useEffect(() => {
         async function checkAdmin() {
@@ -21,7 +59,6 @@ export const AdminSettingsPage = () => {
                 setAdminLoaded(true);
                 return;
             }
-
             const result = await tokenIsAdmin(token);
             setIsAdmin(result);
             setAdminLoaded(true);
@@ -63,13 +100,26 @@ export const AdminSettingsPage = () => {
     }
 
     return (
-        <div>
-            <h1>Admin Settings</h1>
-            <p>Welcome, Admin!</p>
+        <div className="admin-settings-container">
+            <div className="admin-settings-header">
+                <h2>Welcome to the Admin Settings Page</h2>
+                <p>Select an option from above to manage users, posts, comments, or materials.</p>
+            </div>
 
-            <Link to={routes.NEWSPAGE}>
-                <button>Go to News Page</button>
-            </Link>
+            <div className="admin-settings-body">
+                <section className="admin-settings-buttons">
+                    <button onClick={getAllUsers}>All Users</button>
+                    <button onClick={getAllPosts}>All Posts</button>
+                    <button onClick={getAllProfessorComments}>All Professor Comments</button>
+                    <button onClick={getAllSubjectComments}>All Subject Comments</button>
+                    <button onClick={getAllMaterials}>All Materials</button>
+                </section>
+              
+                <section className="admin-settings-content">
+                    <h3 id="admin-content-title">{contentTitle}</h3>
+                    <p id="admin-content-paragraph">{contentParagraph}</p>
+                </section>
+             </div>
             <button
                 onClick = {() => setCommentsProf(!CommentsProf)}
             >
@@ -77,8 +127,7 @@ export const AdminSettingsPage = () => {
             </button>
             <ShowUnverifiedProfComments show = {CommentsProf}/>
         </div>
-    );
+       );
 };
-
 
 
