@@ -3,29 +3,22 @@ import type { Professor } from '../constants';
 import {ProfessorCard} from '../components'
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
-
+import { updateToken,get24Professors } from "../services";
 
 export const ProfessorPage = () => {
-
     const [professors, setProfessors] = useState<Professor[]>([]);
-    const {token}=useAuth()
-
-    let {token, login, logout} = useAuth();
+    let {token,login,logout}=useAuth()
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProfessors = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            axios.get<Professor[]>("http://localhost:3000/prof",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            ).then(response => {
-                setProfessors(response.data);
-            })
+            try {
+                const response = await get24Professors(token)
+                setProfessors(response);
+            } catch (error) {
+                console.error('Error fetching professors:', error);
+            }
         };
         void fetchProfessors();
     }, []);

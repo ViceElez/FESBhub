@@ -1,13 +1,12 @@
 import {CPCard} from './CommentOnProfessorCardForValidation.tsx';
-import type { CommentProfessor } from '../constants';
-import { useEffect, useState} from 'react';
-import { useAuth } from '../hooks';
-import { useNavigate } from 'react-router-dom';
-import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedProfessorComments } from '../services/professorCommentsApi.ts';
+import type {CommentProfessor} from '../constants';
+import {useEffect, useState} from 'react';
+import {useAuth} from '../hooks';
+import {useNavigate} from 'react-router-dom';
+import {getUnverifiedProfessorComments,updateToken} from '../services';
 
 export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
-    if(show === false)
+    if(!show)
         return <div></div>;
 
     const [comments, setComments] = useState<CommentProfessor[]>([]);
@@ -16,7 +15,7 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
     const navigate = useNavigate();
 
     const CorrectType = (raw: any): CommentProfessor => {
-        const corrected: CommentProfessor = {
+        return {
             id: raw.id,
             userId: +raw.userId,
             profId: +raw.professorId,
@@ -24,7 +23,6 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
             content: raw.content,
             verified: raw.verified
         };
-        return corrected;
     };
 
     useEffect(() => {

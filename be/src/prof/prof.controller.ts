@@ -1,8 +1,5 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, UseGuards} from '@nestjs/common';
+import {Controller, Get, UseGuards} from '@nestjs/common';
 import { ProfService } from './prof.service';
-import { CreateProfDto } from './dto/create-prof.dto';
-import { UpdateProfDto } from './dto/update-prof.dto';
-import { patch } from 'axios';
 import {UserGuard} from "../guards";
 
 @UseGuards(UserGuard)

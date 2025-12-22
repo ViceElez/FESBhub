@@ -1,59 +1,50 @@
 import { useNavigate } from 'react-router-dom';
-import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects} from '../services';
+import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects, updateToken} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
-import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
+import { ShowUnverifiedProfComments } from '../components';
 import '../index.css';
 import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
+import { AdminUsersCard } from '../components';
+
+type AdminView =
+    | 'users'
+    | 'posts'
+    | 'profComments'
+    | 'subComments'
+    | 'materials'
+    | null;
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
-    const { token } = useAuth();
+    let { token,login,logout } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
     const [CommentsProf, setCommentsProf] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
-
-    const [contentTitle, setContentTitle] = useState<string>('');
-    const [contentParagraph, setContentParagraph] = useState<string>('');
-
-    const getAllUsers = async () => {
-        const response=await getUnverifiedUsersApi(token);
-        const response1=await getAllVerifiedUsersApi(token);
-        console.log('Unverified Users:', response);
-        console.log('Verified Users:', response1);
-        setContentTitle('All Users');
-        setContentParagraph('List of all users will be displayed here.');
-    };
-
-    const getAllPosts = async() => {
-        setContentTitle('All Posts');
-        setContentParagraph('List of all posts will be displayed here.');
-        console.log('Fetching all posts...');
-    };
+    const[activeView,setActiveView]=useState<AdminView>(null);
 
     const getAllProfessorComments = async () => {
+        token = await updateToken(token!, login, logout, navigate, []);
         const response=await get24Professors(token);
         console.log('Professors:', response);
-        setContentTitle('All Comments');
-        setContentParagraph('List of all professor comments will be displayed here.');
     };
 
     const getAllSubjectComments = async() => {
+        token = await updateToken(token!, login, logout, navigate, []);
         const response=await get24Subjects(token);
         console.log('Subjects:', response);
-        setContentTitle('All Comments');
-        setContentParagraph('List of all subject comments will be displayed here.');
     };
 
     const getAllMaterials = async() => {
-        setContentTitle('All Materials');
-        setContentParagraph('List of all materials will be displayed here.');
+        token = await updateToken(token!, login, logout, navigate, []);
     };
 
     useEffect(() => {
         async function checkAdmin() {
+            token = await updateToken(token!, login, logout, navigate, []);
+            console.log('Checking admin status with token:', token);
             if (!token) {
                 setIsAdmin(false);
                 setAdminLoaded(true);
@@ -108,16 +99,31 @@ export const AdminSettingsPage = () => {
 
             <div className="admin-settings-body">
                 <section className="admin-settings-buttons">
-                    <button onClick={getAllUsers}>All Users</button>
-                    <button onClick={getAllPosts}>All Posts</button>
-                    <button onClick={getAllProfessorComments}>All Professor Comments</button>
-                    <button onClick={getAllSubjectComments}>All Subject Comments</button>
-                    <button onClick={getAllMaterials}>All Materials</button>
+                    <button
+                        onClick={() => setActiveView('users')}>
+                        All Users
+                    </button>
+
+                    <button
+                        onClick={() => setActiveView('posts')}>
+                        All Posts
+                    </button>
+                    <button
+                        onClick={() => setActiveView('profComments')}>
+                        All Professor Comments
+                    </button>
+                    <button
+                        onClick={() => setActiveView('subComments')}>
+                        All Subject Comments
+                    </button>
+                    <button
+                        onClick={() => setActiveView('materials')}>
+                        All Materials
+                    </button>
                 </section>
               
                 <section className="admin-settings-content">
-                    <h3 id="admin-content-title">{contentTitle}</h3>
-                    <p id="admin-content-paragraph">{contentParagraph}</p>
+                    {activeView === 'users' && <AdminUsersCard />}
                 </section>
              </div>
             <button
