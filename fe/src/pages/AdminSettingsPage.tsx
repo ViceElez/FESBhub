@@ -3,6 +3,7 @@ import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects} from '../s
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
+import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
 import '../index.css';
 import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
 
@@ -10,6 +11,7 @@ export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
+    const [CommentsProf, setCommentsProf] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
 
@@ -112,12 +114,20 @@ export const AdminSettingsPage = () => {
                     <button onClick={getAllSubjectComments}>All Subject Comments</button>
                     <button onClick={getAllMaterials}>All Materials</button>
                 </section>
-
+              
                 <section className="admin-settings-content">
                     <h3 id="admin-content-title">{contentTitle}</h3>
                     <p id="admin-content-paragraph">{contentParagraph}</p>
                 </section>
-            </div>
+             </div>
+            <button
+                onClick = {() => setCommentsProf(!CommentsProf)}
+            >
+                Professor Comments
+            </button>
+            <ShowUnverifiedProfComments show = {CommentsProf}/>
         </div>
-    );
+       );
 };
+
+

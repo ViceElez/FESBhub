@@ -2,9 +2,9 @@ import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useState} from "react";
-import {editProfessorComments, newAccessToken, tokenIsExpired} from "../services";
+import {editProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
-import {routes} from "../constants/routes.ts"
+import {updateToken} from "../services/updateToken.ts";
 
 export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
     const [content, setContent] = useState("");
@@ -17,20 +17,7 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
     if(!isOpen) return null;
 
     const handleCommentUpdate=async ()=>{
-        const expired=token?tokenIsExpired(token):true;
-        if(expired){
-            const newAccessTokenResponse=await newAccessToken()
-            if(newAccessTokenResponse?.status!==201){
-                alert('Please login again')
-                logout()
-                onClose()
-                navigate(routes.LOGIN)
-            }
-            else{
-                login(newAccessTokenResponse.data)
-                token=newAccessTokenResponse.data
-            }
-        }
+        token = await updateToken(token!,login,logout,navigate,[onClose]);
         const response=await editProfessorComments(profId,rating,content,token,userId)
         if(response?.status===200)
             alert('Success')
@@ -53,6 +40,5 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
         </div>
     )
 }
-//fix delete nesto, i fixat kad se botun za dodoat kometar za profa stisne(vjerojanto ista stvar s acces tokenon)
 
 

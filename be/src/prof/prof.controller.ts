@@ -10,23 +10,8 @@ import {UserGuard} from "../guards";
 export class ProfController {
   constructor(private readonly profService: ProfService) {}
 
-  @Patch('verifyComment/:idUser/:idProf')
-  NewRatingAfterVerification(@Param('idUser') idUser: string, 
-  @Param('idProf') idProf: string,
-  @Body() updateProfDto: UpdateProfDto) {
-    return this.profService.updateAfterAdminVerification(+idUser, +idProf, updateProfDto);
-  }
 
-  @Patch('deleteComment/:idProf/:oldRating')
-  NewRatingAfterDeletion(@Param('idProf') idProf: string, @Param('oldRating') oldRating: string) {
-    return this.profService.updateAfterCommentDeletion(+idProf, +oldRating);
-  }
-
-  /* @Patch(':id')
-  update(@Param('id') id: string) {
-    return this.profService.updateTest(+id);
-  } */
-
+  @UseGuards(UserGuard)
   @Get()
   findFirst24(){
     return this.profService.findFirst24();

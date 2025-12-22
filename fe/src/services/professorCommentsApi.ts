@@ -43,8 +43,10 @@ export async function editProfessorComments(profId: number, rating: number, cont
             {
                 "userId": userId,
                 "professorId": profId,
-                "rating": rating,
-                "content": content
+                "newRating": rating,
+                "newContent": content,
+                "oldRating": 0,
+                "oldContent": ""
             },
             {
                 headers: {
@@ -69,3 +71,36 @@ export async function getProfessorComments(profId:number, token?: string | null,
         return
     }
 }
+
+export async function getUnverifiedProfessorComments(token?: string | null){
+    try{
+        return axios.get(`${route}/comment-prof/all`, {
+            headers: {
+                Authorization:`Bearer ${token}`
+            }
+        })
+    }catch (e){
+        console.log(e)
+        return
+    }
+}
+
+export async function verifyProfessorComment(profId:number, userId:number, rating:number, content:string, token?: string | null){
+    try{
+        return await axios.patch(`${route}/comment-prof/verify`,
+            {
+                "professorId": profId,
+                "userId": userId,
+                "rating": rating,
+                "content": content
+            }, 
+            {                    
+                headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    }catch (e){
+        console.log(e)
+        return
+    }
+};
