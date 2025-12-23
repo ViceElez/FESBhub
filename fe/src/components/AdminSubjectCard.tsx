@@ -1,4 +1,4 @@
-export const AdminSubjectCommentsCard = () => {
+export const AdminSubjectCard = () => {
   return (
     <div>
       <h2>Admin Subject Comments Card</h2>

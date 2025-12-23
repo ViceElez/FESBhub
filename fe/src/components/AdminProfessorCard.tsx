@@ -10,7 +10,7 @@ type ProfessorComments = {
     verified: boolean;
 };
 
-export const AdminProfessorCommentsCard = () => {
+export const AdminProfessorCard = () => {
     const navigate = useNavigate();
     let { token,login,logout } = useAuth();
     const [professorComments, setProfessorComments] = useState<ProfessorComments[]>([]);
@@ -34,7 +34,7 @@ export const AdminProfessorCommentsCard = () => {
 
   return (
     <div>
-        <h3>Professor Comments:</h3>
+        <h3>Professor:</h3>
         {professorComments.map(c => (
             <div key={c.id}>
                 <p>Professor: {c.professorName}</p>
@@ -44,4 +44,4 @@ export const AdminProfessorCommentsCard = () => {
         ))}
     </div>
   );
-} //odi je sjeb, napravi da profCard(ili novi ili koji vec postoji) da se prikaze prof i onda za svakog profa svi njegovi kometari, a odi ostavi da se samo prikazju neverificirani
+} //znaci napravi verificiraj botun i onda nek se tu bira verificiraj usera, post,profcom, subcom, a odi nek ne izlistaju samo useri,post,prof,subj

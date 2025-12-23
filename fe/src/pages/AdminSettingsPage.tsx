@@ -3,9 +3,15 @@ import {tokenIsExpired, tokenIsAdmin, updateToken} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
-import {AdminProfessorCommentsCard, ShowUnverifiedProfComments} from '../components';
+import {
+    AdminMaterialsCard,
+    AdminPostsCard,
+    AdminProfessorCard,
+    AdminSubjectCard,
+} from '../components';
 import '../index.css';
 import { AdminUsersCard } from '../components';
+import {AdminVerifyContent} from "../components/AdminVerifyContent.tsx";
 
 type AdminView =
     | 'users'
@@ -13,13 +19,13 @@ type AdminView =
     | 'profComments'
     | 'subComments'
     | 'materials'
+    | 'verify'
     | null;
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     let { token,login,logout } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
-    const [CommentsProf, setCommentsProf] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
     const[activeView,setActiveView]=useState<AdminView>(null);
@@ -38,6 +44,7 @@ export const AdminSettingsPage = () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setActiveView('profComments');
     }
+
     const setSubCommentsView =async () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setActiveView('subComments');
@@ -46,6 +53,11 @@ export const AdminSettingsPage = () => {
     const setMaterialsView =async () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setActiveView('materials');
+    }
+
+    const setVerifyView =async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setActiveView('verify');
     }
 
     useEffect(() => {
@@ -126,22 +138,22 @@ export const AdminSettingsPage = () => {
                         onClick={setMaterialsView}>
                         All Materials
                     </button>
+                    <button
+                        onClick={setVerifyView}
+                    >
+                        Verify Content
+                    </button>
                 </section>
               
                 <section className="admin-settings-content">
                     {activeView === 'users' && <AdminUsersCard />}
-                    {activeView === 'posts' && <AdminProfessorCommentsCard/>}
-                    {activeView === 'profComments' && <div><p>All Professor Comments Component Placeholder</p></div>}
-                    {activeView === 'subComments' && <div><p>All Subject Comments Component Placeholder</p></div>}
-                    {activeView === 'materials' && <div><p>All Materials Component Placeholder</p></div>}
+                    {activeView === 'posts' && <AdminPostsCard/>}
+                    {activeView === 'profComments' && <AdminProfessorCard/>}
+                    {activeView === 'subComments' && <AdminSubjectCard/>}
+                    {activeView === 'materials' && <AdminMaterialsCard/>}
+                    {activeView=== 'verify' && <AdminVerifyContent/>}
                 </section>
              </div>
-            <button
-                onClick = {() => setCommentsProf(!CommentsProf)}
-            >
-                Professor Comments
-            </button>
-            <ShowUnverifiedProfComments show = {CommentsProf}/>
         </div>
        );
 };
