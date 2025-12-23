@@ -43,17 +43,14 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
 
     return (
         <div>
-            <ul
+            <div
                 style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
                 {comments.map(C => (
-                    <li key={C.id}>
-                        <h5>
-                            Id profesora je {C.profId} , Id korisnika je {C.userId}
-                        </h5>
+                    <div key={C.id}>
                         <CPCard {...C}/>
-                    </li>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }

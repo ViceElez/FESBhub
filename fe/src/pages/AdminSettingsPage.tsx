@@ -37,7 +37,8 @@ export const AdminSettingsPage = () => {
         const response=await get24Professors(token);
         console.log('Professors:', response);
         setContentTitle('All Comments');
-        setContentParagraph('List of all professor comments will be displayed here.');
+        setContentParagraph('List of all unverified professor comments will be displayed here.');
+        setCommentsProf(!CommentsProf);
     };
 
     const getAllSubjectComments = async() => {
@@ -114,18 +115,13 @@ export const AdminSettingsPage = () => {
                     <button onClick={getAllSubjectComments}>All Subject Comments</button>
                     <button onClick={getAllMaterials}>All Materials</button>
                 </section>
-              
+                
                 <section className="admin-settings-content">
                     <h3 id="admin-content-title">{contentTitle}</h3>
                     <p id="admin-content-paragraph">{contentParagraph}</p>
+                    <ShowUnverifiedProfComments show = {CommentsProf}/>
                 </section>
              </div>
-            <button
-                onClick = {() => setCommentsProf(!CommentsProf)}
-            >
-                Professor Comments
-            </button>
-            <ShowUnverifiedProfComments show = {CommentsProf}/>
         </div>
        );
 };

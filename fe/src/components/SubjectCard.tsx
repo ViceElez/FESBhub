@@ -1,13 +1,13 @@
-import type {CardProperties} from "../constants";
+import type { Subject } from "../constants"
 import {useState, useEffect} from "react";
-import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services/updateToken.ts";
+import {getSubjectComments} from "../services";
+import {AddSubjectComments, DeleteSubjectCommentPopup, UpdateSubjectCommentPopup} from "./index";
 
-export const ProfessorCard = ({prof, profId}: CardProperties) => {
+export const SubjectCard = ( subject: Subject) => {
 
     const [isOpenAdd, setIsOpenAdd] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
@@ -18,28 +18,25 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
 
-
     useEffect(() => {
-        const fetchProfessorComments = async () => {
+        const fetchSubjectComments = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response=await getProfessorComments(profId,token,userId)
-            if(response?.status===200)
+            const response = await getSubjectComments(subject.id, token, userId)
+            if (response?.status === 200)
                 setExistingComment(response.data)
-
             else
                 alert('Error')
         }
-        void fetchProfessorComments()
-    },[]);
+        void fetchSubjectComments()
+    }, []);
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
             <div>
-                <h2>{prof.firstName} {prof.lastName}</h2>
-                <p>Uže područje interesa: {prof.specialization}</p>
-                <p>Obrazovanje: {prof.education}</p>
-                <p>Email: {prof.email}</p>
-                <p>Ocjena: {prof.rating}</p>
+                <h2>{subject.title}</h2>
+                <p>Ocjena očekivanja: {subject.ratingExpectations}</p>
+                <p>Ocjena praktičnosti: {subject.ratingPracticality}</p>
+                <p>Ocjena težine: {subject.ratingDifficulty}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button
@@ -52,7 +49,6 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 >
                     Dodaj komentar
                 </button>
-
                 <button
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
@@ -63,8 +59,6 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 >
                     Izbriši komentar
                 </button>
-
-
                 <button
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
@@ -77,30 +71,27 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 </button>
             </div>
             <div>
-                <AddProfessorCommentPopup
+                <AddSubjectComments
                     isOpen = {isOpenAdd}
                     onClose = {() => setIsOpenAdd(false)}
-                    id = {profId}
+                    id = {subject.id}
                     onSuccess={() => setExistingComment(true)}
                 />
             </div>
             <div>
-                <DeleteProfessorCommentPopup
+                <DeleteSubjectCommentPopup
                     isOpen = {isOpenDelete}
                     onClose = {() => setIsOpenDelete(false)}
-                    id = {profId}
-                    onSuccess={()=> setExistingComment(false)}
+                    id = {subject.id}
                 />
             </div>
             <div>
-                <UpdateProfessorCommentPopup
+                <UpdateSubjectCommentPopup
                     isOpen = {isOpenUpdate}
                     onClose = {() => setIsOpenUpdate(false)}
-                    id = {profId}
+                    id = {subject.id}
                 />
             </div>
-        </div>
-    )
+        </div>);
 }
-
 

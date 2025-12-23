@@ -1,6 +1,6 @@
 export interface PopupProperties {
     isOpen: boolean
     onClose: () => void
-    profId: number
+    id: number
     onSuccess?: () => void
 }
