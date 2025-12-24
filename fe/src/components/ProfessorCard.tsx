@@ -116,7 +116,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
             </div>
             <div>
                 <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
-                    {showVerifiedComments ? 'Sakrij verificirane komentare' : 'Prikaži verificirane komentare'}
+                    {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
                 </button>
             </div>
             <div

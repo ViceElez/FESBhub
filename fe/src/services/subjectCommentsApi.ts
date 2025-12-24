@@ -112,3 +112,16 @@ export async function verifySubjectComment(subjectId: number, userId: number | u
     }
 };
 
+export async function getVerifiedSubjectComments(subjectId: number, token?: string | null) {
+    try {
+        return axios.get(`${route}/comment-subj/verified?subjectId=${subjectId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (e) {
+        console.log(e)
+        return
+    }
+};
+

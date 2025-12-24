@@ -46,4 +46,10 @@ export class CommentSubjController {
     return this.commentSubjService.updateAfterVerification(updateCommentSubjDto);
   }
 
+  @UseGuards(UserGuard)
+  @Get('verified')
+  findVerified(@Query('subjectId') subjectId: number) {
+    return this.commentSubjService.findVerified(+subjectId);
+  }
+
 }

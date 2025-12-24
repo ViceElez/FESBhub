@@ -4,8 +4,10 @@ import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services/updateToken.ts";
-import {getSubjectComments} from "../services";
+import {getSubjectComments, getVerifiedSubjectComments} from "../services";
 import {AddSubjectComments, DeleteSubjectCommentPopup, UpdateSubjectCommentPopup} from "./index";
+import type {CommentSubject} from "../constants";
+import { CSCardNormal } from "./index";
 
 export const SubjectCard = ( subject: Subject) => {
 
@@ -17,6 +19,22 @@ export const SubjectCard = ( subject: Subject) => {
     const userId = decode?.sub;
     const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
+    const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
+    const [showVerifiedComments, setShowVerifiedComments] = useState(false);
+
+    const CorrectType = (raw: any): CommentSubject => {
+        const corrected: CommentSubject = {
+            id: raw.id,
+            userId: +raw.userId,
+            subjId: +raw.subjectId,
+            ratingPracticality: +raw.ratingPracicality,
+            ratingDifficulty: +raw.ratingDiffuculty,
+            ratingExpectation: +raw.ratingExceptions,
+            content: raw.content,
+            verified: raw.verified
+        };
+        return corrected;
+    };
 
     useEffect(() => {
         const fetchSubjectComments = async () => {
@@ -29,6 +47,19 @@ export const SubjectCard = ( subject: Subject) => {
         }
         void fetchSubjectComments()
     }, []);
+
+    useEffect(() => {
+        const fetchVerifiedComments = async () => {
+            token = await updateToken(token!, login, logout, navigate, []);
+            const response = await getVerifiedSubjectComments(subject.id, token);
+            if (response?.status === 200) {
+                setVerifiedComments(response.data.map(CorrectType));
+            } else {
+                alert('Error fetching verified comments');
+            }
+        };
+        void fetchVerifiedComments();
+    }, [subject.id]);
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
@@ -91,6 +122,19 @@ export const SubjectCard = ( subject: Subject) => {
                     onClose = {() => setIsOpenUpdate(false)}
                     id = {subject.id}
                 />
+            </div>
+            <div>
+                <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
+                    {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
+                </button>
+            </div>
+            <div
+                style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                {showVerifiedComments && verifiedComments.map(comment => (
+                    <div key={comment.id}>
+                        <CSCardNormal comment = {comment} show = {showVerifiedComments}/>
+                    </div>
+                ))}
             </div>
         </div>);
 }
