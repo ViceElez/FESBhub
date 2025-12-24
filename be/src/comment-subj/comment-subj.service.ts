@@ -39,7 +39,7 @@ export class CommentSubjService {
     });
   }
 
-  async updateAfterVerification(updateCommentSubjDto: UpdateCommentSubjDto) {
+  async updateAfterVerification(updateCommentSubjDto: CreateCommentSubjDto) {
 
     const comment = await this.prisma.commentOnSubject.findFirst({
       where: { subjectId: updateCommentSubjDto.subjectId,
@@ -127,10 +127,10 @@ export class CommentSubjService {
     const change = await this.subjService.updateNormal(
       updateCommentSubjDto.subjectId,
       updateCommentSubjDto.oldRatingExpectation,
-      updateCommentSubjDto.oldRatingDifficulty,
-      updateCommentSubjDto.oldRatingPracticality,
       updateCommentSubjDto.newRatingExpectation,
+      updateCommentSubjDto.oldRatingDifficulty,
       updateCommentSubjDto.newRatingDifficulty,
+      updateCommentSubjDto.oldRatingPracticality,
       updateCommentSubjDto.newRatingPracticality
     );
 

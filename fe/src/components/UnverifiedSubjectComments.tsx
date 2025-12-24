@@ -1,26 +1,28 @@
-import {CPCard} from './CommentOnProfessorCardForValidation.tsx';
-import type { CommentProfessor } from '../constants';
+import {CSCard} from './CommentOnSubjectCardForValidation.tsx';
+import type { CommentSubject } from '../constants';
 import { useEffect, useState} from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedProfessorComments } from '../services/professorCommentsApi.ts';
+import { getUnverifiedSubjectComments } from '../services/subjectCommentsApi.ts';
 
-export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
+export const ShowUnverifiedSubjComments = ({ show }: { show: boolean }) => {
     if(show === false)
         return <div></div>;
 
-    const [comments, setComments] = useState<CommentProfessor[]>([]);
+    const [comments, setComments] = useState<CommentSubject[]>([]);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
-    const CorrectType = (raw: any): CommentProfessor => {
-        const corrected: CommentProfessor = {
+    const CorrectType = (raw: any): CommentSubject => {
+        const corrected: CommentSubject = {
             id: raw.id,
             userId: +raw.userId,
-            profId: +raw.professorId,
-            rating: raw.rating,
+            subjId: +raw.subjectId,
+            ratingPracticality: +raw.ratingPracicality,
+            ratingDifficulty: +raw.ratingDiffuculty,
+            ratingExpectation: +raw.ratingExceptions,
             content: raw.content,
             verified: raw.verified
         };
@@ -30,7 +32,7 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
     useEffect(() => {
         const fetchUnverified = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getUnverifiedProfessorComments(token);
+            const response = await getUnverifiedSubjectComments(token);
             if(response?.status===200){
                 setComments(response.data.map(CorrectType));
             }
@@ -46,11 +48,10 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
                 style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
                 {comments.map(C => (
                     <div key={C.id}>
-                        <CPCard {...C}/>
+                        <CSCard {...C}/>
                     </div>
                 ))}
             </div>
         </div>
     );
 }
-

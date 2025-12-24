@@ -6,12 +6,14 @@ import { useEffect, useState } from 'react';
 import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
 import '../index.css';
 import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
+import { ShowUnverifiedSubjComments } from '../components/UnverifiedSubjectComments';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
     const [CommentsProf, setCommentsProf] = useState(false);
+    const [CommentsSubj, setCommentsSubj] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
 
@@ -39,6 +41,7 @@ export const AdminSettingsPage = () => {
         setContentTitle('All Comments');
         setContentParagraph('List of all unverified professor comments will be displayed here.');
         setCommentsProf(!CommentsProf);
+        setCommentsSubj(false);
     };
 
     const getAllSubjectComments = async() => {
@@ -46,6 +49,8 @@ export const AdminSettingsPage = () => {
         console.log('Subjects:', response);
         setContentTitle('All Comments');
         setContentParagraph('List of all subject comments will be displayed here.');
+        setCommentsSubj(!CommentsSubj);
+        setCommentsProf(false);
     };
 
     const getAllMaterials = async() => {
@@ -120,6 +125,7 @@ export const AdminSettingsPage = () => {
                     <h3 id="admin-content-title">{contentTitle}</h3>
                     <p id="admin-content-paragraph">{contentParagraph}</p>
                     <ShowUnverifiedProfComments show = {CommentsProf}/>
+                    <ShowUnverifiedSubjComments show = {CommentsSubj}/> 
                 </section>
              </div>
         </div>

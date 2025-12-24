@@ -3,7 +3,6 @@ import { IsString, IsInt, IsNumber, Min, Max, IsNotEmpty } from 'class-validator
 export class CreateCommentSubjDto {
     @IsString()
     @IsNotEmpty()
-    
     content: string;
 
     @IsInt()

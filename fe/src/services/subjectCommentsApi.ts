@@ -80,7 +80,7 @@ export async function getSubjectComments(subjectId: number, token?: string | nul
 
 export async function getUnverifiedSubjectComments(token?: string | null) {
     try {
-        return axios.get(`${route}/comment-subj/unverified`, {
+        return axios.get(`${route}/comment-subj/all`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -91,15 +91,16 @@ export async function getUnverifiedSubjectComments(token?: string | null) {
     }
 };
 
-export async function verifySubjectComment(subjectId: number, userId: string | undefined, ratingPract: number, ratingDiff: number, ratingExpect: number, content: string, token?: string | null) {
+export async function verifySubjectComment(subjectId: number, userId: number | undefined, ratingPracticality: number, ratingDiff: number, ratingExpect: number, content: string, token?: string | null) {
     try {
-        return axios.post(`${route}/comment-subj/verify`, {
+        return axios.patch(`${route}/comment-subj/verify`, {
             "userId": userId,
             "subjectId": subjectId,
-            "ratingPracticality": ratingPract,
+            "ratingPracticality": ratingPracticality,
             "ratingDifficulty": ratingDiff,
             "ratingExpectation": ratingExpect,
-            "content": content
+            "content": content,
+
         }, {
             headers: {
                 Authorization: `Bearer ${token}`

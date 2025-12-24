@@ -1,12 +1,11 @@
-import type { CommentProfessor } from "../constants";
+import type { CommentSubject } from "../constants";
 import {useState} from "react";
-import { verifyProfessorComment } from "../services/professorCommentsApi";
+import { verifySubjectComment } from "../services/subjectCommentsApi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 import { updateToken } from "../services/updateToken.ts";
 
-
-export const CPCard = (comment: CommentProfessor) => {
+export const CSCard = (comment: CommentSubject) => {
     const [verified, setVerified] = useState(comment.verified);
 
     let {token, login, logout} = useAuth();
@@ -18,9 +17,12 @@ export const CPCard = (comment: CommentProfessor) => {
 
     const handleVerify = async () => {
         token = await updateToken(token!, login, logout, navigate, []);
-        const response = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, token);
+        const response = await verifySubjectComment(comment.subjId, comment.userId, 
+            comment.ratingPracticality,
+            comment.ratingDifficulty,
+            comment.ratingExpectation,
+            comment.content, token);
         if (response?.status === 200) {
-            //nemoze se vise prikazivat samo
             setVerified(!verified);
             console.log("Comment verified successfully");
         }
@@ -29,7 +31,9 @@ export const CPCard = (comment: CommentProfessor) => {
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }}>
             <div>
-                <h2>Ocjena: {comment.rating}</h2>
+                <h2>Ocjena korisnosti: {comment.ratingPracticality}</h2>
+                <h2>Ocjena težine: {comment.ratingDifficulty}</h2>
+                <h2>Ocjena očekivanja: {comment.ratingExpectation}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
             <button 
@@ -38,5 +42,4 @@ export const CPCard = (comment: CommentProfessor) => {
             </button>
         </div>
     );
-};
-
+}

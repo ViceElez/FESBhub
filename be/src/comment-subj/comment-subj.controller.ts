@@ -5,6 +5,7 @@ import { UpdateCommentSubjDto } from './dto/update-comment-subj.dto';
 import { DeleteCommentSubjDto } from './dto/delete-comment-subj.dto';
 import {UserGuard, AdminGuard} from "../guards";
 
+@UseGuards(UserGuard)
 @Controller('comment-subj')
 export class CommentSubjController {
   constructor(private readonly commentSubjService: CommentSubjService) {}
@@ -41,7 +42,7 @@ export class CommentSubjController {
 
   @UseGuards(UserGuard, AdminGuard)
   @Patch('verify')
-  updateVerification(@Body() updateCommentSubjDto: UpdateCommentSubjDto) {
+  updateVerification(@Body() updateCommentSubjDto: CreateCommentSubjDto) {
     return this.commentSubjService.updateAfterVerification(updateCommentSubjDto);
   }
 

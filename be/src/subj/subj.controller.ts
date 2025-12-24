@@ -8,11 +8,13 @@ import { UserGuard } from '../guards';
 export class SubjController {
   constructor(private readonly subjService: SubjService) {}
 
+  @UseGuards(UserGuard)
   @Get(':id')
     async getSubjById(@Param('id') id: string) {
         return this.subjService.getSubjById(id);
     }
 
+  @UseGuards(UserGuard)
   @Get()
   async findFirst24(){
       return this.subjService.findFirst24();
