@@ -14,6 +14,8 @@ export const ProfessorPage = () => {
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [ascending, setAscending] = useState(true);
     
     useEffect(() => {
         const fetchProfessors = async () => {
@@ -27,12 +29,20 @@ export const ProfessorPage = () => {
             ).then(response => {
                 setProfessors(response.data);
             })
+            setProfessors((list) =>
+                [...list].sort((a, b) =>
+                    ascending ? a.rating - b.rating : b.rating - a.rating
+                )
+            );
         };
         void fetchProfessors();
     }, []);
 
     const [page, setPage] = useState(1);
-    const pageCount = Math.max(1, Math.ceil(professors.length / 12));
+    const pageCount = Math.max(1, Math.ceil(professors.filter(
+        (professor) => professor.firstName.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+        || professor.lastName.toLowerCase().includes(searchTerm.toLocaleLowerCase()))
+        .length / 12));
 
     if (page > pageCount) setPage(pageCount);
 
@@ -57,10 +67,35 @@ export const ProfessorPage = () => {
                 <button>ADMINSETTINGSPAGE</button>
             </Link>
             <h1>Professor Page</h1>
-            <p>This is the professor page.</p>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Search professors..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button
+                    onClick={() =>
+                        setAscending((prev) => {
+                            const newAsc = !prev;
+                            setProfessors((list) =>
+                                [...list].sort((a, b) =>
+                                    prev ? a.rating - b.rating : b.rating - a.rating
+                                )
+                            );
+                            return newAsc;
+                        })
+                    }
+                >
+                    {ascending ? "Ascending" : "Descending"}
+                </button>
+            </div>
             <div
                 style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                {pageCards.map(professor => (
+                {pageCards.filter((professor) => 
+                    professor.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+                    || professor.lastName.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .map(professor => (
                     <div key={professor.id}>
                         <ProfessorCard prof = {professor} profId = {professor.id}/>
                     </div>

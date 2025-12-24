@@ -14,6 +14,24 @@ export const SubjectPage=()=>{
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [ascending, setAscending] = useState(true);
+
+    const rating = (d: number, e: number, p: number) => {
+        return (d + e + p) / 3;
+    };
+
+    const handleSort = (direction: boolean) => {
+        setSubjects((list) =>
+            [...list].sort((a, b) =>
+                direction ?
+                    rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality) - 
+                    rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality) :
+                    rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality) - 
+                    rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality)
+            )
+        );
+    }
 
     useEffect(() => {
         const fetchSubjects = async () => {
@@ -27,12 +45,15 @@ export const SubjectPage=()=>{
             ).then(response => {
                 setSubjects(response.data);
             })
+            handleSort(ascending);
         };
         void fetchSubjects();
     }, []);
 
     const [page, setPage] = useState(1);
-        const pageCount = Math.max(1, Math.ceil(subjects.length / 12));
+        const pageCount = Math.max(1, Math.ceil(subjects.filter(subject => {
+            subject.title.toLowerCase().includes(searchTerm.toLowerCase())
+        }).length / 12));
     
         if (page > pageCount) setPage(pageCount);
     
@@ -56,10 +77,32 @@ export const SubjectPage=()=>{
                 <button>ADMINSETTINGSPAGE</button>
             </Link>
             <h1>Subject Page</h1>
-            <p>This is the subject page.</p>
+            <div>
+                <input
+                    type="text"
+                    placeholder="Search subjects..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <button
+                    onClick={() =>
+                        setAscending((prev) => {
+                            const newAsc = !prev;
+                            handleSort(prev);
+                            return newAsc;
+                        })
+                    }
+                >
+                    {ascending ? "Ascending" : "Descending"}
+                </button>
+            </div>
             <div
                 style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                {pageCards.map(subject => (
+                {//ovde i za profesore triba popravit sta ovo dohvaca samo predmete i profesorce 
+                // koji su na toj stranici jer uzima pageCards
+                pageCards.filter(subject =>
+                    subject.title.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .map(subject => (
                     <div key={subject.id}>
                         <SubjectCard {...subject}/>
                     </div>
