@@ -134,6 +134,16 @@ export class CommentProfService {
           where: {verified: false},
       });
   }
+
+  async findVerified(profId: number) {
+    return this.prisma.commentOnProffessor.findMany({
+        where: {
+          professorId: profId,
+          verified: true
+        },
+    });
+  }
+  
 }
 
 

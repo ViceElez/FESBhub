@@ -1,4 +1,4 @@
-import type {CardProperties} from "../constants";
+import type {CardProperties, CommentProfessor} from "../constants";
 import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
@@ -6,6 +6,8 @@ import {useAuth} from "../hooks";
 import {getProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services/updateToken.ts";
+import {getVerifiedProfessorComments} from "../services/professorCommentsApi.ts";
+import { CPCardNormal } from "./index";
 
 export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
@@ -17,7 +19,8 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const userId = decode?.sub;
     const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
-
+    const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
+    const [showVerifiedComments, setShowVerifiedComments] = useState(false);
 
     useEffect(() => {
         const fetchProfessorComments = async () => {
@@ -25,12 +28,24 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
             const response=await getProfessorComments(profId,token,userId)
             if(response?.status===200)
                 setExistingComment(response.data)
-
             else
                 alert('Error')
         }
         void fetchProfessorComments()
     },[]);
+
+    useEffect(() => {
+        const fetchVerifiedComments = async () => {
+            token = await updateToken(token!, login, logout, navigate, []);
+            const response = await getVerifiedProfessorComments(profId, token);
+            if (response?.status === 200) {
+                setVerifiedComments(response.data);
+            } else {
+                alert('Error fetching verified comments');
+            }
+        };
+        void fetchVerifiedComments();
+    }, [profId]);
 
     return (
         <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
@@ -99,8 +114,20 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                     id = {profId}
                 />
             </div>
+            <div>
+                <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
+                    {showVerifiedComments ? 'Sakrij verificirane komentare' : 'Prikaži verificirane komentare'}
+                </button>
+            </div>
+            <div
+                style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                {verifiedComments.map(comment => (
+                    <div key={comment.id}>
+                        <CPCardNormal comment = {comment} show = {showVerifiedComments}/>
+                    </div>
+                ))}
+            </div>
         </div>
     )
 }
-
 

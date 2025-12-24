@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import {tokenIsExpired, tokenIsAdmin, get24Professors, get24Subjects} from '../services';
+import {tokenIsExpired, tokenIsAdmin, getAllProfessors, getAllSubjects} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
@@ -36,8 +36,7 @@ export const AdminSettingsPage = () => {
     };
 
     const getAllProfessorComments = async () => {
-        const response=await get24Professors(token);
-        console.log('Professors:', response);
+        const response=await getAllProfessors(token);
         setContentTitle('All Comments');
         setContentParagraph('List of all unverified professor comments will be displayed here.');
         setCommentsProf(!CommentsProf);
@@ -45,8 +44,7 @@ export const AdminSettingsPage = () => {
     };
 
     const getAllSubjectComments = async() => {
-        const response=await get24Subjects(token);
-        console.log('Subjects:', response);
+        const response=await getAllSubjects(token);
         setContentTitle('All Comments');
         setContentParagraph('List of all subject comments will be displayed here.');
         setCommentsSubj(!CommentsSubj);

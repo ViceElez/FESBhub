@@ -16,8 +16,8 @@ export class SubjController {
 
   @UseGuards(UserGuard)
   @Get()
-  async findFirst24(){
-      return this.subjService.findFirst24();
+  async findAll(){
+      return this.subjService.findAll();
   }
 
 }

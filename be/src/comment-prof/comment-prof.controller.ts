@@ -45,5 +45,11 @@ export class CommentProfController {
     return this.commentProfService.remove(deleteCommentProfDto);
   }
 
+  @UseGuards(UserGuard)
+  @Get('verified')
+  findVerified(@Query('profId') profId: number) {
+    return this.commentProfService.findVerified(+profId);
+  }
+
 }
 

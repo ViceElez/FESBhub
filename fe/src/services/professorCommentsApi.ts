@@ -104,3 +104,17 @@ export async function verifyProfessorComment(profId:number, userId:number, ratin
         return
     }
 };
+
+export async function getVerifiedProfessorComments(profId:number, token?: string | null){
+    try{
+        return axios.get(`${route}/comment-prof/verified?profId=${profId}`, {
+            headers: {
+                Authorization:`Bearer ${token}`
+            }
+        })
+    }catch (e){
+        console.log(e)
+        return
+    }
+}
+

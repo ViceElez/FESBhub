@@ -128,9 +128,7 @@ export class SubjService {
         })
   }
 
-  async findFirst24() {
-      return this.prisma.subject.findMany({
-          take: 24,
-      });
+  async findAll() {
+      return this.prisma.subject.findMany();
   }
 }
