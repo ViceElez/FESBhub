@@ -51,5 +51,11 @@ export class CommentProfController {
     return this.commentProfService.findVerified(+profId);
   }
 
+  @UseGuards(UserGuard)
+  @Get('verified/all')
+  findAllVerified() {
+    return this.commentProfService.findAllVerified();
+  }
+
 }
 

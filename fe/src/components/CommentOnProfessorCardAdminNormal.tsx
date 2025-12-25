@@ -1,16 +1,16 @@
 import type { CommentProfessor } from "../constants";
 import {useEffect, useState} from "react";
-import { verifyProfessorComment, deleteProfessorComment } from "../services/professorCommentsApi";
+import {  deleteProfessorComment } from "../services/professorCommentsApi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 import { updateToken } from "../services/updateToken.ts";
 import { getUserById } from "../services/userApi.ts";
 
 
-export const CPCard = (comment: CommentProfessor) => {
-    const [verified, setVerified] = useState(comment.verified);
+export const CPCardAdminNormal = (comment: CommentProfessor) => {
     const [userFirstName, setUserFirstName] = useState<string>("");
     const [userLastName, setUserLastName] = useState<string>("");
+    const [deleted, setDeleted] = useState(false);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
@@ -40,21 +40,12 @@ export const CPCard = (comment: CommentProfessor) => {
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (verified === true) {
+    if (deleted === true) {
         return <div></div>;
     }
 
-    const handleVerify = async () => {
-        token = await updateToken(token!, login, logout, navigate, []);
-        const response = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, token);
-        if (response?.status === 200) {
-            //nemoze se vise prikazivat samo
-            setVerified(!verified);
-            console.log("Comment verified successfully");
-        }
-    };
-
     const handleDelete = async () => {
+        setDeleted(true);
         token = await updateToken(token!, login, logout, navigate, []);
         const response=await deleteProfessorComment(comment.profId,token, comment.userId)
         if(response?.status===200){
@@ -74,10 +65,6 @@ export const CPCard = (comment: CommentProfessor) => {
                 <h2>Ocjena: {comment.rating}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
-            <button 
-            onClick = { handleVerify }>
-                Verificiraj
-            </button>
             <button
             onClick = {handleDelete}
             >
@@ -86,4 +73,3 @@ export const CPCard = (comment: CommentProfessor) => {
         </div>
     );
 };
-

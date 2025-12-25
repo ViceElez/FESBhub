@@ -4,13 +4,13 @@ import { useEffect, useState} from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedSubjectComments } from '../services/subjectCommentsApi.ts';
+import { getUnverifiedSubjectComments, getAllVerifiedSubjectComments } from '../services/subjectCommentsApi.ts';
+import { CSCardAdminNormal } from './CommentOnSubjectCardAdminNormal.tsx';
 
-export const ShowUnverifiedSubjComments = ({ show }: { show: boolean }) => {
-    if(show === false)
-        return <div></div>;
+export const ShowAdminSubjComments = ({ show }: { show: number }) => {
 
-    const [comments, setComments] = useState<CommentSubject[]>([]);
+    const [Unverifiedcomments, setUnverifiedComments] = useState<CommentSubject[]>([]);
+    const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
@@ -34,24 +34,56 @@ export const ShowUnverifiedSubjComments = ({ show }: { show: boolean }) => {
             token = await updateToken(token!, login, logout, navigate, []);
             const response = await getUnverifiedSubjectComments(token);
             if(response?.status===200){
-                setComments(response.data.map(CorrectType));
+                setUnverifiedComments(response.data.map(CorrectType));
             }
             else
                 alert('Error')
         }
+        const fetchVerified = async () => {
+            token = await updateToken(token!, login, logout, navigate, []);
+            const response = await getAllVerifiedSubjectComments(token);
+            if(response?.status===200){
+                setVerifiedComments(response.data.map(CorrectType));
+            }
+            else
+                alert('Error')
+        }
+        void fetchVerified();
         void fetchUnverified();
     }, []);
-
-    return (
+    
+    if(show === 1){
+        return (
         <div>
             <div
                 style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
-                {comments.map(C => (
+                {verifiedComments.map(C => (
+                    <div key={C.id}>
+                        <CSCardAdminNormal {...C}/>
+                    </div>
+                ))}
+            </div>
+        </div>
+        );
+    }
+
+    else if(show === 2){
+        return (
+        <div>
+            <div
+                style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+                {Unverifiedcomments.map(C => (
                     <div key={C.id}>
                         <CSCard {...C}/>
                     </div>
                 ))}
             </div>
         </div>
-    );
+        );
+    }
+
+    else{
+        return <div></div>;
+    }
 }
+

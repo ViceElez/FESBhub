@@ -143,6 +143,12 @@ export class CommentProfService {
         },
     });
   }
+
+  async findAllVerified() {
+    return this.prisma.commentOnProffessor.findMany({
+        where: {verified: true},
+    });
+  }
   
 }
 

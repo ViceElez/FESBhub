@@ -158,5 +158,11 @@ export class CommentSubjService {
                subjectId: subjectId },
     });
   }
+
+  async findAllVerified() {
+    return this.prisma.commentOnSubject.findMany({
+      where: { verified: true },
+    });
+  }
 }
 

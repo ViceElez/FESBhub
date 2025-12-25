@@ -16,7 +16,7 @@ export const DeleteSubjectCommentPopup = ({isOpen, onClose, id,onSuccess}: Popup
 
     const handleCommentDelete=async ()=>{
         token = await updateToken(token!,login,logout,navigate,[onClose]);
-        const response=await deleteSubjectComment(id,token,userId)
+        const response=await deleteSubjectComment(id,token,userId === undefined ? undefined : Number(userId))
         if(response?.status===200){
             alert('Success')
             onSuccess?.();

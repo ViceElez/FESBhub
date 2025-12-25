@@ -52,4 +52,10 @@ export class CommentSubjController {
     return this.commentSubjService.findVerified(+subjectId);
   }
 
+  @UseGuards(UserGuard)
+  @Get('verified/all')
+  findAllVerified() {
+    return this.commentSubjService.findAllVerified();
+  }
+
 }

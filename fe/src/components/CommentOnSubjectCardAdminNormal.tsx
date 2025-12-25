@@ -1,32 +1,18 @@
 import type { CommentSubject } from "../constants";
 import {useState} from "react";
-import { verifySubjectComment, deleteSubjectComment } from "../services/subjectCommentsApi";
+import { deleteSubjectComment } from "../services/subjectCommentsApi";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 import { updateToken } from "../services/updateToken.ts";
 
-export const CSCard = (comment: CommentSubject) => {
-    const [verified, setVerified] = useState(comment.verified);
+export const CSCardAdminNormal = (comment: CommentSubject) => {
     const [deleted, setDeleted] = useState(false);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
-    if (verified === true || deleted === true) {
+    if (deleted === true) {
         return <div></div>;
-    }
-
-    const handleVerify = async () => {
-        token = await updateToken(token!, login, logout, navigate, []);
-        const response = await verifySubjectComment(comment.subjId, comment.userId, 
-            comment.ratingPracticality,
-            comment.ratingDifficulty,
-            comment.ratingExpectation,
-            comment.content, token);
-        if (response?.status === 200) {
-            setVerified(!verified);
-            console.log("Comment verified successfully");
-        }
     }
 
     const handleDelete = async () => {
@@ -50,10 +36,6 @@ export const CSCard = (comment: CommentSubject) => {
                 <h2>Ocjena očekivanja: {comment.ratingExpectation}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
-            <button 
-            onClick = { handleVerify }>
-                Verificiraj
-            </button>
             <button
             onClick = {handleDelete}
             >
@@ -62,4 +44,3 @@ export const CSCard = (comment: CommentSubject) => {
         </div>
     );
 }
-

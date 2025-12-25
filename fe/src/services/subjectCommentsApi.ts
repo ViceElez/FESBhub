@@ -22,7 +22,7 @@ export async function addSubjectComment(subjectId: number, ratingPract: number, 
     }
 };
 
-export async function deleteSubjectComment(subjectId: number, token?: string | null, userId?: string | undefined) {
+export async function deleteSubjectComment(subjectId: number, token?: string | null, userId?: number) {
     try {
         return axios.delete(`${route}/comment-subj/`, {
             data: {
@@ -124,4 +124,18 @@ export async function getVerifiedSubjectComments(subjectId: number, token?: stri
         return
     }
 };
+
+export async function getAllVerifiedSubjectComments(token?: string | null) {
+    try {
+        return axios.get(`${route}/comment-subj/verified/all`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (e) {
+        console.log(e)
+        return
+    }
+};
+
 

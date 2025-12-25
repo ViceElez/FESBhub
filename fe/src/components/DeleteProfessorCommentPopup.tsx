@@ -16,7 +16,7 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: Pop
 
     const handleCommentDelete=async ()=>{
         token = await updateToken(token!,login,logout,navigate,[onClose]);
-        const response=await deleteProfessorComment(id,token,userId)
+        const response=await deleteProfessorComment(id,token, userId === undefined ? 0 : +userId)
         if(response?.status===200){
             alert('Success')
             onSuccess?.();

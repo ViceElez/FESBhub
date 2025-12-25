@@ -1,16 +1,16 @@
 import {CPCard} from './CommentOnProfessorCardForValidation.tsx';
+import { CPCardAdminNormal } from './CommentOnProfessorCardAdminNormal.tsx';
 import type { CommentProfessor } from '../constants';
 import { useEffect, useState} from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedProfessorComments } from '../services/professorCommentsApi.ts';
+import { getUnverifiedProfessorComments, getAllVerifiedProfessorComments } from '../services/professorCommentsApi.ts';
 
-export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
-    if(show === false)
-        return <div></div>;
+export const ShowAdminProfComments = ({ show }: { show: number }) => {
 
-    const [comments, setComments] = useState<CommentProfessor[]>([]);
+    const [unverifiedComments, setUnverifiedComments] = useState<CommentProfessor[]>([]);
+    const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
@@ -32,25 +32,54 @@ export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
             token = await updateToken(token!, login, logout, navigate, []);
             const response = await getUnverifiedProfessorComments(token);
             if(response?.status===200){
-                setComments(response.data.map(CorrectType));
+                setUnverifiedComments(response.data.map(CorrectType));
             }
             else
                 alert('Error')
         }
+        const fetchVerified = async () => {
+            token = await updateToken(token!, login, logout, navigate, []);
+            const response = await getAllVerifiedProfessorComments(token);
+            if(response?.status===200){
+                setVerifiedComments(response.data.map(CorrectType));
+            }
+            else
+                alert('Error')
+        }
+        void fetchVerified();
         void fetchUnverified();
     }, []);
 
-    return (
-        <div>
-            <div
-                style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
-                {comments.map(C => (
-                    <div key={C.id}>
-                        <CPCard {...C}/>
-                    </div>
-                ))}
+    if(show === 1){
+        return (
+            <div>
+                <div
+                    style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+                    {verifiedComments.map(C => (
+                        <div key={C.id}>
+                            <CPCardAdminNormal {...C}/>
+                        </div>
+                    ))}
+                </div>
             </div>
-        </div>
-    );
+        );
+    }
+    else if(show === 2){
+        return (
+            <div>
+                <div
+                    style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+                    {unverifiedComments.map(C => (
+                        <div key={C.id}>
+                            <CPCard {...C}/>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
+    else {
+        return <div></div>;
+    }
 }
 

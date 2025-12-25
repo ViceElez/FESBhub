@@ -3,17 +3,21 @@ import {tokenIsExpired, tokenIsAdmin, getAllProfessors, getAllSubjects} from '..
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
-import { ShowUnverifiedProfComments } from '../components/UnverifiedProfessorComments';
+import { ShowAdminProfComments } from '../components/UnverifiedProfessorComments';
 import '../index.css';
 import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
-import { ShowUnverifiedSubjComments } from '../components/UnverifiedSubjectComments';
+import { ShowAdminSubjComments } from '../components/UnverifiedSubjectComments';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     const { token } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
-    const [CommentsProf, setCommentsProf] = useState(false);
-    const [CommentsSubj, setCommentsSubj] = useState(false);
+    const [CommentsProf, setCommentsProf] = useState(-1);
+    const [CommentsSubj, setCommentsSubj] = useState(-1);
+    const [Users, setUsers] = useState(-1);
+    const [Posts, setPosts] = useState(-1);
+    const [Materials, setMaterials] = useState(-1);
+    const [showVerified, setShowVerified] = useState(1);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
 
@@ -27,34 +31,64 @@ export const AdminSettingsPage = () => {
         console.log('Verified Users:', response1);
         setContentTitle('All Users');
         setContentParagraph('List of all users will be displayed here.');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(1);
+        setPosts(-1);
+        setMaterials(-1);
     };
 
     const getAllPosts = async() => {
         setContentTitle('All Posts');
         setContentParagraph('List of all posts will be displayed here.');
         console.log('Fetching all posts...');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(1);
+        setMaterials(-1);
     };
 
     const getAllProfessorComments = async () => {
         const response=await getAllProfessors(token);
         setContentTitle('All Comments');
-        setContentParagraph('List of all unverified professor comments will be displayed here.');
-        setCommentsProf(!CommentsProf);
-        setCommentsSubj(false);
+        setContentParagraph('');
+        setCommentsProf(1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(-1);
     };
 
     const getAllSubjectComments = async() => {
         const response=await getAllSubjects(token);
         setContentTitle('All Comments');
-        setContentParagraph('List of all subject comments will be displayed here.');
-        setCommentsSubj(!CommentsSubj);
-        setCommentsProf(false);
+        setContentParagraph('');
+        setCommentsProf(-1);
+        setCommentsSubj(1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(-1);
     };
 
     const getAllMaterials = async() => {
         setContentTitle('All Materials');
         setContentParagraph('List of all materials will be displayed here.');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(1);
     };
+
+    const handleVerify = () => {
+        if(showVerified === 1){
+            setShowVerified(2);
+        }
+        else{
+            setShowVerified(1);
+        }
+    }
 
     useEffect(() => {
         async function checkAdmin() {
@@ -122,8 +156,15 @@ export const AdminSettingsPage = () => {
                 <section className="admin-settings-content">
                     <h3 id="admin-content-title">{contentTitle}</h3>
                     <p id="admin-content-paragraph">{contentParagraph}</p>
-                    <ShowUnverifiedProfComments show = {CommentsProf}/>
-                    <ShowUnverifiedSubjComments show = {CommentsSubj}/> 
+                    <button
+                        onClick={handleVerify}
+                    >
+                        {showVerified === 2 ? 'Show Verified' : 'Show Unverified'}
+                    </button>
+                    <div>
+                        <ShowAdminProfComments show = {CommentsProf * showVerified}/>
+                        <ShowAdminSubjComments show = {CommentsSubj * showVerified}/>
+                    </div>
                 </section>
              </div>
         </div>
