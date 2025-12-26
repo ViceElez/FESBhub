@@ -1,20 +1,20 @@
-import {CSCard,CSCardAdminNormal} from '../components';
-import type { CommentSubject } from '../constants';
-import { useEffect, useState} from 'react';
-import { useAuth } from '../hooks';
-import { useNavigate } from 'react-router-dom';
-import { getUnverifiedSubjectComments, getAllVerifiedSubjectComments,updateToken } from '../services';
+import {CSCard, CSCardAdminNormal} from '../components';
+import type {CommentSubject} from '../constants';
+import {useEffect, useState} from 'react';
+import {useAuth} from '../hooks';
+import {useNavigate} from 'react-router-dom';
+import {getAllVerifiedSubjectComments, getUnverifiedSubjectComments, updateToken} from '../services';
 
-export const ShowAdminSubjComments = ({ show }: { show: number }) => {
+export const ShowAdminSubjComments = ({ showVerified }: { showVerified: boolean }) => {
 
-    const [Unverifiedcomments, setUnverifiedComments] = useState<CommentSubject[]>([]);
+    const [unverifiedComments, setUnverifiedComments] = useState<CommentSubject[]>([]);
     const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
     const CorrectType = (raw: any): CommentSubject => {
-        const corrected: CommentSubject = {
+        return {
             id: raw.id,
             userId: +raw.userId,
             subjId: +raw.subjectId,
@@ -24,62 +24,41 @@ export const ShowAdminSubjComments = ({ show }: { show: number }) => {
             content: raw.content,
             verified: raw.verified
         };
-        return corrected;
     };
 
     useEffect(() => {
-        const fetchUnverified = async () => {
+        const fetch= async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getUnverifiedSubjectComments(token);
-            if(response?.status===200){
-                setUnverifiedComments(response.data.map(CorrectType));
+            if (showVerified) {
+                if (verifiedComments.length > 0) return;
+                const res = await getAllVerifiedSubjectComments(token);
+                if (res?.status === 200) {
+                    setVerifiedComments(res.data.map(CorrectType));
+                }
+            } else {
+                if (unverifiedComments.length > 0) return;
+                const res = await getUnverifiedSubjectComments(token);
+                if (res?.status === 200) {
+                    setUnverifiedComments(res.data.map(CorrectType));
+                }
             }
-            else
-                alert('Error')
-        }
-        const fetchVerified = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getAllVerifiedSubjectComments(token);
-            if(response?.status===200){
-                setVerifiedComments(response.data.map(CorrectType));
+        }; //fixat verificiraj(vjerojatno kako san minja raspored, bice ista greska i za prof)
+        void fetch();
+    }, [showVerified]);
+
+    return(
+        <div className = "cards-container-scroll-horizontally">
+            {(showVerified? verifiedComments : unverifiedComments).map(C => (
+                <div key={C.id}>
+                    {showVerified ? (
+                        <CSCardAdminNormal {...C} />
+                    ) : (
+                        <CSCard {...C} />
+                    )}
+                </div>
+            ))
             }
-            else
-                alert('Error')
-        }
-        void fetchVerified();
-        void fetchUnverified();
-    }, []);
-    
-    if(show === 1){
-        return (
-        <div>
-            <div className = "cards-container-scroll-horizontally">
-                {verifiedComments.map(C => (
-                    <div key={C.id}>
-                        <CSCardAdminNormal {...C}/>
-                    </div>
-                ))}
-            </div>
         </div>
-        );
-    }
-
-    else if(show === 2){
-        return (
-        <div>
-            <div className = "cards-container-scroll-horizontally">
-                {Unverifiedcomments.map(C => (
-                    <div key={C.id}>
-                        <CSCard {...C}/>
-                    </div>
-                ))}
-            </div>
-        </div>
-        );
-    }
-
-    else{
-        return <div></div>;
-    }
+    )
 }
 

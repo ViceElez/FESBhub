@@ -5,9 +5,7 @@ import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import { getUnverifiedProfessorComments, getAllVerifiedProfessorComments,updateToken } from '../services';
 
-export const ShowUnverifiedProfComments = ({ show }: { show: number }) => {
-    if(!show)
-        return <div></div>;
+export const ShowUnverifiedProfComments = ({ showVerified }: { showVerified: boolean }) => {
 
     const [unverifiedComments, setUnverifiedComments] = useState<CommentProfessor[]>([]);
     const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
@@ -27,54 +25,39 @@ export const ShowUnverifiedProfComments = ({ show }: { show: number }) => {
     };
 
     useEffect(() => {
-        const fetchUnverified = async () => {
+        const fetch = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getUnverifiedProfessorComments(token);
-            if(response?.status===200){
-                setUnverifiedComments(response.data.map(CorrectType));
-            }
-            else
-                alert('Error')
-        }
-        const fetchVerified = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getAllVerifiedProfessorComments(token);
-            if(response?.status===200){
-                setVerifiedComments(response.data.map(CorrectType));
-            }
-            else
-                alert('Error')
-        }
-        void fetchVerified();
-        void fetchUnverified();
-    }, []);
 
-    if(show === 1){
-        return (
-            <div className = "cards-container-scroll-horizontally">
-                {verifiedComments.map(C => (
-                    <div key={C.id}>
-                        <CPCardAdminNormal {...C}/>
-                    </div>
-                ))}
-            </div>
-        );
-    }
-    else if(show === 2){
-        return (
-            <div>
-                <div className = "cards-container-scroll-horizontally">
-                    {unverifiedComments.map(C => (
-                        <div key={C.id}>
-                            <CPCard {...C}/>
-                        </div>
-                    ))}
+            if (showVerified) {
+                if(verifiedComments.length > 0) return;
+                const res = await getAllVerifiedProfessorComments(token);
+                if (res?.status === 200) {
+                    setVerifiedComments(res.data.map(CorrectType));
+                }
+            } else {
+                if(unverifiedComments.length > 0) return;
+                const res = await getUnverifiedProfessorComments(token);
+                if (res?.status === 200) {
+                    setUnverifiedComments(res.data.map(CorrectType));
+                }
+            }
+        }; //fixat verificiraj
+
+        void fetch();
+    }, [showVerified]);
+
+    return (
+        <div className="cards-container-scroll-horizontally">
+            {(showVerified ? verifiedComments : unverifiedComments).map(C => (
+                <div key={C.id}>
+                    {showVerified ? (
+                        <CPCardAdminNormal {...C} />
+                    ) : (
+                        <CPCard {...C} />
+                    )}
                 </div>
-            </div>
-        );
-    }
-    else {
-        return <div></div>;
-    }
+            ))}
+        </div>
+    );
 }
 

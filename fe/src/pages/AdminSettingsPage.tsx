@@ -1,11 +1,17 @@
 import { useNavigate } from 'react-router-dom';
-import {tokenIsExpired, tokenIsAdmin, getAllProfessors, getAllSubjects} from '../services';
+import {tokenIsExpired, tokenIsAdmin} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants';
 import { useEffect, useState } from 'react';
 import '../index.css';
-import {getAllVerifiedUsersApi, getUnverifiedUsersApi,updateToken} from "../services";
-import { ShowAdminSubjComments,ShowUnverifiedProfComments } from '../components';
+import {updateToken} from "../services";
+import {
+    AdminMaterialsCard,
+    AdminPostsCard,
+    AdminUsersCard,
+    ShowAdminSubjComments,
+    ShowUnverifiedProfComments
+} from '../components';
 
 type AdminView =
     | 'users'
@@ -19,69 +25,10 @@ export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     let { token,login,logout } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
-    const [CommentsProf, setCommentsProf] = useState(-1);
-    const [CommentsSubj, setCommentsSubj] = useState(-1);
-    const [Users, setUsers] = useState(-1);
-    const [Posts, setPosts] = useState(-1);
-    const [Materials, setMaterials] = useState(-1);
-    const [showVerified, setShowVerified] = useState(1);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
     const [adminView, setAdminView] = useState<AdminView>(null);
-
-
-    const setUserView = async () => {
-        setAdminView('users');
-        // setCommentsProf(-1);
-        // setCommentsSubj(-1);
-        // setUsers(1);
-        // setPosts(-1);
-        // setMaterials(-1);
-    };
-
-    const setPostView = async() => {
-        console.log('Fetching all posts...');
-        setCommentsProf(-1);
-        setCommentsSubj(-1);
-        setUsers(-1);
-        setPosts(1);
-        setMaterials(-1);
-    };
-
-    const setProfCommentsView = async () => {
-        const response=await getAllProfessors(token);
-        setCommentsProf(1);
-        setCommentsSubj(-1);
-        setUsers(-1);
-        setPosts(-1);
-        setMaterials(-1);
-    };
-
-    const setSubjCommentsView = async() => {
-        const response=await getAllSubjects(token);
-        setCommentsProf(-1);
-        setCommentsSubj(1);
-        setUsers(-1);
-        setPosts(-1);
-        setMaterials(-1);
-    };
-
-    const setMaterialView = async() => {
-        setCommentsProf(-1);
-        setCommentsSubj(-1);
-        setUsers(-1);
-        setPosts(-1);
-        setMaterials(1);
-    };
-
-    const handleVerify = () => {
-        if(showVerified === 1){
-            setShowVerified(2);
-        }
-        else{
-            setShowVerified(1);
-        }
-    }
+    const [showVerified, setShowVerified] = useState(false);
 
     useEffect(() => {
         async function checkAdmin() {
@@ -97,6 +44,32 @@ export const AdminSettingsPage = () => {
         }
         void checkAdmin();
     }, [token]);
+
+    const setUserView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('users');
+    }
+
+    const setPostView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('posts');
+    }
+
+    const setProfCommentView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('profComments');
+    }
+
+    const setSubCommentView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('subComments');
+    }
+
+    const setMaterialView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('materials');
+    }
+
 
     if (!token) {
         return (
@@ -144,17 +117,16 @@ export const AdminSettingsPage = () => {
                         onClick={setUserView}>
                         All Users
                     </button>
-
                     <button
                         onClick={setPostView}>
                         All Posts
                     </button>
                     <button
-                        onClick={setProfCommentsView}>
+                        onClick={setProfCommentView}>
                         All Professor Comments
                     </button>
                     <button
-                        onClick={setSubjCommentsView}>
+                        onClick={setSubCommentView}>
                         All Subject Comments
                     </button>
                     <button
@@ -162,16 +134,29 @@ export const AdminSettingsPage = () => {
                         All Materials
                     </button>
                 </section>
-                
+
                 <section className="admin-settings-content">
-                    <button
-                        onClick={handleVerify}
-                    >
-                        {showVerified === 2 ? 'Show Verified' : 'Show Unverified'}
+                    <button onClick={() => setShowVerified(v => !v)}>
+                        {showVerified ? 'Show Unverified' : 'Show Verified'}
                     </button>
                     <div>
-                        <ShowUnverifiedProfComments show = {CommentsProf * showVerified}/>
-                        <ShowAdminSubjComments show = {CommentsSubj * showVerified}/>
+                        {adminView === 'users' && (
+                            <AdminUsersCard/>
+                        )}
+
+                        {adminView === 'posts' && (
+                            <AdminPostsCard/>
+                        )}
+                        {adminView === 'profComments' && (
+                            <ShowUnverifiedProfComments showVerified={showVerified} />
+                        )}
+
+                        {adminView === 'subComments' && (
+                            <ShowAdminSubjComments showVerified={showVerified} />
+                        )}
+                        {adminView === 'materials' && (
+                            <AdminMaterialsCard/>
+                        )}
                     </div>
                 </section>
              </div>
