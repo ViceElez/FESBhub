@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
-import { get24Subjects, updateToken} from "../services";
+import { getAllProfessors, updateToken} from "../services";
 
 type ProfessorComments = {
     id: number;
@@ -17,17 +17,17 @@ export const AdminProfessorCard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchUsers() {
+        async function fetchProfessors() {
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
-                const comments = await get24Subjects(token);
+                const comments = await getAllProfessors(token);
                 console.log(comments)
                 setProfessorComments(comments);
             } finally {
                 setLoading(false);
             }
         }
-        void fetchUsers();
+        void fetchProfessors();
     }, []);
 
     if (loading) return <p>Loading professor comments...</p>;

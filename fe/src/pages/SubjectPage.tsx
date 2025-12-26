@@ -1,12 +1,11 @@
 import {Link} from "react-router-dom";
-import {routes} from "../constants/routes.ts";
+import {routes} from "../constants";
+import type {Subject} from "../constants";
 import { useEffect, useState, useMemo} from 'react';
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
-import axios from "axios";
-import type {Subject} from "../constants/subjectType.ts";
-import { SubjectCard } from "../components/SubjectCard.tsx";
+import {getAllSubjects, updateToken} from "../services";
+import { SubjectCard } from "../components";
 import '../index.css';
 
 export const SubjectPage=()=>{
@@ -36,16 +35,14 @@ export const SubjectPage=()=>{
 
     useEffect(() => {
         const fetchSubjects = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            axios.get<Subject[]>("http://localhost:3000/subj",
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            ).then(response => {
-                setSubjects(response.data);
-            })
+            try {
+                token = await updateToken(token!, login, logout, navigate, []);
+                const response = await getAllSubjects(token)
+                setSubjects(response);
+
+            }catch(error){
+                console.error("Error fetching subjects:", error);
+            }
             handleSort(ascending);
         };
         void fetchSubjects();

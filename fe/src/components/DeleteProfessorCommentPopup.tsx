@@ -1,9 +1,8 @@
 import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {deleteProfessorComment} from "../services";
+import {deleteProfessorComment,updateToken} from "../services";
 import {useNavigate} from "react-router-dom";
-import {updateToken} from "../services/updateToken.ts";
 
 export const DeleteProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: PopupProperties) => {
 

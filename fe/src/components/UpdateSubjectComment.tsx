@@ -2,9 +2,8 @@ import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useState} from "react";
-import {editSubjectComments} from "../services";
+import {editSubjectComments,updateToken} from "../services";
 import {useNavigate} from "react-router-dom";
-import {updateToken} from "../services/updateToken.ts";
 
 export const UpdateSubjectCommentPopup = ({isOpen, onClose, id}: PopupProperties) => {
       

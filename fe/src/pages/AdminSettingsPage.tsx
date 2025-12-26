@@ -1,12 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import {tokenIsExpired, tokenIsAdmin, getAllProfessors, getAllSubjects} from '../services';
 import { useAuth } from "../hooks";
-import { routes } from '../constants/routes';
+import { routes } from '../constants';
 import { useEffect, useState } from 'react';
-import { ShowAdminProfComments } from '../components/UnverifiedProfessorComments';
 import '../index.css';
-import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
-import { ShowAdminSubjComments } from '../components/UnverifiedSubjectComments';
+import {getAllVerifiedUsersApi, getUnverifiedUsersApi,updateToken} from "../services";
+import { ShowAdminSubjComments,ShowUnverifiedProfComments } from '../components';
+
+type AdminView =
+    | 'users'
+    | 'posts'
+    | 'profComments'
+    | 'subComments'
+    | 'materials'
+    | null;
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
@@ -20,28 +27,19 @@ export const AdminSettingsPage = () => {
     const [showVerified, setShowVerified] = useState(1);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
-    const[activeView,setActiveView]=useState<AdminView>(null);
+    const [adminView, setAdminView] = useState<AdminView>(null);
 
-    const [contentTitle, setContentTitle] = useState<string>('');
-    const [contentParagraph, setContentParagraph] = useState<string>('');
 
-    const getAllUsers = async () => {
-        const response=await getUnverifiedUsersApi(token);
-        const response1=await getAllVerifiedUsersApi(token);
-        console.log('Unverified Users:', response);
-        console.log('Verified Users:', response1);
-        setContentTitle('All Users');
-        setContentParagraph('List of all users will be displayed here.');
-        setCommentsProf(-1);
-        setCommentsSubj(-1);
-        setUsers(1);
-        setPosts(-1);
-        setMaterials(-1);
+    const setUserView = async () => {
+        setAdminView('users');
+        // setCommentsProf(-1);
+        // setCommentsSubj(-1);
+        // setUsers(1);
+        // setPosts(-1);
+        // setMaterials(-1);
     };
 
-    const getAllPosts = async() => {
-        setContentTitle('All Posts');
-        setContentParagraph('List of all posts will be displayed here.');
+    const setPostView = async() => {
         console.log('Fetching all posts...');
         setCommentsProf(-1);
         setCommentsSubj(-1);
@@ -50,10 +48,8 @@ export const AdminSettingsPage = () => {
         setMaterials(-1);
     };
 
-    const getAllProfessorComments = async () => {
+    const setProfCommentsView = async () => {
         const response=await getAllProfessors(token);
-        setContentTitle('All Comments');
-        setContentParagraph('');
         setCommentsProf(1);
         setCommentsSubj(-1);
         setUsers(-1);
@@ -61,10 +57,8 @@ export const AdminSettingsPage = () => {
         setMaterials(-1);
     };
 
-    const getAllSubjectComments = async() => {
+    const setSubjCommentsView = async() => {
         const response=await getAllSubjects(token);
-        setContentTitle('All Comments');
-        setContentParagraph('');
         setCommentsProf(-1);
         setCommentsSubj(1);
         setUsers(-1);
@@ -72,9 +66,7 @@ export const AdminSettingsPage = () => {
         setMaterials(-1);
     };
 
-    const getAllMaterials = async() => {
-        setContentTitle('All Materials');
-        setContentParagraph('List of all materials will be displayed here.');
+    const setMaterialView = async() => {
         setCommentsProf(-1);
         setCommentsSubj(-1);
         setUsers(-1);
@@ -149,12 +141,12 @@ export const AdminSettingsPage = () => {
             <div className="admin-settings-body">
                 <section className="admin-settings-buttons">
                     <button
-                        onClick={setUsersView}>
+                        onClick={setUserView}>
                         All Users
                     </button>
 
                     <button
-                        onClick={setPostsView}>
+                        onClick={setPostView}>
                         All Posts
                     </button>
                     <button
@@ -162,30 +154,23 @@ export const AdminSettingsPage = () => {
                         All Professor Comments
                     </button>
                     <button
-                        onClick={setSubCommentsView}>
+                        onClick={setSubjCommentsView}>
                         All Subject Comments
                     </button>
                     <button
-                        onClick={setMaterialsView}>
+                        onClick={setMaterialView}>
                         All Materials
-                    </button>
-                    <button
-                        onClick={setVerifyView}
-                    >
-                        Verify Content
                     </button>
                 </section>
                 
                 <section className="admin-settings-content">
-                    <h3 id="admin-content-title">{contentTitle}</h3>
-                    <p id="admin-content-paragraph">{contentParagraph}</p>
                     <button
                         onClick={handleVerify}
                     >
                         {showVerified === 2 ? 'Show Verified' : 'Show Unverified'}
                     </button>
                     <div>
-                        <ShowAdminProfComments show = {CommentsProf * showVerified}/>
+                        <ShowUnverifiedProfComments show = {CommentsProf * showVerified}/>
                         <ShowAdminSubjComments show = {CommentsSubj * showVerified}/>
                     </div>
                 </section>

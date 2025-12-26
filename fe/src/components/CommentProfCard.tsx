@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import type { CommentProfessorNormal } from "../constants";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
-import { getUserById } from "../services/userApi.ts";
-import {updateToken} from "../services/updateToken.ts";
+import { getUserById,updateToken } from "../services";
 
 export const CPCardNormal = ({comment, show}: CommentProfessorNormal) => {
 

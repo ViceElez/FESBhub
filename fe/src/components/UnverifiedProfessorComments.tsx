@@ -1,13 +1,11 @@
-import {CPCard} from './CommentOnProfessorCardForValidation.tsx';
-import { CPCardAdminNormal } from './CommentOnProfessorCardAdminNormal.tsx';
+import {CPCard,CPCardAdminNormal} from '../components';
 import type { CommentProfessor } from '../constants';
 import { useEffect, useState} from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
-import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedProfessorComments, getAllVerifiedProfessorComments } from '../services/professorCommentsApi.ts';
+import { getUnverifiedProfessorComments, getAllVerifiedProfessorComments,updateToken } from '../services';
 
-export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
+export const ShowUnverifiedProfComments = ({ show }: { show: number }) => {
     if(!show)
         return <div></div>;
 

@@ -1,11 +1,9 @@
-import {CSCard} from './CommentOnSubjectCardForValidation.tsx';
+import {CSCard,CSCardAdminNormal} from '../components';
 import type { CommentSubject } from '../constants';
 import { useEffect, useState} from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
-import { updateToken } from '../services/updateToken.ts';
-import { getUnverifiedSubjectComments, getAllVerifiedSubjectComments } from '../services/subjectCommentsApi.ts';
-import { CSCardAdminNormal } from './CommentOnSubjectCardAdminNormal.tsx';
+import { getUnverifiedSubjectComments, getAllVerifiedSubjectComments,updateToken } from '../services';
 
 export const ShowAdminSubjComments = ({ show }: { show: number }) => {
 

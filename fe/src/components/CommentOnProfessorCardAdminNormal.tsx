@@ -1,10 +1,10 @@
 import type { CommentProfessor } from "../constants";
 import {useEffect, useState} from "react";
-import {  deleteProfessorComment } from "../services/professorCommentsApi";
+import {  deleteProfessorComment } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
-import { getUserById } from "../services/userApi.ts";
+import { updateToken } from "../services";
+import { getUserById } from "../services";
 
 
 export const CPCardAdminNormal = (comment: CommentProfessor) => {
@@ -40,7 +40,7 @@ export const CPCardAdminNormal = (comment: CommentProfessor) => {
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (deleted === true) {
+    if (deleted) {
         return <div></div>;
     }
 

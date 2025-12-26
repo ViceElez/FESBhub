@@ -1,9 +1,8 @@
-import type { CommentSubjectNormal } from '../constants/CommentSubjectNormal';
+import type { CommentSubjectNormal } from '../constants';
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
-import { getUserById } from "../services/userApi.ts";
-import {updateToken} from "../services/updateToken.ts";
+import { getUserById,updateToken } from "../services";
 
 export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
     const [userFirstName, setUserFirstName] = useState<string>("");
@@ -21,7 +20,7 @@ export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (comment.verified === false || !show) {
+    if (!comment.verified || !show) {
         return <div></div>;
     }
 

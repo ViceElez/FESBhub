@@ -3,10 +3,8 @@ import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
-import {updateToken} from "../services/updateToken.ts";
-import {getVerifiedProfessorComments} from "../services/professorCommentsApi.ts";
+import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
 import { CPCardNormal } from "./index";
 
 export const ProfessorCard = ({prof, profId}: CardProperties) => {

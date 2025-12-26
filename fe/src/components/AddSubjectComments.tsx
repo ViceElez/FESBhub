@@ -4,7 +4,7 @@ import {jwtDecode} from "jwt-decode";
 import type {PopupProperties} from "../constants";
 import {addSubjectComment} from "../services";
 import {useNavigate} from "react-router-dom";
-import {updateToken} from "../services/updateToken.ts";
+import {updateToken} from "../services";
 
 export const AddSubjectComments = ({isOpen, onClose, id, onSuccess}: PopupProperties) => {
     

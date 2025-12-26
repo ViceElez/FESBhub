@@ -2,9 +2,8 @@ import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useState} from "react";
-import {editProfessorComments} from "../services";
+import {editProfessorComments,updateToken} from "../services";
 import {useNavigate} from "react-router-dom";
-import {updateToken} from "../services/updateToken.ts";
 
 export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperties) => {
     const [content, setContent] = useState("");

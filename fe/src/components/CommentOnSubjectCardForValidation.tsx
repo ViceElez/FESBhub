@@ -1,9 +1,8 @@
 import type { CommentSubject } from "../constants";
 import {useState} from "react";
-import { verifySubjectComment, deleteSubjectComment } from "../services/subjectCommentsApi";
+import { verifySubjectComment, deleteSubjectComment,updateToken } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
 
 export const CSCard = (comment: CommentSubject) => {
     const [verified, setVerified] = useState(comment.verified);
@@ -12,7 +11,7 @@ export const CSCard = (comment: CommentSubject) => {
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
-    if (verified === true || deleted === true) {
+    if (verified || deleted) {
         return <div></div>;
     }
 

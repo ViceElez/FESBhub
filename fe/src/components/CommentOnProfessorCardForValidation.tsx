@@ -1,10 +1,8 @@
 import type { CommentProfessor } from "../constants";
 import {useEffect, useState} from "react";
-import { verifyProfessorComment, deleteProfessorComment } from "../services/professorCommentsApi";
+import { verifyProfessorComment, deleteProfessorComment,updateToken,getUserById } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
-import { getUserById } from "../services/userApi.ts";
 
 
 export const CPCard = (comment: CommentProfessor) => {

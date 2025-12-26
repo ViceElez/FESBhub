@@ -1,9 +1,8 @@
 import type { CommentSubject } from "../constants";
 import {useState} from "react";
-import { deleteSubjectComment } from "../services/subjectCommentsApi";
+import { deleteSubjectComment,updateToken } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services/updateToken.ts";
 
 export const CSCardAdminNormal = (comment: CommentSubject) => {
     const [deleted, setDeleted] = useState(false);
@@ -11,7 +10,7 @@ export const CSCardAdminNormal = (comment: CommentSubject) => {
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
-    if (deleted === true) {
+    if (deleted) {
         return <div></div>;
     }
 
