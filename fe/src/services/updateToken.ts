@@ -4,6 +4,7 @@ import {routes} from "../constants/routes.ts";
 export async function updateToken(token: string, login: (arg: any) => void, logout: () => void, navigate: any,funcArr: (() => void)[]): Promise<string | null> {
     const expired = token ? tokenIsExpired(token) : true;
     if(expired){
+        console.log('TOKEN EXPIRED');
         const newAccessTokenResponse=await newAccessToken()
         if(newAccessTokenResponse?.status!==201){
             alert('Please login again')

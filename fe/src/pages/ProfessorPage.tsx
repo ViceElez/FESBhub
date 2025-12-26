@@ -10,7 +10,6 @@ import { routes } from '../constants/routes.ts';
 import '../index.css';
 
 export const ProfessorPage = () => {
-
     const [professors, setProfessors] = useState<Professor[]>([]);
 
     let {token, login, logout} = useAuth();

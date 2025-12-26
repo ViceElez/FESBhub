@@ -7,7 +7,9 @@ import { useNavigate } from 'react-router-dom';
 import { updateToken } from '../services/updateToken.ts';
 import { getUnverifiedProfessorComments, getAllVerifiedProfessorComments } from '../services/professorCommentsApi.ts';
 
-export const ShowAdminProfComments = ({ show }: { show: number }) => {
+export const ShowUnverifiedProfComments = ({ show }: { show: boolean }) => {
+    if(!show)
+        return <div></div>;
 
     const [unverifiedComments, setUnverifiedComments] = useState<CommentProfessor[]>([]);
     const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
@@ -16,7 +18,7 @@ export const ShowAdminProfComments = ({ show }: { show: number }) => {
     const navigate = useNavigate();
 
     const CorrectType = (raw: any): CommentProfessor => {
-        const corrected: CommentProfessor = {
+        return {
             id: raw.id,
             userId: +raw.userId,
             profId: +raw.professorId,
@@ -24,7 +26,6 @@ export const ShowAdminProfComments = ({ show }: { show: number }) => {
             content: raw.content,
             verified: raw.verified
         };
-        return corrected;
     };
 
     useEffect(() => {

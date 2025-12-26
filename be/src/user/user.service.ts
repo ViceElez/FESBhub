@@ -27,6 +27,12 @@ export class UserService {
         return this.prisma.user.findMany({
             where:{
                 isVerified:false
+            },
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
             }
         })
     }
@@ -35,6 +41,12 @@ export class UserService {
         return this.prisma.user.findMany({
             where:{
                 isVerified:true
+            },
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
             }
         });
     }

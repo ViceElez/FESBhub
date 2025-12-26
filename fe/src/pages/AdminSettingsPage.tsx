@@ -10,7 +10,7 @@ import { ShowAdminSubjComments } from '../components/UnverifiedSubjectComments';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
-    const { token } = useAuth();
+    let { token,login,logout } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
     const [CommentsProf, setCommentsProf] = useState(-1);
     const [CommentsSubj, setCommentsSubj] = useState(-1);
@@ -20,6 +20,7 @@ export const AdminSettingsPage = () => {
     const [showVerified, setShowVerified] = useState(1);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
+    const[activeView,setActiveView]=useState<AdminView>(null);
 
     const [contentTitle, setContentTitle] = useState<string>('');
     const [contentParagraph, setContentParagraph] = useState<string>('');
@@ -92,6 +93,7 @@ export const AdminSettingsPage = () => {
 
     useEffect(() => {
         async function checkAdmin() {
+            token = await updateToken(token!, login, logout, navigate, []);
             if (!token) {
                 setIsAdmin(false);
                 setAdminLoaded(true);
@@ -146,11 +148,32 @@ export const AdminSettingsPage = () => {
 
             <div className="admin-settings-body">
                 <section className="admin-settings-buttons">
-                    <button onClick={getAllUsers}>All Users</button>
-                    <button onClick={getAllPosts}>All Posts</button>
-                    <button onClick={getAllProfessorComments}>All Professor Comments</button>
-                    <button onClick={getAllSubjectComments}>All Subject Comments</button>
-                    <button onClick={getAllMaterials}>All Materials</button>
+                    <button
+                        onClick={setUsersView}>
+                        All Users
+                    </button>
+
+                    <button
+                        onClick={setPostsView}>
+                        All Posts
+                    </button>
+                    <button
+                        onClick={setProfCommentsView}>
+                        All Professor Comments
+                    </button>
+                    <button
+                        onClick={setSubCommentsView}>
+                        All Subject Comments
+                    </button>
+                    <button
+                        onClick={setMaterialsView}>
+                        All Materials
+                    </button>
+                    <button
+                        onClick={setVerifyView}
+                    >
+                        Verify Content
+                    </button>
                 </section>
                 
                 <section className="admin-settings-content">
