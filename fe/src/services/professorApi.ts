@@ -16,7 +16,7 @@ export async function getProfessorById(profId: number, token?: string | null) {
     }
 }
 
-export async function get24Professors(token?: string | null) {
+export async function getAllProfessors(token?: string | null) {
     try{
         const response=await axios.get(`${route}/prof`,{
             headers:{
@@ -29,3 +29,4 @@ export async function get24Professors(token?: string | null) {
         return
     }
 }
+

@@ -28,14 +28,6 @@ export class ProfService {
   }
 
   async updateAfterAdminVerification(idAdmin: number, idProf: number, updateProfDto: UpdateProfDto) {
-    const admin = await this.prisma.user.findUnique({
-      where: { id: idAdmin },
-      select: { isAdmin: true },
-    });
-
-    if (!admin) {
-      throw new Error('User not found or not admin');
-    }
 
     const prof = await this.prisma.professor.findUnique({
       where: { id: idProf },
@@ -93,10 +85,8 @@ export class ProfService {
     });
   }
 
-  async findFirst24() {
-    return this.prisma.professor.findMany({
-      take: 24,
-    });
+  async findAll() {
+    return this.prisma.professor.findMany();
   }
 
 }

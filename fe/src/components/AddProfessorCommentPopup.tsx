@@ -6,7 +6,7 @@ import {addProfessorComment} from "../services";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services/updateToken.ts";
 
-export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: PopupProperties) => {
+export const AddProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
     let {token,logout,login} = useAuth()
@@ -20,7 +20,7 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: Po
     const handleCommentSubmit =async () => {
         const funcs = [onClose];
         token = await updateToken(token!,login,logout,navigate,funcs);
-        const response=await addProfessorComment(profId,rating,content,token,userId)
+        const response=await addProfessorComment(id,rating,content,token,userId)
         if(response?.status===201){
             alert('Success')
             onSuccess?.();
@@ -30,8 +30,8 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: Po
             alert("Error")
             console.log(response)
         }
-        onClose()
-    }
+        onClose();
+    };
 
     return (
         <div>

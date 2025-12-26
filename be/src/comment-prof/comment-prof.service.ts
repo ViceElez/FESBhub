@@ -58,7 +58,10 @@ export class CommentProfService {
       },
     });
 
-    const change = await this.profService.updateNormal(updateCommentProfDto.professorId, updateCommentProfDto.oldRating, updateCommentProfDto.newRating);
+    const change = await this.profService.updateNormal(
+      updateCommentProfDto.professorId, 
+      updateCommentProfDto.oldRating, 
+      updateCommentProfDto.newRating);
     return updatedComment;
   }
 
@@ -89,11 +92,6 @@ export class CommentProfService {
     return updatedComment;
   }
 
-
-  findAll() {
-    return "testiranje123";
-  }
-
   async remove(@Body() deleteCommentProfDto: DeleteCommentProfDto) {
     const comment = await this.prisma.commentOnProffessor.findFirst({
       where: { professorId: deleteCommentProfDto.professorId,
@@ -120,7 +118,6 @@ export class CommentProfService {
   }
 
   async Exists(professorId: number, userId: number): Promise<boolean> {
-    console.log(professorId, userId);
     const findUniqueDto: DeleteCommentProfDto = {
       professorId: professorId,
       userId: userId
@@ -137,6 +134,22 @@ export class CommentProfService {
           where: {verified: false},
       });
   }
+
+  async findVerified(profId: number) {
+    return this.prisma.commentOnProffessor.findMany({
+        where: {
+          professorId: profId,
+          verified: true
+        },
+    });
+  }
+
+  async findAllVerified() {
+    return this.prisma.commentOnProffessor.findMany({
+        where: {verified: true},
+    });
+  }
+  
 }
 
 

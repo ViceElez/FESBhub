@@ -10,8 +10,8 @@ export class ProfController {
 
   @UseGuards(UserGuard)
   @Get()
-  findFirst24(){
-    return this.profService.findFirst24();
+  findAll(){
+    return this.profService.findAll();
   }
 
 }

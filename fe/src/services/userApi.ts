@@ -30,6 +30,20 @@ export async function getAllVerifiedUsersApi(accessToken:string | null):Promise<
     }
 }
 
+export async function getUserById(userId:number, accessToken:string | null):Promise<any>{
+    try{
+        const response=await axios.get(`${route}/user/${userId}`,{
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+        return response.data;
+    }catch (e){
+        alert('Error fetching user by ID');
+        return;
+    }
+}
+
 // export async function getUserByNameApi(username:string, accessToken:string | null):Promise<any>{
 //
 // }

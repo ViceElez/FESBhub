@@ -1,63 +1,94 @@
 import { useNavigate } from 'react-router-dom';
-import {tokenIsExpired, tokenIsAdmin, updateToken} from '../services';
+import {tokenIsExpired, tokenIsAdmin, getAllProfessors, getAllSubjects} from '../services';
 import { useAuth } from "../hooks";
 import { routes } from '../constants/routes';
 import { useEffect, useState } from 'react';
-import {
-    AdminMaterialsCard,
-    AdminPostsCard,
-    AdminProfessorCard,
-    AdminSubjectCard,
-} from '../components';
+import { ShowAdminProfComments } from '../components/UnverifiedProfessorComments';
 import '../index.css';
-import { AdminUsersCard } from '../components';
-import {AdminVerifyContent} from "../components/AdminVerifyContent.tsx";
-
-type AdminView =
-    | 'users'
-    | 'posts'
-    | 'profComments'
-    | 'subComments'
-    | 'materials'
-    | 'verify'
-    | null;
+import {getAllVerifiedUsersApi, getUnverifiedUsersApi} from "../services";
+import { ShowAdminSubjComments } from '../components/UnverifiedSubjectComments';
 
 export const AdminSettingsPage = () => {
     const navigate = useNavigate();
     let { token,login,logout } = useAuth();
     const expired = token ? tokenIsExpired(token) : true;
+    const [CommentsProf, setCommentsProf] = useState(-1);
+    const [CommentsSubj, setCommentsSubj] = useState(-1);
+    const [Users, setUsers] = useState(-1);
+    const [Posts, setPosts] = useState(-1);
+    const [Materials, setMaterials] = useState(-1);
+    const [showVerified, setShowVerified] = useState(1);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
     const[activeView,setActiveView]=useState<AdminView>(null);
 
-    const setUsersView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('users');
-    }
+    const [contentTitle, setContentTitle] = useState<string>('');
+    const [contentParagraph, setContentParagraph] = useState<string>('');
 
-    const setPostsView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('posts');
-    }
+    const getAllUsers = async () => {
+        const response=await getUnverifiedUsersApi(token);
+        const response1=await getAllVerifiedUsersApi(token);
+        console.log('Unverified Users:', response);
+        console.log('Verified Users:', response1);
+        setContentTitle('All Users');
+        setContentParagraph('List of all users will be displayed here.');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(1);
+        setPosts(-1);
+        setMaterials(-1);
+    };
 
-    const setProfCommentsView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('profComments');
-    }
+    const getAllPosts = async() => {
+        setContentTitle('All Posts');
+        setContentParagraph('List of all posts will be displayed here.');
+        console.log('Fetching all posts...');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(1);
+        setMaterials(-1);
+    };
 
-    const setSubCommentsView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('subComments');
-    }
+    const getAllProfessorComments = async () => {
+        const response=await getAllProfessors(token);
+        setContentTitle('All Comments');
+        setContentParagraph('');
+        setCommentsProf(1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(-1);
+    };
 
-    const setMaterialsView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('materials');
-    }
+    const getAllSubjectComments = async() => {
+        const response=await getAllSubjects(token);
+        setContentTitle('All Comments');
+        setContentParagraph('');
+        setCommentsProf(-1);
+        setCommentsSubj(1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(-1);
+    };
 
-    const setVerifyView =async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setActiveView('verify');
+    const getAllMaterials = async() => {
+        setContentTitle('All Materials');
+        setContentParagraph('List of all materials will be displayed here.');
+        setCommentsProf(-1);
+        setCommentsSubj(-1);
+        setUsers(-1);
+        setPosts(-1);
+        setMaterials(1);
+    };
+
+    const handleVerify = () => {
+        if(showVerified === 1){
+            setShowVerified(2);
+        }
+        else{
+            setShowVerified(1);
+        }
     }
 
     useEffect(() => {
@@ -144,14 +175,19 @@ export const AdminSettingsPage = () => {
                         Verify Content
                     </button>
                 </section>
-              
+                
                 <section className="admin-settings-content">
-                    {activeView === 'users' && <AdminUsersCard />}
-                    {activeView === 'posts' && <AdminPostsCard/>}
-                    {activeView === 'profComments' && <AdminProfessorCard/>}
-                    {activeView === 'subComments' && <AdminSubjectCard/>}
-                    {activeView === 'materials' && <AdminMaterialsCard/>}
-                    {activeView=== 'verify' && <AdminVerifyContent/>}
+                    <h3 id="admin-content-title">{contentTitle}</h3>
+                    <p id="admin-content-paragraph">{contentParagraph}</p>
+                    <button
+                        onClick={handleVerify}
+                    >
+                        {showVerified === 2 ? 'Show Verified' : 'Show Unverified'}
+                    </button>
+                    <div>
+                        <ShowAdminProfComments show = {CommentsProf * showVerified}/>
+                        <ShowAdminSubjComments show = {CommentsSubj * showVerified}/>
+                    </div>
                 </section>
              </div>
         </div>

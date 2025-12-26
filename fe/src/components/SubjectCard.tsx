@@ -1,15 +1,15 @@
-import type {CardProperties, CommentProfessor} from "../constants";
+import type { Subject } from "../constants"
 import {useState, useEffect} from "react";
-import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments} from "../services";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services/updateToken.ts";
-import {getVerifiedProfessorComments} from "../services/professorCommentsApi.ts";
-import { CPCardNormal } from "./index";
+import {getSubjectComments, getVerifiedSubjectComments} from "../services";
+import {AddSubjectComments, DeleteSubjectCommentPopup, UpdateSubjectCommentPopup} from "./index";
+import type {CommentSubject} from "../constants";
+import { CSCardNormal } from "./index";
 
-export const ProfessorCard = ({prof, profId}: CardProperties) => {
+export const SubjectCard = ( subject: Subject) => {
 
     const [isOpenAdd, setIsOpenAdd] = useState(false)
     const [isOpenDelete, setIsOpenDelete] = useState(false)
@@ -19,42 +19,55 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     const userId = decode?.sub;
     const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
-    const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
+    const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
     const [showVerifiedComments, setShowVerifiedComments] = useState(false);
 
+    const CorrectType = (raw: any): CommentSubject => {
+        const corrected: CommentSubject = {
+            id: raw.id,
+            userId: +raw.userId,
+            subjId: +raw.subjectId,
+            ratingPracticality: +raw.ratingPracicality,
+            ratingDifficulty: +raw.ratingDiffuculty,
+            ratingExpectation: +raw.ratingExceptions,
+            content: raw.content,
+            verified: raw.verified
+        };
+        return corrected;
+    };
+
     useEffect(() => {
-        const fetchProfessorComments = async () => {
+        const fetchSubjectComments = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response=await getProfessorComments(profId,token,userId)
-            if(response?.status===200)
+            const response = await getSubjectComments(subject.id, token, userId)
+            if (response?.status === 200)
                 setExistingComment(response.data)
             else
                 alert('Error')
         }
-        void fetchProfessorComments()
-    },[]);
+        void fetchSubjectComments()
+    }, []);
 
     useEffect(() => {
         const fetchVerifiedComments = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getVerifiedProfessorComments(profId, token);
+            const response = await getVerifiedSubjectComments(subject.id, token);
             if (response?.status === 200) {
-                setVerifiedComments(response.data);
+                setVerifiedComments(response.data.map(CorrectType));
             } else {
                 alert('Error fetching verified comments');
             }
         };
         void fetchVerifiedComments();
-    }, [profId]);
+    }, [subject.id]);
 
     return (
-        <div className = "card" >
+        <div className="card" >
             <div>
-                <h2>{prof.firstName} {prof.lastName}</h2>
-                <p>Uže područje interesa: {prof.specialization}</p>
-                <p>Obrazovanje: {prof.education}</p>
-                <p>Email: {prof.email}</p>
-                <p>Ocjena: {prof.rating}</p>
+                <h2>{subject.title}</h2>
+                <p>Ocjena očekivanja: {subject.ratingExpectations}</p>
+                <p>Ocjena praktičnosti: {subject.ratingPracticality}</p>
+                <p>Ocjena težine: {subject.ratingDifficulty}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button
@@ -67,7 +80,6 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 >
                     Dodaj komentar
                 </button>
-
                 <button
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
@@ -78,8 +90,6 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 >
                     Izbriši komentar
                 </button>
-
-
                 <button
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
@@ -92,26 +102,25 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 </button>
             </div>
             <div>
-                <AddProfessorCommentPopup
+                <AddSubjectComments
                     isOpen = {isOpenAdd}
                     onClose = {() => setIsOpenAdd(false)}
-                    id = {profId}
+                    id = {subject.id}
                     onSuccess={() => setExistingComment(true)}
                 />
             </div>
             <div>
-                <DeleteProfessorCommentPopup
+                <DeleteSubjectCommentPopup
                     isOpen = {isOpenDelete}
                     onClose = {() => setIsOpenDelete(false)}
-                    id = {profId}
-                    onSuccess={()=> setExistingComment(false)}
+                    id = {subject.id}
                 />
             </div>
             <div>
-                <UpdateProfessorCommentPopup
+                <UpdateSubjectCommentPopup
                     isOpen = {isOpenUpdate}
                     onClose = {() => setIsOpenUpdate(false)}
-                    id = {profId}
+                    id = {subject.id}
                 />
             </div>
             <div>
@@ -120,13 +129,12 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 </button>
             </div>
             <div className = "cards-container-scroll-horizontally">
-                {verifiedComments.map(comment => (
+                {showVerifiedComments && verifiedComments.map(comment => (
                     <div key={comment.id}>
-                        <CPCardNormal comment = {comment} show = {showVerifiedComments}/>
+                        <CSCardNormal comment = {comment} show = {showVerifiedComments}/>
                     </div>
                 ))}
             </div>
-        </div>
-    )
+        </div>);
 }
 
