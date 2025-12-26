@@ -10,7 +10,7 @@ type User = {
     email: string;
 };
 
-export const AdminUsersCard = () => {
+export const AdminUsersCard = ({showVerified}: { showVerified: boolean }) => {
     const navigate = useNavigate();
     let { token,login,logout } = useAuth();
     const [unverifiedUsers, setUnverifiedUsers] = useState<User[]>([]);
@@ -18,40 +18,45 @@ export const AdminUsersCard = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        async function fetchUsers() {
-            try {
-                token = await updateToken(token!, login, logout, navigate, []);
-                const unverified = await getUnverifiedUsersApi(token);
-                const verified = await getAllVerifiedUsersApi(token);
+       const fetchUsers = async () => {
+              token = await updateToken(token!, login, logout, navigate, []);
+              if (showVerified) {
+                    if(verifiedUsers.length > 0) return;
+                    const res = await getAllVerifiedUsersApi(token);
+                    if (res?.status === 200) {
+                        setVerifiedUsers(res.data);
+                    }
 
-                setUnverifiedUsers(unverified);
-                setVerifiedUsers(verified);
-            } finally {
-                setLoading(false);
-            }
-        }
-        void fetchUsers();
-    }, []);
+              }else{
+                    if(unverifiedUsers.length > 0) return;
+                    const res = await getUnverifiedUsersApi(token);
+                    if (res?.status === 200) {
+                        setUnverifiedUsers(res.data);
+                    }
+              }
+       }
+         void fetchUsers().then(() => setLoading(false));
+    }, [showVerified]);
 
     if (loading) return <p>Loading users...</p>;
 
     return (
         <div>
-            <h3>Unverified Users:</h3>
-            {unverifiedUsers.map(u => (
-                <div key={u.id}>
-                    <p>{u.firstName}</p>
-                    <p>{u.lastName}</p>
-                    <p>{u.email}</p>
-                </div>
-            ))}
-
-            <h3>Verified Users:</h3>
-            {verifiedUsers.map(u => (
-                <div key={u.id}>
-                    <p>{u.firstName}</p>
-                    <p>{u.lastName}</p>
-                    <p>{u.email}</p>
+            {(showVerified ? verifiedUsers : unverifiedUsers).map((user) => (
+                <div key={user.id} className="admin-card">
+                    {showVerified?(
+                        <div>
+                            <h3>{user.firstName} {user.lastName}</h3>
+                            <p>Email: {user.email}</p>
+                            <p>User ID: {user.id}</p>
+                        </div>
+                    ):(
+                        <div>
+                            <h3>{user.firstName} {user.lastName}</h3>
+                            <p>Email: {user.email}</p>
+                            <p>User ID: {user.id}</p>
+                        </div>
+                    )}
                 </div>
             ))}
         </div>

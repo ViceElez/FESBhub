@@ -1,5 +1,5 @@
-import {logoutApi, tokenIsAdmin} from "../services";
-import {routes} from "../constants/routes.ts";
+import {logoutApi, tokenIsAdmin,updateToken} from "../services";
+import {routes} from "../constants";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import '../index.css'
@@ -7,9 +7,10 @@ import logo from '../assets/images/FESBhubLogo.png'
 
 export const Header = () => {
     const navigate=useNavigate();
-    const {token,logout}=useAuth()
+    let {token,logout,login}=useAuth()
 
     const handleLogoutClick=async()=>{
+        token=await updateToken(token!, login, logout, navigate, []);
         const response=await logoutApi(token);
         if(response?.status===201){
             alert('Logout successful!');

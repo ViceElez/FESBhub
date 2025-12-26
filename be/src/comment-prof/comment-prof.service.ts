@@ -39,8 +39,9 @@ export class CommentProfService {
 
   async updateComment(@Body() updateCommentProfDto: UpdateCommentProfDto) {
     const comment = await this.prisma.commentOnProffessor.findFirst({
-      where: { professorId: updateCommentProfDto.professorId,
-               userId: updateCommentProfDto.userId},
+      where: {
+          professorId: updateCommentProfDto.professorId,
+          userId: updateCommentProfDto.userId},
     });
     if (!comment) {
       throw new Error('Comment not found');
@@ -58,10 +59,11 @@ export class CommentProfService {
       },
     });
 
-    const change = await this.profService.updateNormal(
-      updateCommentProfDto.professorId, 
-      updateCommentProfDto.oldRating, 
+    await this.profService.updateNormal(
+      updateCommentProfDto.professorId,
+      updateCommentProfDto.oldRating,
       updateCommentProfDto.newRating);
+
     return updatedComment;
   }
 

@@ -41,7 +41,7 @@ export const ShowUnverifiedProfComments = ({ showVerified }: { showVerified: boo
                     setUnverifiedComments(res.data.map(CorrectType));
                 }
             }
-        }; //fixat verificiraj
+        }; 
 
         void fetch();
     }, [showVerified]);

@@ -70,6 +70,11 @@ export const AdminSettingsPage = () => {
         setAdminView('materials');
     }
 
+    const changeShowVerified = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setShowVerified(!showVerified);
+    }
+
 
     if (!token) {
         return (
@@ -136,12 +141,12 @@ export const AdminSettingsPage = () => {
                 </section>
 
                 <section className="admin-settings-content">
-                    <button onClick={() => setShowVerified(v => !v)}>
+                    <button onClick={changeShowVerified}>
                         {showVerified ? 'Show Unverified' : 'Show Verified'}
                     </button>
                     <div>
                         {adminView === 'users' && (
-                            <AdminUsersCard/>
+                            <AdminUsersCard showVerified={showVerified}/>
                         )}
 
                         {adminView === 'posts' && (

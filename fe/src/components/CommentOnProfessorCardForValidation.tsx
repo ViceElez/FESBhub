@@ -38,7 +38,7 @@ export const CPCard = (comment: CommentProfessor) => {
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (verified === true) {
+    if (verified) {
         return <div></div>;
     }
 
