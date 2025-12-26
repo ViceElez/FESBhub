@@ -32,6 +32,7 @@ export class PostsService{
         if (!existing) return null;
         return this.prisma.post.delete({ where: { id } });
     }
+
     async update(id:number, dto: Partial<{ title:string; content:string }>) {
         // provjera postoji li
         const existing = await this.prisma.post.findUnique({ where: { id } });
@@ -39,7 +40,6 @@ export class PostsService{
        
         const data: any = {};
         if (dto.title !== undefined) {
-            // defensive: reject empty or whitespace-only titles
             if (typeof dto.title === 'string' && dto.title.trim() === '') {
                 throw new BadRequestException('Title cannot be empty');
             }
@@ -61,5 +61,21 @@ export class PostsService{
             data,
         });
         return updated;
+    }
+
+    async findUnverified(){
+        return this.prisma.post.findMany({
+            where:{verified:false},
+            orderBy:{createdAt:'desc'},
+            include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
+        });
+    }
+
+    async findVerified(){
+        return this.prisma.post.findMany({
+            where:{verified:true},
+            orderBy:{createdAt:'desc'},
+            include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
+        });
     }
 }

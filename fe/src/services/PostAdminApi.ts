@@ -30,6 +30,30 @@ export async function fetchAllPosts(): Promise<Post[]> {
   }
 }
 
+export async function fetchUnverifiedPosts(token?: string | null) {
+    try {
+        return await axios.get(`${route}/posts/unverified`, {
+            headers:{
+                Authorization: `Bearer ${token}`,
+            }
+        })
+    }catch (e){
+        throw e;
+    }
+}
+
+export async function fetchVerifiedPosts(token?: string | null) {
+    try {
+        return await axios.get(`${route}/posts/verified`, {
+            headers:{
+                Authorization: `Bearer ${token}`,
+            }
+        })
+    }catch (e){
+        throw e;
+    }
+}
+
 export async function createPost(
   dto: { title: string; content: string },
   token: string

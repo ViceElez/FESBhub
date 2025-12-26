@@ -150,7 +150,7 @@ export const AdminSettingsPage = () => {
                         )}
 
                         {adminView === 'posts' && (
-                            <AdminPostsCard/>
+                            <AdminPostsCard showVerified={showVerified}/>
                         )}
                         {adminView === 'profComments' && (
                             <ShowUnverifiedProfComments showVerified={showVerified} />

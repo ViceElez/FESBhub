@@ -24,7 +24,6 @@ export class PostsController{
         return this.postsService.create(dto,userId,isAdmin);
     }
 
-    // Admin-only brisanje za postove
     @UseGuards(UserGuard, AdminGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id:number){
@@ -37,13 +36,11 @@ export class PostsController{
         }
         return deleted;
     }
-    //admin only editanje postova
-   @UseGuards(UserGuard, AdminGuard)
+
+   @UseGuards(UserGuard)
     @Patch(':id')
     async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdatePostDto,
-    ) {
+    @Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
     try {
         return await this.postsService.update(id, dto);
     } catch (e) {
@@ -52,4 +49,15 @@ export class PostsController{
     }
     }
 
+    @UseGuards(UserGuard)
+    @Get('unverified')
+    async getUnverified(){
+        return this.postsService.findUnverified();
+    }
+
+    @UseGuards(UserGuard)
+    @Get('verified')
+    async getVerified(){
+        return this.postsService.findVerified();
+    }
 }
