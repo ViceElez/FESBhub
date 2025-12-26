@@ -12,6 +12,8 @@ import {
   deleteMyPost,
   type MyPost,
 } from "../services";
+import type { Post } from '../services/PostAdminApi.ts';
+import { fetchAllPosts,approvePost,deletePost } from "../services/PostAdminApi.ts";
 
 type Tab =
   | "profile"
@@ -51,8 +53,10 @@ export const UserSettingsPage = () => {
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  
 
+        const [loadingPosts, setLoadingPosts] = useState(false);
+
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [myPosts, setMyPosts] = useState<MyPost[]>([]);
   const [myPostsLoading, setMyPostsLoading] = useState(false);
   const [myPostsErr, setMyPostsErr] = useState<string | null>(null);
@@ -81,6 +85,7 @@ export const UserSettingsPage = () => {
     }
   };
 
+  
   useEffect(() => {
     if (!token) return;
     if (activeTab !== "my-posts") return;
@@ -184,7 +189,29 @@ export const UserSettingsPage = () => {
       setParams({ tab: availableTabs[0].key }, { replace: true });
     }
   }, [activeTab, availableTabs, setParams]);
+ useEffect(() => {
+      
+        setLoadingPosts(true);
+        fetchAllPosts()
+            .then((posts) => {
+             
+                setAllPosts(posts);
+            })
+            .catch((err: any) => {
+               
+              postMessage(`Error fetching posts: ${err?.message ?? 'Unknown error'}`);
+            })
+            .finally(() => {
+                
+                setLoadingPosts(false);
+            });
 
+        return () => {};
+        
+    }, []);
+    
+
+ 
   if (!token) {
     return (
       <div>
@@ -320,8 +347,74 @@ export const UserSettingsPage = () => {
           {activeTab === "admin-posts" && isAdmin && (
             <div>
               <h2>Admin: Postovi</h2>
-              <p>Ovdje može doći moderacija/potvrda postova.</p>
-              <button onClick={() => navigate(routes.NEWSPAGE)}>Otvori News Page</button>
+              
+              {loadingPosts && <p>Učitavanje...</p>}
+           
+
+              {!loadingPosts && allPosts.filter(post => !post.verified).length === 0 && (
+                <p>Nema postova koji čekaju verifikaciju.</p>
+              )}
+
+              <div >
+                {allPosts
+                  .filter(post => !post.verified)
+                  .map(post => (
+                    <div
+                      key={post.id}
+                      style={{ border: "1px solid #444", borderRadius: 12, padding: 12 }}
+                    >
+                      <div >
+                        <strong >{post.title}</strong>
+                        <div >
+                          {new Date(post.createdAt).toLocaleString()} • 
+                          Autor: {post.user?.firstName ?? ""} {post.user?.lastName ?? ""}
+                        </div>
+                      </div>
+
+                      <p>{post.content}</p>
+
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button
+                          onClick={async () => {if(!token) {
+                            setMsg('no token available');
+                            return;
+                          }
+                          try{
+                            await approvePost(post.id, token);
+                            const updated = await fetchAllPosts();
+                            setAllPosts(updated);
+                            alert('Post uspješno verificiran');
+                          }catch(err:any){
+                            alert(`Greška pri verifikaciji posta: ${err?.message ?? 'Nepoznata greška'}`);
+                          }
+                          }}
+                          
+                        >
+                        Verificiraj
+                        </button>
+
+                        <button
+                          onClick={async () => {
+                            if(!token) {
+                              alert('No token available');
+                              return;
+                            }
+                            try {
+                              await deletePost(post.id, token);
+                              const updated = await fetchAllPosts();
+                              setAllPosts(updated);
+                              alert('Post uspješno obrisan');
+                            } catch(err:any) {
+                              alert(`Greška pri brisanju posta: ${err?.message ?? 'Nepoznata greška'}`);
+                            }
+                          }}
+                        >
+                          Obriši
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
         </section>
