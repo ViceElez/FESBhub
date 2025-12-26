@@ -43,7 +43,7 @@ export const CSCard = (comment: CommentSubject) => {
         };
 
     return (
-        <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }}>
+        <div className = "card-scroll-horizontally card" >
             <div>
                 <h2>Ocjena korisnosti: {comment.ratingPracticality}</h2>
                 <h2>Ocjena težine: {comment.ratingDifficulty}</h2>

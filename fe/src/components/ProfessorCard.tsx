@@ -48,7 +48,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     }, [profId]);
 
     return (
-        <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
+        <div className = "card" >
             <div>
                 <h2>{prof.firstName} {prof.lastName}</h2>
                 <p>Uže područje interesa: {prof.specialization}</p>
@@ -119,8 +119,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                     {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
                 </button>
             </div>
-            <div
-                style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+            <div className = "cards-container-scroll-horizontally">
                 {verifiedComments.map(comment => (
                     <div key={comment.id}>
                         <CPCardNormal comment = {comment} show = {showVerifiedComments}/>

@@ -7,6 +7,7 @@ import { updateToken } from "../services/updateToken.ts";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { routes } from '../constants/routes.ts';
+import '../index.css';
 
 export const ProfessorPage = () => {
 

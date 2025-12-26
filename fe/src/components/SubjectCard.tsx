@@ -62,7 +62,7 @@ export const SubjectCard = ( subject: Subject) => {
     }, [subject.id]);
 
     return (
-        <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
+        <div className="card" >
             <div>
                 <h2>{subject.title}</h2>
                 <p>Ocjena očekivanja: {subject.ratingExpectations}</p>
@@ -128,8 +128,7 @@ export const SubjectCard = ( subject: Subject) => {
                     {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
                 </button>
             </div>
-            <div
-                style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+            <div className = "cards-container-scroll-horizontally">
                 {showVerifiedComments && verifiedComments.map(comment => (
                     <div key={comment.id}>
                         <CSCardNormal comment = {comment} show = {showVerifiedComments}/>

@@ -55,8 +55,7 @@ export const ShowAdminSubjComments = ({ show }: { show: number }) => {
     if(show === 1){
         return (
         <div>
-            <div
-                style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+            <div className = "cards-container-scroll-horizontally">
                 {verifiedComments.map(C => (
                     <div key={C.id}>
                         <CSCardAdminNormal {...C}/>
@@ -70,8 +69,7 @@ export const ShowAdminSubjComments = ({ show }: { show: number }) => {
     else if(show === 2){
         return (
         <div>
-            <div
-                style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+            <div className = "cards-container-scroll-horizontally">
                 {Unverifiedcomments.map(C => (
                     <div key={C.id}>
                         <CSCard {...C}/>

@@ -7,6 +7,7 @@ import { updateToken } from "../services/updateToken.ts";
 import axios from "axios";
 import type {Subject} from "../constants/subjectType.ts";
 import { SubjectCard } from "../components/SubjectCard.tsx";
+import '../index.css';
 
 export const SubjectPage=()=>{
 

@@ -58,7 +58,7 @@ export const CPCardAdminNormal = (comment: CommentProfessor) => {
     }
 
     return (
-        <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }}>
+        <div className = "card-scroll-horizontally card" >
             <div>
                 <h2>Korisnik: {userFirstName} {userLastName}</h2>
                 <h4>ID korisnika: {comment.userId}</h4>

@@ -52,23 +52,19 @@ export const ShowAdminProfComments = ({ show }: { show: number }) => {
 
     if(show === 1){
         return (
-            <div>
-                <div
-                    style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
-                    {verifiedComments.map(C => (
-                        <div key={C.id}>
-                            <CPCardAdminNormal {...C}/>
-                        </div>
-                    ))}
-                </div>
+            <div className = "cards-container-scroll-horizontally">
+                {verifiedComments.map(C => (
+                    <div key={C.id}>
+                        <CPCardAdminNormal {...C}/>
+                    </div>
+                ))}
             </div>
         );
     }
     else if(show === 2){
         return (
             <div>
-                <div
-                    style = {{ display: 'flex', flexDirection: 'row', justifyContent : 'space-evenly' , flexWrap: 'wrap' }}>
+                <div className = "cards-container-scroll-horizontally">
                     {unverifiedComments.map(C => (
                         <div key={C.id}>
                             <CPCard {...C}/>
