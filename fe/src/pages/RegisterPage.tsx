@@ -24,68 +24,110 @@ export const RegisterPage=()=>{
             navigate(`${routes.VERIFYEMAILPAGE}?email=${encodeURIComponent(email)}`);
         }
     }
-    return(
-        <div>
-            <form
-                onSubmit={handleRegisterSubmit}>
-                <h1>Register Page</h1>
-                <label>
-                    Email:
-                    <input type="text"
-                           name="email"
-                           required
-                    />
-                </label>
-                <br />
-                <label>
-                    Password:
-                    <input type="password"
-                           name="password"
-                           required
-                    />
-                </label>
-                <br />
-                <label>
-                    First Name:
-                    <input type="text"
-                           name="firstName"
-                           required
-                    />
-                </label>
-                <br />
-                <label>
-                    Last Name:
-                    <input type="text"
-                           name="lastName"
-                    />
-                </label>
-                <br />
-                <label>Choose a Studij:</label>
-                <select name="study" value={study} onChange={(e) => setStudy(e.target.value)} >
-                    {studies.map((s) => (
-                        <option key={s} value={s}>
-                            {s}
-                        </option>
-                    ))}
-                </select>
-                <br />
-                <label>Choose a Year:</label>
-                <select name="year" value={year} onChange={(e) => setYear(e.target.value)} >
-                    {studyYear.map((y) => (
-                        <option key={y} value={y}>
-                            {y}
-                        </option>
-                    ))}
-                </select>
-                <br />
-                <button
-                    type="submit"
-                    id="register-button"
-                >Register</button>
-            </form>
-            <Link to={routes.LOGIN}>
-                <button>Login</button>
-            </Link>
+    return (
+        <div className="registerPageBody">
+            <div className="registerPageWrapper">
+                <header>
+                    <p>Registracija</p>
+                </header>
+
+                <form
+                    onSubmit={handleRegisterSubmit}
+                >
+                    <div>
+                        <label htmlFor="email">Email</label>
+                        <br />
+                        <input
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="vas@email.hr"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="password">Lozinka</label>
+                        <br />
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            placeholder="Unesite lozinku"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="confirmPassword">Potvrdite lozinku</label>
+                        <br />
+                        <input
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            type="password"
+                            placeholder="Ponovo unesite lozinku"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="firstName">Ime</label>
+                        <br />
+                        <input
+                            id="username"
+                            name="firstName"
+                            type="text"
+                            placeholder="Unesite korisničko ime"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="lastName">Prezime</label>
+                        <br />
+                        <input
+                            id="username"
+                            name="lastName"
+                            type="text"
+                            placeholder="Unesite korisničko ime"
+                            required
+                        />
+                    </div>
+
+                    <div>
+                        <label>Choose a Studij:</label>
+                        <select name="study" value={study} onChange={(e) => setStudy(e.target.value)} >
+                            {studies.map((s) => (
+                                <option key={s} value={s}>
+                                    {s}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label>Choose a Year:</label>
+                        <select name="year" value={year} onChange={(e) => setYear(e.target.value)} >
+                            {studyYear.map((y) => (
+                                <option key={y} value={y}>
+                                    {y}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <button
+                            type="submit"
+                            id="register-button"
+                        >Registriraj se</button>
+                    </div>
+
+                    <p>
+                        Već imate račun? <Link to={routes.LOGIN}>Prijavite se</Link>
+                    </p>
+                </form>
+            </div>
         </div>
-    )
+    );
 }
