@@ -58,4 +58,26 @@ export class UserService {
             }
         });
     }
+
+    async verifyUser(userId:string){
+        return this.prisma.user.update({
+            where:{
+                id:parseInt(userId)
+            },
+            data:{
+                isVerified:true
+            }
+        });
+    }
+
+    async unverifyUser(userId:string){
+        return this.prisma.user.update({
+            where:{
+                id:parseInt(userId)
+            },
+            data:{
+                isVerified:false
+            }
+        });
+    }
 }

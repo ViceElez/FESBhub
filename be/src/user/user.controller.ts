@@ -1,4 +1,4 @@
-import { Controller,Get,Req,UseGuards,Param } from '@nestjs/common';
+import { Controller,Get,Req,UseGuards,Param,Patch} from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
 
@@ -35,5 +35,15 @@ export class UserController {
     async isUserAdmin(@Param('id') id: string) {
         const isAdmin=await this.UserService.isUserAdmin(id);
         return {isAdmin};
+    }
+
+    @Patch('verify/:id')
+    async verifyUser(@Param('id') id: string) {
+        return this.UserService.verifyUser(id);
+    }
+
+    @Patch('unverify/:id')
+    async unverifyUser(@Param('id') id: string) {
+        return this.UserService.unverifyUser(id);
     }
 }

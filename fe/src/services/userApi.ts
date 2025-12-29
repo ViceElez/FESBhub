@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const route="http://localhost:3000";
 
-export async function getUnverifiedUsersApi(accessToken:string | null):Promise<any>{
+export async function getUnverifiedUsersApi(accessToken:string | null){
     try{
         return await axios.get(`${route}/user/unverifiedUsers`, {
             headers: {
@@ -15,7 +15,7 @@ export async function getUnverifiedUsersApi(accessToken:string | null):Promise<a
     }
 }
 
-export async function getAllVerifiedUsersApi(accessToken:string | null):Promise<any>{
+export async function getAllVerifiedUsersApi(accessToken:string | null){
     try{
         return await axios.get(`${route}/user/verifiedUsers`, {
             headers: {
@@ -28,7 +28,7 @@ export async function getAllVerifiedUsersApi(accessToken:string | null):Promise<
     }
 }
 
-export async function getUserById(userId:number, accessToken:string | null):Promise<any>{
+export async function getUserById(userId:number, accessToken:string | null){
     try{
         return await axios.get(`${route}/user/${userId}`, {
             headers: {
@@ -41,6 +41,28 @@ export async function getUserById(userId:number, accessToken:string | null):Prom
     }
 }
 
-// export async function getUserByNameApi(username:string, accessToken:string | null):Promise<any>{
-//
-// }
+export async function unverifyUserApi(userId:number, accessToken:string | null){
+    try{
+        return await axios.patch(`${route}/user/unverify/${userId}`, {}, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+    }catch (e){
+        alert('Error unverifying user');
+        return;
+    }
+}
+
+export async function verifyUserApi(userId:number, accessToken:string | null){
+    try{
+        return await axios.patch(`${route}/user/verify/${userId}`, {}, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+    }catch (e){
+        alert('Error verifying user');
+        return;
+    }
+}
