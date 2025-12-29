@@ -1,8 +1,28 @@
+.admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.admin-tab {
+    flex: 1;
+    padding: 10px;
+    background-color: #f1f1f1;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.admin-tab.active {
+    background-color: #ffffff;
+    border-bottom: 2px solid #4caf50;
+}
+
 .admin-users-container {
     display: flex;
     flex-direction: column;
     gap: 12px;
-
     width: 100%;
     max-width: 70vw;
     height: 65vh;

@@ -34,8 +34,8 @@ export const CPCardAdminNormal = (comment: CommentProfessor) => {
                 setUserLastName(response.data.lastName);
             } */
 
-            setUserFirstName(response.firstName);
-            setUserLastName(response.lastName);
+            // setUserFirstName(response?.firstName);
+            // setUserLastName(response?.lastName);
         };
         void fetchUser();
     }, [comment.userId, token]);

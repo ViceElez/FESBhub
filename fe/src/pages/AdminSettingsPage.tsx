@@ -28,7 +28,6 @@ export const AdminSettingsPage = () => {
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminLoaded, setAdminLoaded] = useState(false);
     const [adminView, setAdminView] = useState<AdminView>(null);
-    const [showVerified, setShowVerified] = useState(false);
 
     useEffect(() => {
         async function checkAdmin() {
@@ -69,12 +68,6 @@ export const AdminSettingsPage = () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setAdminView('materials');
     }
-
-    const changeShowVerified = async () => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        setShowVerified(!showVerified);
-    }
-
 
     if (!token) {
         return (
@@ -141,23 +134,20 @@ export const AdminSettingsPage = () => {
                 </section>
 
                 <section className="admin-settings-content">
-                    <button onClick={changeShowVerified}>
-                        {showVerified ? 'Show Unverified' : 'Show Verified'}
-                    </button>
                     <div>
                         {adminView === 'users' && (
-                            <AdminUsersCard showVerified={showVerified}/>
+                            <AdminUsersCard/>
                         )}
 
                         {adminView === 'posts' && (
-                            <AdminPostsCard showVerified={showVerified}/>
+                            <AdminPostsCard/>
                         )}
                         {adminView === 'profComments' && (
-                            <ShowUnverifiedProfComments showVerified={showVerified} />
+                            <ShowUnverifiedProfComments/>
                         )}
 
                         {adminView === 'subComments' && (
-                            <ShowAdminSubjComments showVerified={showVerified} />
+                            <ShowAdminSubjComments/>
                         )}
                         {adminView === 'materials' && (
                             <AdminMaterialsCard/>
