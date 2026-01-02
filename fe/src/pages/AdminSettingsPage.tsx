@@ -9,8 +9,8 @@ import {
     AdminMaterialsCard,
     AdminPostsCard,
     AdminUsersCard,
-    ShowAdminSubjComments,
-    ShowUnverifiedProfComments
+    AdminProfessorComments,
+    AdminSubjectComments,
 } from '../components';
 
 type AdminView =
@@ -143,11 +143,11 @@ export const AdminSettingsPage = () => {
                             <AdminPostsCard/>
                         )}
                         {adminView === 'profComments' && (
-                            <ShowUnverifiedProfComments/>
+                            <AdminProfessorComments/>
                         )}
 
                         {adminView === 'subComments' && (
-                            <ShowAdminSubjComments/>
+                            <AdminSubjectComments/>
                         )}
                         {adminView === 'materials' && (
                             <AdminMaterialsCard/>

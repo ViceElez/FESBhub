@@ -1,10 +1,9 @@
 @import url('./styles/Header.css');
 @import url('./styles/AdminSettingsPageStyle.css');
-@import url('./styles/scrollComments.css');
-@import url('./styles/card.css');
 @import url('./styles/RegisterPageStyle.css');
 @import url('./styles/LoginPageStyle.css');
-@import url('./styles/AdminUserCardStyle.css');
+/*@import url('./styles/AdminUserCardStyle.css');*/
+@import url('./styles/AdminProfessorCommentsCardStyle.css');
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

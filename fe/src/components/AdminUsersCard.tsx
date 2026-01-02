@@ -87,6 +87,12 @@ export const AdminUsersCard = () => {
                         >
                             {showVerified ? 'Unverify' : 'Verify'}
                         </button>
+                        <button>
+                            Delete
+                        </button>
+                        <button>
+                            View Profile
+                        </button>
                     </div>
                 ))}
 
@@ -95,3 +101,4 @@ export const AdminUsersCard = () => {
         </div>
     );
 };
+//znaci triba dizajn risit da je sve isto, i da nie puno css fileova,l za usera napravit delete i za sad view profile je samo button bez funkcionalnosti, ist otako ce tribat napravit ove kartice od vaatre ne u 500 fileova

@@ -1,6 +1,6 @@
 import type { CommentSubject } from "../constants";
 import {useState} from "react";
-import { deleteSubjectComment,updateToken } from "../services";
+import {deleteSubjectComment, updateToken, verifySubjectComment} from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 
@@ -27,8 +27,21 @@ export const CSCardAdminNormal = (comment: CommentSubject) => {
             }
         };
 
+    const handleVerify = async () => {
+        token = await updateToken(token!, login, logout, navigate, []);
+        const response = await verifySubjectComment(comment.subjId, comment.userId,
+            comment.ratingPracticality,
+            comment.ratingDifficulty,
+            comment.ratingExpectation,
+            comment.content, token);
+        if (response?.status === 200) {
+            setVerified(!verified);
+            console.log("Comment verified successfully");
+        }
+    }
+
     return (
-        <div className = "card-scroll-horizontally card" >
+        <div>
             <div>
                 <h2>Ocjena korisnosti: {comment.ratingPracticality}</h2>
                 <h2>Ocjena težine: {comment.ratingDifficulty}</h2>

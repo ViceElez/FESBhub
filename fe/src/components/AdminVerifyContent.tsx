@@ -1,4 +1,4 @@
-import {ShowUnverifiedProfComments} from "./UnverifiedProfessorComments.tsx";
+import {AdminProfessorComments} from "./AdminProfessorComments.tsx";
 import {useState} from "react";
 
 export const AdminVerifyContent = () => {
@@ -11,7 +11,7 @@ export const AdminVerifyContent = () => {
         >
             Professor Comments
         </button>
-        <ShowUnverifiedProfComments show = {CommentsProf}/>
+        <AdminProfessorComments show = {CommentsProf}/>
     </div>
   );
 }

@@ -1,18 +1,16 @@
-import type { CommentProfessor } from "../constants";
-import {useEffect, useState} from "react";
-import {  deleteProfessorComment } from "../services";
+import { useEffect, useState } from "react";
+import { verifyProfessorComment, deleteProfessorComment, updateToken, getUserById } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { updateToken } from "../services";
-import { getUserById } from "../services";
+import type { CommentProfessor } from "../constants";
 
-
-export const CPCardAdminNormal = (comment: CommentProfessor) => {
+export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => {
     const [userFirstName, setUserFirstName] = useState<string>("");
     const [userLastName, setUserLastName] = useState<string>("");
     const [deleted, setDeleted] = useState(false);
+    const [verified, setVerified] = useState(comment.verified);
 
-    let {token, login, logout} = useAuth();
+    const { token, login, logout } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -20,7 +18,7 @@ export const CPCardAdminNormal = (comment: CommentProfessor) => {
             const response = await getUserById(comment.userId, token!);
 
             /*
-            ko god da je radia stvari za usere nek popravi ovo kad stigne 
+            ko god da je radia stvari za usere nek popravi ovo kad stigne
             jer trenutno nepostoji response.status jer response nema data
             ni nista pa se svi atributi iz date samo nalaze u response
             npr: response.firstName izbaci Vatroslav
@@ -34,42 +32,45 @@ export const CPCardAdminNormal = (comment: CommentProfessor) => {
                 setUserLastName(response.data.lastName);
             } */
 
-            // setUserFirstName(response?.firstName);
-            // setUserLastName(response?.lastName);
+            setUserFirstName(response.firstName);
+            setUserLastName(response.lastName);
         };
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (deleted) {
-        return <div></div>;
-    }
+    if (deleted) return null;
+
+    const handleVerify = async () => {
+        const newToken = await updateToken(token!, login, logout, navigate, []);
+        const res = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, newToken);
+        if (res?.status === 200) setVerified(true);
+    };
+
+    const handleUnverify = async () => {
+        console.log("Unverify not implemented yet");
+    };
 
     const handleDelete = async () => {
-        setDeleted(true);
-        token = await updateToken(token!, login, logout, navigate, []);
-        const response=await deleteProfessorComment(comment.profId,token, comment.userId)
-        if(response?.status===200){
-            alert('Success')
-        }
-        else {
-            alert("Error")
-            console.log(response)
-        }
-    }
+        const newToken = await updateToken(token!, login, logout, navigate, []);
+        const res = await deleteProfessorComment(comment.profId, newToken, comment.userId);
+        if (res?.status === 200) setDeleted(true);
+    };
 
     return (
-        <div className = "card-scroll-horizontally card" >
-            <div>
+        <div className="admin-card">
+            <div className="admin-card-content">
                 <h2>Korisnik: {userFirstName} {userLastName}</h2>
                 <h4>ID korisnika: {comment.userId}</h4>
                 <h2>Ocjena: {comment.rating}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
-            <button
-            onClick = {handleDelete}
-            >
-                Izbriši
-            </button>
+            <div className="admin-card-actions">
+                {!verified && <button className="verify-btn" onClick={handleVerify}>Verify</button>}
+
+                {verified && <button className="unverify-btn" onClick={handleUnverify}>Unverify</button>}
+
+                <button className="delete-btn" onClick={handleDelete}>Delete</button>
+            </div>
         </div>
     );
 };
