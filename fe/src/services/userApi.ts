@@ -79,3 +79,16 @@ export async function verifyUserApi(userId:number, accessToken:string | null){
         return;
     }
 }
+
+export async function deleteUserApi(userId:number, accessToken:string | null){
+    try{
+        return await axios.delete(`${route}/user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+    }catch (e){
+        alert('Error deleting user');
+        return;
+    }
+}

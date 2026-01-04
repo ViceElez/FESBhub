@@ -1,4 +1,4 @@
-import { Controller,Get,Req,UseGuards,Param,Patch} from '@nestjs/common';
+import {Controller, Get, Req, UseGuards, Param, Patch, Delete} from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
 
@@ -49,5 +49,10 @@ export class UserController {
     @Patch('unverify/:id')
     async unverifyUser(@Param('id') id: string) {
         return this.UserService.unverifyUser(id);
+    }
+
+    @Delete(':id')
+    async deleteUser(@Param('id') id: string) {
+        return this.UserService.deleteUser(id);
     }
 }

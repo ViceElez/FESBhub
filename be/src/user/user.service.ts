@@ -20,6 +20,9 @@ export class UserService {
 
     async isUserAdmin(userId:string):Promise<boolean | undefined>{
         const user=await this.getUserById(userId)
+        if (!user){
+            throw new Error('User not found');
+        }
         return user?.isAdmin;
     }
 
@@ -52,11 +55,25 @@ export class UserService {
     }
 
     async getUserByUsername(username:string){
-        return this.prisma.user.findMany({
+        const existing=await this.prisma.user.findMany({
             where:{
                 firstName:username
+            },
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
+                studij:true,
+                currentStudyYear:true,
+                createdAt:true,
+                isVerified:true,
             }
         });
+        if(!existing){
+            throw new Error('User not found');
+        }
+        return existing;
     }
 
     async verifyUser(userId:string){
@@ -92,6 +109,18 @@ export class UserService {
                 currentStudyYear:true,
                 createdAt:true,
                 isVerified:true,
+            }
+        });
+    }
+
+    async deleteUser(userId:string){
+        const existing=await this.getUserById(userId);
+        if(!existing){
+            throw new Error('User not found');
+        }
+        return this.prisma.user.delete({
+            where:{
+                id:parseInt(userId)
             }
         });
     }

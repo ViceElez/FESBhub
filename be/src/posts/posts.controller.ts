@@ -24,7 +24,7 @@ export class PostsController{
         return this.postsService.create(dto,userId,isAdmin);
     }
 
-    @UseGuards(UserGuard, AdminGuard)
+    @UseGuards(UserGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id:number){
         const deleted = await this.postsService.remove(id);

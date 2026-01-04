@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../hooks";
-import {updateToken, fetchVerifiedPosts} from '../services';
+import {updateToken, fetchVerifiedPosts, deletePost} from '../services';
 
 type Post = {
     id: number;
@@ -38,7 +38,13 @@ export const AdminSettingsPostsTab = () => {
     }, []);
 
     const handleDelete = async (postId:number) => {
-        console.log("Delete called", postId);
+        token = await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this post? This action cannot be undone.')) return;
+        const res=await deletePost(postId,token);
+        if(res?.status===200){
+            setPostsToShow(prevPosts => prevPosts.filter(post => post.id !== postId));
+            alert('Post deleted successfully.');
+        }
     }
 
     if (loading) return <p>Loading posts...</p>;

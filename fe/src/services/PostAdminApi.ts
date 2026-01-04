@@ -74,3 +74,18 @@ export async function createPost(
     throw new Error(error.response?.data?.message ?? error.message ?? 'Failed to create post');
   }
 }
+
+export async function deletePost(id: number, token:string | null) {
+  try {
+    return axios.delete(`${route}/posts/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  } catch (error: any) {
+    if (error.response?.status === 401 || error.response?.status === 403) {
+      throw new Error("Unauthorized. Please log in again.");
+    }
+    throw new Error(error.response?.data?.message ?? error.message ?? 'Failed to delete post');
+  }
+}

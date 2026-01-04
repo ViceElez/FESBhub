@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     updateToken,
-    getAllUsersApi, unverifyUserApi, verifyUserApi
+    getAllUsersApi, unverifyUserApi, verifyUserApi, deleteUserApi
 } from "../services";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,6 @@ type User = {
 export const AdminSettingsUsersTab = () => {
     const navigate = useNavigate();
     let { token, login, logout } = useAuth();
-
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -68,7 +67,12 @@ export const AdminSettingsUsersTab = () => {
 
     const handleDelete = async (userId: number) => {
         token= await updateToken(token!, login, logout, navigate, []);
-        console.log("Delete called for userId:", userId);
+        if(!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+        const res=await deleteUserApi(userId,token)
+        if(res?.status===200){
+            setUsers(prevUsers => prevUsers.filter(u => u.id !== userId));
+            alert('User deleted successfully.');
+        }
     }
 
     const handleViewProfile = async (userId: number) => {
@@ -123,4 +127,4 @@ export const AdminSettingsUsersTab = () => {
     );
 
 };
-//znaci triba dizajn risit da je sve isto, i da nie puno css fileova,l za usera napravit delete i za sad view profile je samo button bez funkcionalnosti, ist otako ce tribat napravit ove kartice od vaatre ne u 500 fileova
+//triba napravit da kad se delete user da se deleteaju i svi njegovi komentari, tokeni sve vezano uz njega
