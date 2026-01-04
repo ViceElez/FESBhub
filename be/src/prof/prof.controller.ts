@@ -1,4 +1,4 @@
-import {Controller, Get, UseGuards} from '@nestjs/common';
+import {Controller, Delete, Get, UseGuards,Param} from '@nestjs/common';
 import { ProfService } from './prof.service';
 import {UserGuard} from "../guards";
 
@@ -7,12 +7,17 @@ import {UserGuard} from "../guards";
 export class ProfController {
   constructor(private readonly profService: ProfService) {}
 
-
-  @UseGuards(UserGuard)
   @Get()
   findAll(){
     return this.profService.findAll();
   }
+
+  @Delete(':id')
+    async deleteProfById(@Param('id') id: string) {
+        return this.profService.deleteProfById(id);
+    }
+
+
 
 }
 

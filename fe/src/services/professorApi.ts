@@ -29,3 +29,16 @@ export async function getAllProfessors(token?: string | null) {
     }
 }
 
+export async function deleteProfessorById(profId: number, token?: string | null) {
+    try{
+        return await axios.delete(`${route}/prof/${profId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e){
+        alert("Error deleting professor.")
+        return
+    }
+}
+

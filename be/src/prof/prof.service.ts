@@ -89,4 +89,17 @@ export class ProfService {
     return this.prisma.professor.findMany();
   }
 
+  async deleteProfById(id: string) {
+      const existingProf = await this.prisma.professor.findUnique({
+          where: {id: parseInt(id)},
+      });
+
+      if (!existingProf) {
+          throw new Error('Professor not found');
+      }
+    return this.prisma.professor.delete({
+        where: {id: parseInt(id)},
+    });
+  }
+
 }

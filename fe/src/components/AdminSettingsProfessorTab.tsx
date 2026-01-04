@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
-import { getAllProfessors, updateToken} from "../services";
+import {deleteProfessorById, getAllProfessors, updateToken} from "../services";
 
 type Professor = {
     id: number;
@@ -39,8 +39,15 @@ export const AdminSettingsProfessorTab = () => {
     }, []);
 
     const handleDelete = async (professorId: number) => {
-        // Implement delete functionality here
-        console.log(`Delete professor with ID: ${professorId}`);
+        token= await updateToken(token!, login, logout, navigate, []);
+        if(!confirm("Are you sure you want to delete this professor? This action cannot be undone.")) return;
+        const res=await deleteProfessorById(professorId, token);
+        if(res?.status===200){
+            setProfessors(prevProfessors =>
+                prevProfessors.filter(p => p.id !== professorId)
+            );
+            alert('Professor deleted successfully.');
+        }
     }
 
     const handleViewComments = async (professorId: number) => {
