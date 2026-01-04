@@ -1,0 +1,70 @@
+.admin-professors-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px 0 160px 0;
+    gap: 20px;
+}
+
+.admin-professor-card {
+    width: 75%;
+    background-color: #1D2D44;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.admin-professor-name {
+    font-size: 19px;
+    margin: 0;
+    width: 100%;
+}
+
+.admin-professor-email {
+    font-size: 16px;
+    opacity: 0.85;
+}
+
+.admin-professor-specialization,
+.admin-professor-education,
+.admin-professor-rating {
+    font-size: 15px;
+    margin: 0;
+}
+
+.admin-professor-delete-btn,
+.admin-professor-comments-btn {
+    width: 85%;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+    align-self: center;
+}
+
+.admin-professor-delete-btn {
+    background-color: #dc3545;
+    color: white;
+}
+
+.admin-professor-delete-btn:hover {
+    background-color: #c82333;
+}
+
+.admin-professor-comments-btn {
+    background-color: #6c757d;
+    color: white;
+}
+
+.admin-professor-comments-btn:hover {
+    background-color: #5a6268;
+}

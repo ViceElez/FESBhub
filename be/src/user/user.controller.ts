@@ -19,6 +19,10 @@ export class UserController {
         return this.UserService.getVerifiedUsers();
     }
 
+    @Get('allUsers')
+    async getAllUsers() {
+        return this.UserService.getAllUsers();
+    }
     @Get(':id')
     async getUserById(@Param('id') id: string) {
         return this.UserService.getUserById(id);

@@ -18,6 +18,7 @@ export interface Post {
 
 export async function fetchAllPosts(): Promise<Post[]> {
   try {
+      //stavi da token prima
     const response = await axios.get(`${route}/posts`);
     const posts = response.data;
     return Array.isArray(posts) ? posts.slice(0, 10) : [];

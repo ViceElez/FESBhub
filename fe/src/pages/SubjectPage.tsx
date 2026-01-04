@@ -38,7 +38,7 @@ export const SubjectPage=()=>{
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
                 const response = await getAllSubjects(token)
-                setSubjects(response);
+                setSubjects(response?.data);
 
             }catch(error){
                 console.error("Error fetching subjects:", error);

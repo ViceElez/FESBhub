@@ -28,6 +28,19 @@ export async function getAllVerifiedUsersApi(accessToken:string | null){
     }
 }
 
+export async function getAllUsersApi(accessToken:string | null){
+    try{
+        return await axios.get(`${route}/user/allUsers`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+    }catch (e){
+        alert('Error fetching users');
+        return;
+    }
+}
+
 export async function getUserById(userId:number, accessToken:string | null){
     try{
         return await axios.get(`${route}/user/${userId}`, {

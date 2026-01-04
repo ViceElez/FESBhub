@@ -6,19 +6,21 @@ import { useEffect, useState } from 'react';
 import '../index.css';
 import {updateToken} from "../services";
 import {
-    AdminMaterialsCard,
-    AdminPostsCard,
-    AdminUsersCard,
-    AdminProfessorComments,
-    AdminSubjectComments,
+    AdminSettingsPostsTab,
+    AdminSettingsUsersTab,
+    AdminSettingsMaterialsTab,
+    AdminSettingsSubjectTab,
+    AdminSettingsProfessorTab,
+    AdminVerifyContentCard,
 } from '../components';
 
 type AdminView =
     | 'users'
     | 'posts'
-    | 'profComments'
-    | 'subComments'
+    | 'professors'
+    | 'subjects'
     | 'materials'
+    | 'verify'
     | null;
 
 export const AdminSettingsPage = () => {
@@ -54,19 +56,24 @@ export const AdminSettingsPage = () => {
         setAdminView('posts');
     }
 
-    const setProfCommentView = async () => {
+    const setProfessorView = async () => {
         token= await updateToken(token!, login, logout, navigate, []);
-        setAdminView('profComments');
+        setAdminView('professors');
     }
 
-    const setSubCommentView = async () => {
+    const setSubjectView = async () => {
         token= await updateToken(token!, login, logout, navigate, []);
-        setAdminView('subComments');
+        setAdminView('subjects');
     }
 
     const setMaterialView = async () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setAdminView('materials');
+    }
+
+    const setVerifyView = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setAdminView('verify');
     }
 
     if (!token) {
@@ -120,37 +127,44 @@ export const AdminSettingsPage = () => {
                         All Posts
                     </button>
                     <button
-                        onClick={setProfCommentView}>
-                        All Professor Comments
+                        onClick={setProfessorView}>
+                        All Professors
                     </button>
                     <button
-                        onClick={setSubCommentView}>
-                        All Subject Comments
+                        onClick={setSubjectView}>
+                        All Subjects
                     </button>
                     <button
                         onClick={setMaterialView}>
                         All Materials
+                    </button>
+                    <button
+                        onClick={setVerifyView}
+                    >
+                        Verify
                     </button>
                 </section>
 
                 <section className="admin-settings-content">
                     <div>
                         {adminView === 'users' && (
-                            <AdminUsersCard/>
+                            <AdminSettingsUsersTab/>
                         )}
 
                         {adminView === 'posts' && (
-                            <AdminPostsCard/>
+                            <AdminSettingsPostsTab/>
                         )}
-                        {adminView === 'profComments' && (
-                            <AdminProfessorComments/>
+                        {adminView === 'professors' && (
+                            <AdminSettingsProfessorTab/>
                         )}
-
-                        {adminView === 'subComments' && (
-                            <AdminSubjectComments/>
+                        {adminView === 'subjects' && (
+                            <AdminSettingsSubjectTab/>
                         )}
                         {adminView === 'materials' && (
-                            <AdminMaterialsCard/>
+                            <AdminSettingsMaterialsTab/>
+                        )}
+                        {adminView === 'verify' && (
+                            <AdminVerifyContentCard/>
                         )}
                     </div>
                 </section>

@@ -20,7 +20,7 @@ export const ProfessorPage = () => {
             try{
                 token= await updateToken(token!, login, logout, navigate, []);
                 const response=await getAllProfessors(token)
-                setProfessors(response)
+                setProfessors(response?.data)
             }catch(error){
                 console.error("Error fetching professors:", error);
             }

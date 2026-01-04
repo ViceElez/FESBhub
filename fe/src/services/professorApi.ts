@@ -18,12 +18,11 @@ export async function getProfessorById(profId: number, token?: string | null) {
 
 export async function getAllProfessors(token?: string | null) {
     try{
-        const response=await axios.get(`${route}/prof`,{
-            headers:{
+        return await axios.get(`${route}/prof`, {
+            headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        return response.data;
     } catch (e){
         console.log(e)
         return

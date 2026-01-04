@@ -2,8 +2,10 @@
 @import url('./styles/AdminSettingsPageStyle.css');
 @import url('./styles/RegisterPageStyle.css');
 @import url('./styles/LoginPageStyle.css');
-/*@import url('./styles/AdminUserCardStyle.css');*/
-@import url('./styles/AdminProfessorCommentsCardStyle.css');
+@import url('styles/AdminSettingsUsersTabStyle.css');
+@import url('./styles/AdminSettingsPostsTabStyle.css');
+@import url('./styles/AdminSettingsProfessorTabStyle.css');
+@import url('./styles/AdminSettingsSubjectTabStyle.css');
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

@@ -80,4 +80,19 @@ export class UserService {
             }
         });
     }
+
+    async getAllUsers(){
+        return this.prisma.user.findMany({
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
+                studij:true,
+                currentStudyYear:true,
+                createdAt:true,
+                isVerified:true,
+            }
+        });
+    }
 }
