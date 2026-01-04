@@ -6,6 +6,7 @@
     overflow-y: auto;
     padding: 20px 0 160px 0;
     gap: 20px;
+    color: #F0EBD8;
 }
 
 .admin-subject-card {
@@ -47,7 +48,7 @@
 
 .admin-subject-delete-btn {
     background-color: #dc3545;
-    color: white;
+    color: #F0EBD8;
 }
 
 .admin-subject-delete-btn:hover {
@@ -55,8 +56,8 @@
 }
 
 .admin-subject-comments-btn {
-    background-color: #6c757d;
-    color: white;
+    background-color: #748CAB;
+    color: #F0EBD8;
 }
 
 .admin-subject-comments-btn:hover {

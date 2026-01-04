@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { CreateSubjDto } from './dto/create-subj.dto';
 import { UpdateSubjDto } from './dto/update-subj.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -123,12 +122,27 @@ export class SubjService {
   }
 
   async getSubjById(id: string) {
-        return this.prisma.subject.findUnique({
-            where: { id: Number(id) },
-        })
+      const existingSubj = await this.prisma.subject.findUnique({
+          where: { id: Number(id) },
+      });
+
+      if (!existingSubj) {
+          throw new Error('Subject not found');
+      }
+      return existingSubj
   }
 
   async findAll() {
       return this.prisma.subject.findMany();
+  }
+
+  async deleteSubjById(id: string) {
+      const existingSubj=await this.getSubjById(id);
+        if(!existingSubj){
+            throw new Error('Subject not found');
+        }
+      return this.prisma.subject.delete({
+          where: { id: Number(id) },
+      });
   }
 }

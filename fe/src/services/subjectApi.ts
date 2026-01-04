@@ -28,3 +28,16 @@ export async function getAllSubjects(token?: string | null) {
         return
     }
 }
+
+export async function deleteSubjectById(subjId: number, token?: string | null) {
+    try{
+        return await axios.delete(`${route}/subj/${subjId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e){
+        alert("Error deleting subject.")
+        return
+    }
+}

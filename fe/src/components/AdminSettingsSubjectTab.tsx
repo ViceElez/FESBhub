@@ -1,7 +1,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
-import {getAllSubjects, updateToken} from "../services";
+import {deleteSubjectById, getAllSubjects, updateToken} from "../services";
 
 type Subject = {
     id: number;
@@ -38,8 +38,15 @@ export const AdminSettingsSubjectTab = () => {
     }, []);
 
     const handleDelete = async (subId: number) => {
-        // Implement delete functionality here
-        console.log(`Delete subj with ID: ${subId}`);
+        token= await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this subject? This action cannot be undone.')) return;
+        const res=await deleteSubjectById(subId,token)
+        if(res?.status===200){
+            setSubj(prevSubj =>
+                prevSubj.filter(s => s.id !== subId)
+            );
+            alert('Subject deleted successfully.');
+        }
     }
 
     const handleViewComments = async (subId: number) => {

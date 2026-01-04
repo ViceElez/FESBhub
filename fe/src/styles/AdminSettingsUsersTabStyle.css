@@ -6,6 +6,7 @@
     overflow-y: auto;
     padding: 20px 0 160px 0;
     gap: 20px;
+    color: #F0EBD8;
 }
 
 .admin-card {
@@ -58,7 +59,7 @@
 
 .unverify-btn {
     background-color: #007bff;
-    color: white;
+    color: #F0EBD8;
 }
 
 .unverify-btn:hover {
@@ -67,7 +68,7 @@
 
 .delete-btn {
     background-color: #dc3545;
-    color: white;
+    color: #F0EBD8;
 }
 
 .delete-btn:hover {
@@ -75,8 +76,8 @@
 }
 
 .view-profile-btn {
-    background-color: #6c757d;
-    color: white;
+    background-color: #748CAB;
+    color: #F0EBD8;
 }
 
 .view-profile-btn:hover {
