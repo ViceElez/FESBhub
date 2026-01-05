@@ -1,22 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from "../hooks";
-import {updateToken, fetchVerifiedPosts, deletePost} from '../services';
-
-type Post = {
-    id: number;
-    title: string;
-    content: string;
-    userId: number;
-    verified: boolean;
-    createdAt: string;
-    user?: {
-        id: number;
-        firstName: string;
-        lastName: string;
-        email?: string;
-    };
-}
+import {updateToken, fetchVerifiedPosts, deletePost, type Post} from '../services';
 
 export const AdminSettingsPostsTab = () => {
     const navigate = useNavigate();

@@ -50,6 +50,9 @@ export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => 
 
     const handleDelete = async () => {
         const newToken = await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
         const res = await deleteProfessorComment(comment.profId, newToken, comment.userId);
         if (res?.status === 200){
             setDeleted(true);

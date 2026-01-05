@@ -1,28 +1,42 @@
 .admin-tabs {
     display: flex;
+    justify-content: center;
+    gap: 32px;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .admin-tabs button {
-    flex: 1;
-    padding: 14px 0;
+    background: transparent;
     border: none;
-    background-color: #3E5C76;
-    color: #F0EBD8;
-    font-size: 1rem;
+    padding: 12px 6px;
+    font-size: 1.05rem;
+    color: #748CAB;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    position: relative;
+    transition: color 0.2s ease;
 }
 
 .admin-tabs button:hover {
-    background-color: #748CAB;
+    color: #F0EBD8;
 }
 
 .admin-tabs button.active {
-    background-color: #1D2D44;
-    font-weight: bold;
+    color: #F0EBD8;
+    font-weight: 600;
 }
+
+.admin-tabs button.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: #F0EBD8;
+    border-radius: 1px;
+}
+
 .admin-comments-wrapper {
     display: flex;
     flex-direction: column;

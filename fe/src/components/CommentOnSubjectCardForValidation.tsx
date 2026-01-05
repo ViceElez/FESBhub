@@ -30,6 +30,10 @@ export const CommentSubjectCardAdminSettings = (comment: CommentSubject) => {
     const handleDelete = async () => {
         setDeleted(true);
         token = await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this comment?')) {
+            setDeleted(false);
+            return;
+        }
         const response = await deleteSubjectComment(comment.subjId, token, comment.userId);
         if (response?.status === 200) {
             setDeleted(true)
@@ -43,10 +47,12 @@ export const CommentSubjectCardAdminSettings = (comment: CommentSubject) => {
     return (
         <div className="comment-card">
             <div className="comment-content">
-                <h2>Ocjena korisnosti: {comment.ratingPracticality}</h2>
-                <h2>Ocjena težine: {comment.ratingDifficulty}</h2>
-                <h2>Ocjena očekivanja: {comment.ratingExpectation}</h2>
-                <h2>Komentar: {comment.content}</h2>
+                <h2>Subject ID: {comment.subjId}</h2>
+                <h2>User ID: {comment.userId}</h2>
+                <h3>Ocjena korisnosti: {comment.ratingPracticality}</h3>
+                <h3>Ocjena težine: {comment.ratingDifficulty}</h3>
+                <h3>Ocjena očekivanja: {comment.ratingExpectation}</h3>
+                <p>Komentar: {comment.content}</p>
             </div>
             <div className="comment-actions">
                 <button className="verify-btn" onClick={handleVerify}>Verify</button>
