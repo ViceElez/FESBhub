@@ -11,7 +11,7 @@ import {
     AdminSettingsMaterialsTab,
     AdminSettingsSubjectTab,
     AdminSettingsProfessorTab,
-    AdminVerifyContentCard,
+    AdminSettingsVerifyContentTab,
 } from '../components';
 
 type AdminView =
@@ -164,7 +164,7 @@ export const AdminSettingsPage = () => {
                             <AdminSettingsMaterialsTab/>
                         )}
                         {adminView === 'verify' && (
-                            <AdminVerifyContentCard/>
+                            <AdminSettingsVerifyContentTab/>
                         )}
                     </div>
                 </section>

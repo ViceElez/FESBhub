@@ -100,9 +100,6 @@ export async function getAllVerifiedProfessorComments(token?: string | null){
 
 export async function verifyProfessorComment(profId:number, userId:number, rating:number, content:string, token?: string | null){
     try{
-        console.log("Verifying comment for profId:", profId, "userId:", userId);
-        console.log("Rating:", rating, "Content:", content);
-        console.log(typeof(profId), typeof(userId), typeof(rating), typeof(content));
         return await axios.patch(`${route}/comment-prof/verify`,
             {
                 "userId": userId,

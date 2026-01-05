@@ -1,0 +1,93 @@
+.admin-tabs {
+    display: flex;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.admin-tabs button {
+    flex: 1;
+    padding: 14px 0;
+    border: none;
+    background-color: #3E5C76;
+    color: #F0EBD8;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.admin-tabs button:hover {
+    background-color: #748CAB;
+}
+
+.admin-tabs button.active {
+    background-color: #1D2D44;
+    font-weight: bold;
+}
+.admin-comments-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 10%;
+}
+
+.comment-card {
+    width: 65%;
+    background-color: #1D2D44;
+    color: #F0EBD8;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.comment-content h2,
+.comment-content h3,
+.comment-content h4 {
+    margin: 4px 0;
+}
+
+.comment-content p {
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.comment-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.comment-actions button {
+    width: 80%;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.verify-btn {
+    background-color: #3E8E41;
+    color: white;
+}
+
+.verify-btn:hover {
+    background-color: #2f6f32;
+}
+
+.delete-btn {
+    background-color: #B23A48;
+    color: white;
+}
+
+.delete-btn:hover {
+    background-color: #8e2e38;
+}

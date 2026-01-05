@@ -3,14 +3,10 @@ import type { CommentSubject } from '../constants';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
-import { getAllVerifiedSubjectComments, getUnverifiedSubjectComments, updateToken } from '../services';
+import { getUnverifiedSubjectComments, updateToken } from '../services';
 
 export const AdminSubjectComments = () => {
-    const [unverifiedComments, setUnverifiedComments] = useState<CommentSubject[]>([]);
-    const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
-    const [activeTab, setActiveTab] = useState<'unverified' | 'verified'>('unverified');
-    const showVerified = activeTab === 'verified';
-
+    const [subjComments, setSubjComments] = useState<CommentSubject[]>([]);
     let { token, login, logout } = useAuth();
     const navigate = useNavigate();
 
@@ -28,44 +24,18 @@ export const AdminSubjectComments = () => {
     useEffect(() => {
         const fetch = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            if (showVerified) {
-                if (verifiedComments.length > 0) return;
-                const res = await getAllVerifiedSubjectComments(token);
-                if (res?.status === 200) setVerifiedComments(res.data.map(CorrectType));
-            } else {
-                if (unverifiedComments.length > 0) return;
-                const res = await getUnverifiedSubjectComments(token);
-                if (res?.status === 200) setUnverifiedComments(res.data.map(CorrectType));
-            }
+            const res= await getUnverifiedSubjectComments(token);
+            if (res?.status === 200) setSubjComments(res.data.map(CorrectType));
         };
         void fetch();
-    }, [activeTab]);
-
-    const commentsToShow = showVerified ? verifiedComments : unverifiedComments;
+    }, []);
 
     return (
-        <div>
-            <div className="admin-tabs">
-                <button
-                    className={`admin-tab ${activeTab === 'unverified' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('unverified')}
-                >
-                    Unverified Comments
-                </button>
-                <button
-                    className={`admin-tab ${activeTab === 'verified' ? 'active' : ''}`}
-                    onClick={() => setActiveTab('verified')}
-                >
-                    Verified Comments
-                </button>
-            </div>
-
-            <div className="admin-users-container">
-                {commentsToShow.map(C => (
-                    <CommentSubjectCardAdminSettings key={C.id} {...C} />
-                ))}
-                {commentsToShow.length === 0 && <p>No comments to display.</p>}
-            </div>
+        <div className="admin-comments-wrapper">
+            {subjComments.map(C => (
+                <CommentSubjectCardAdminSettings key={C.id} {...C} />
+            ))}
+            {subjComments.length === 0 && <p>No comments to display.</p>}
         </div>
     );
 };

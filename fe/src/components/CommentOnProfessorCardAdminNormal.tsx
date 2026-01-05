@@ -3,12 +3,12 @@ import { verifyProfessorComment, deleteProfessorComment, updateToken, getUserByI
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 import type { CommentProfessor } from "../constants";
+import '../index.css';
 
 export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => {
     const [userFirstName, setUserFirstName] = useState<string>("");
     const [userLastName, setUserLastName] = useState<string>("");
     const [deleted, setDeleted] = useState(false);
-    const [verified, setVerified] = useState(comment.verified);
 
     const { token, login, logout } = useAuth();
     const navigate = useNavigate();
@@ -43,34 +43,34 @@ export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => 
     const handleVerify = async () => {
         const newToken = await updateToken(token!, login, logout, navigate, []);
         const res = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, newToken);
-        if (res?.status === 200) setVerified(true);
-    };
-
-    const handleUnverify = async () => {
-        console.log("Unverify not implemented yet");
+        if (res?.status === 200) {
+            alert("Comment verified successfully");
+        }
     };
 
     const handleDelete = async () => {
         const newToken = await updateToken(token!, login, logout, navigate, []);
         const res = await deleteProfessorComment(comment.profId, newToken, comment.userId);
-        if (res?.status === 200) setDeleted(true);
+        if (res?.status === 200){
+            setDeleted(true);
+            alert("Comment deleted successfully");
+        }
     };
 
     return (
-        <div className="admin-card">
-            <div className="admin-card-content">
+        <div className="comment-card">
+            <div className="comment-content">
                 <h2>Korisnik: {userFirstName} {userLastName}</h2>
                 <h4>ID korisnika: {comment.userId}</h4>
-                <h2>Ocjena: {comment.rating}</h2>
-                <h2>Komentar: {comment.content}</h2>
+                <h3>Ocjena: {comment.rating}</h3>
+                <p>{comment.content}</p>
             </div>
-            <div className="admin-card-actions">
-                {!verified && <button className="verify-btn" onClick={handleVerify}>Verify</button>}
 
-                {verified && <button className="unverify-btn" onClick={handleUnverify}>Unverify</button>}
-
+            <div className="comment-actions">
+                <button className="verify-btn" onClick={handleVerify}>Verify</button>
                 <button className="delete-btn" onClick={handleDelete}>Delete</button>
             </div>
         </div>
     );
+
 };
