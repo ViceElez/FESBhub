@@ -85,19 +85,6 @@ export async function getUnverifiedProfessorComments(token?: string | null){
     }
 }
 
-export async function getAllVerifiedProfessorComments(token?: string | null){
-    try{
-        return axios.get(`${route}/comment-prof/verified/all`, {
-            headers: {
-                Authorization:`Bearer ${token}`
-            }
-        })
-    }catch (e){
-        console.log(e)
-        return
-    }
-};
-
 export async function verifyProfessorComment(profId:number, userId:number, rating:number, content:string, token?: string | null){
     try{
         return await axios.patch(`${route}/comment-prof/verify`,
@@ -131,3 +118,15 @@ export async function getVerifiedProfessorComments(profId:number, token?: string
     }
 }
 
+export async function getProfessorCommentsByUserId(userId:number, token?: string | null){
+    try{
+        return axios.get(`${route}/comment-prof/user/${userId}`, {
+            headers: {
+                Authorization:`Bearer ${token}`
+            }
+        })
+    }catch (e){
+        alert('Error fetching professor comments.');
+        return
+    }
+}

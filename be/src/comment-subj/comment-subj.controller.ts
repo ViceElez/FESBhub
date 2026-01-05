@@ -58,4 +58,9 @@ export class CommentSubjController {
     return this.commentSubjService.findAllVerified();
   }
 
+  @Get('user/:id')
+    async getCommentsByUserId(@Param('id') id: string) {
+        return this.commentSubjService.getCommentsByUserId(id);
+    }
+
 }

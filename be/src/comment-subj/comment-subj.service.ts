@@ -1,10 +1,8 @@
-import { Body, Injectable } from '@nestjs/common';
-import { CreateCommentSubjDto } from './dto/create-comment-subj.dto';
-import { UpdateCommentSubjDto } from './dto/update-comment-subj.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import { Prisma } from '@prisma/client';
-import { User } from '@prisma/client';
-import { DeleteCommentSubjDto } from './dto/delete-comment-subj.dto';
+import {Body, Injectable} from '@nestjs/common';
+import {CreateCommentSubjDto} from './dto/create-comment-subj.dto';
+import {UpdateCommentSubjDto} from './dto/update-comment-subj.dto';
+import {PrismaService} from '../prisma/prisma.service';
+import {DeleteCommentSubjDto} from './dto/delete-comment-subj.dto';
 import {SubjService} from "../subj/subj.service";
 
 @Injectable()
@@ -163,6 +161,26 @@ export class CommentSubjService {
     return this.prisma.commentOnSubject.findMany({
       where: { verified: true },
     });
+  }
+
+  async getCommentsByUserId(id: string) {
+      return this.prisma.commentOnSubject.findMany({
+          where: {userId: parseInt(id)},
+          select: {
+              id: true,
+              content: true,
+              ratingExceptions: true,
+              ratingDiffuculty: true,
+              ratingPracicality: true,
+              verified: true,
+              createdAt:true,
+              subject: {
+                  select: {
+                      title: true,
+                  }
+              }
+          }
+      });
   }
 }
 

@@ -151,7 +151,31 @@ export class CommentProfService {
         where: {verified: true},
     });
   }
-  
+
+  async getCommentsByUserId(id: string) {
+      const userExists = await this.prisma.user.findUnique({
+          where: { id: parseInt(id) },
+      });
+      if (!userExists) {
+          throw new Error('User not found');
+      }
+        return this.prisma.commentOnProffessor.findMany({
+        where: { userId: parseInt(id) },
+            select:{
+                id:true,
+                content:true,
+                rating:true,
+                verified:true,
+                createdAt:true,
+                professor:{
+                    select:{
+                        firstName:true,
+                        lastName:true
+                    }
+                }
+            }
+        })
+  }
 }
 
 

@@ -6,6 +6,7 @@ import {
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
 import '../index.css';
+import {AdminUserViewProfile} from "../components";
 
 type User = {
     id: number;
@@ -23,6 +24,8 @@ export const AdminSettingsUsersTab = () => {
     let { token, login, logout } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -75,9 +78,10 @@ export const AdminSettingsUsersTab = () => {
         }
     }
 
-    const handleViewProfile = async (userId: number) => {
+    const handleViewProfile = async (user: User) => {
         token= await updateToken(token!, login, logout, navigate, []);
-        console.log("View Profile called for userId:", userId);
+        setIsVisible(true)
+        setSelectedUser(user);
     }
 
     if (loading) return <p>Loading users...</p>;
@@ -115,13 +119,19 @@ export const AdminSettingsUsersTab = () => {
 
                     <button
                         className="view-profile-btn"
-                        onClick={() => handleViewProfile(user.id)}
+                        onClick={() => handleViewProfile(user)}
                     >
                         View Profile
                     </button>
                 </div>
             ))}
-
+            <AdminUserViewProfile
+                open={isVisible}
+                user={selectedUser}
+                close={() => {
+                    setIsVisible(false);
+                    setSelectedUser(null);
+                }}/>
             {users.length === 0 && <p>No users to display.</p>}
         </div>
     );

@@ -125,15 +125,15 @@ export async function getVerifiedSubjectComments(subjectId: number, token?: stri
     }
 };
 
-export async function getAllVerifiedSubjectComments(token?: string | null) {
+export async function getSubjectCommentsByUserId(userId: number, token?: string | null) {
     try {
-        return axios.get(`${route}/comment-subj/verified/all`, {
+        return axios.get(`${route}/comment-subj/user/${userId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
     } catch (e) {
-        console.log(e)
+        alert('Failed to fetch subject comments.');
         return
     }
 };

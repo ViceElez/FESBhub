@@ -78,4 +78,29 @@ export class PostsService{
             include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
         });
     }
+
+    async getPostByUserId(userId:number){
+        const userExists = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!userExists) {
+            throw new BadRequestException('User does not exist');
+        }
+        return this.prisma.post.findMany({
+            where:{userId},
+            select:{
+                id:true,
+                title:true,
+                content:true,
+                verified:true,
+                createdAt:true,
+                user:{
+                    select:{
+                        firstName:true,
+                        lastName:true
+                    }
+                }
+            },
+            orderBy:{createdAt:'desc'
+            }
+        });
+    }
 }

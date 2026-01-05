@@ -7,6 +7,7 @@
 @import url('./styles/AdminSettingsProfessorTabStyle.css');
 @import url('./styles/AdminSettingsSubjectTabStyle.css');
 @import url('./styles/AdminSettingsVerifyContentTabStyle.css');
+@import url('./styles/AdminUserViewProfileStyle.css');
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

@@ -89,3 +89,16 @@ export async function deletePost(id: number, token:string | null) {
     throw new Error(error.response?.data?.message ?? error.message ?? 'Failed to delete post');
   }
 }
+
+export async function getPostsByUserId(userId: number, token?: string | null) {
+    try {
+        return axios.get(`${route}/posts/user/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e) {
+        alert('Failed to fetch posts.');
+        return
+    }
+}

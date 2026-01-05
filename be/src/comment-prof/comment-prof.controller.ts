@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Delete, UseGuards, Query} from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Delete, UseGuards, Query, Param} from '@nestjs/common';
 import { CommentProfService } from './comment-prof.service';
 import { CreateCommentProfDto } from './dto/create-comment-prof.dto';
 import { DeleteCommentProfDto } from './dto/delete-comment-prof.dto';
@@ -49,6 +49,11 @@ export class CommentProfController {
   findAllVerified() {
     return this.commentProfService.findAllVerified();
   }
+
+  @Get('user/:id')
+    async getCommentsByUserId(@Param('id') id: string) {
+        return this.commentProfService.getCommentsByUserId(id);
+    }
 
 }
 

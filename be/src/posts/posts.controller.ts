@@ -60,4 +60,10 @@ export class PostsController{
     async getVerified(){
         return this.postsService.findVerified();
     }
+
+    @UseGuards(UserGuard)
+    @Get('user/:userId')
+    async getPostsByUserId(@Param('userId', ParseIntPipe) userId:number){
+        return this.postsService.getPostByUserId(userId);
+    }
 }
