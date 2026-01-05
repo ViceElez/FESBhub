@@ -59,7 +59,6 @@ export const AdminSettingsProfessorTab = () => {
 
     return (
         <div className="admin-professors-container">
-            <h2>All Professors</h2>
             {professors.map(professor => (
                 <div key={professor.id} className="admin-professor-card">
                     <h2 className="admin-professor-name">

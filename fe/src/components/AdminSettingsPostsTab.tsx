@@ -37,7 +37,6 @@ export const AdminSettingsPostsTab = () => {
 
     return (
         <div className="admin-posts-container">
-            <h2>All Posts</h2>
             {postsToShow.map(post => (
                 <div key={post.id} className="admin-post-card">
                     <div className="admin-post-content">

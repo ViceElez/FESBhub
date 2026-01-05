@@ -88,7 +88,6 @@ export const AdminSettingsUsersTab = () => {
 
     return (
         <div className="admin-users-container">
-            <h2>All Users</h2>
             {users.map(user => (
                 <div key={user.id} className="admin-card">
                     <h2 className="admin-card-name">
