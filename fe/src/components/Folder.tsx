@@ -32,7 +32,8 @@ function Folder({ folder, depth = 0, defaultExpanded = false }: FolderProps) {
         setError(null);
         try {
             const res = await fetch(`http://localhost:3000/mats/folders/${folder.id}/files`);
-            if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+            if (!res.ok) 
+                throw new Error(`${res.status} ${res.statusText}`);
             const fileData = (await res.json()) as FileItem[];
             setFiles(fileData);
         } catch (err: any) {
@@ -57,7 +58,6 @@ function Folder({ folder, depth = 0, defaultExpanded = false }: FolderProps) {
         if (expanded && isFileFolder) {
             void fetchFiles();
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [expanded]);
 
     return (
