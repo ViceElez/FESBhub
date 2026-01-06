@@ -21,6 +21,7 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: relative;
 }
 
 .profile-left {
@@ -95,4 +96,23 @@
 .empty-msg {
     color: #777;
     font-style: italic;
+}
+
+.view-profile-close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+
+    background: transparent;
+    border: none;
+    color: #F0EBD8;
+    font-size: 1.4rem;
+    cursor: pointer;
+
+    padding: 4px;
+    line-height: 1;
+}
+
+.view-profile-close-btn:hover {
+    color: #ffffff;
 }

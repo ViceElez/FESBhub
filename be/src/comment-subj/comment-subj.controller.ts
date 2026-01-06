@@ -63,4 +63,10 @@ export class CommentSubjController {
         return this.commentSubjService.getCommentsByUserId(id);
     }
 
+    @UseGuards(UserGuard)
+    @Get('subj/:id')
+    async getCommentsBySubjectId(@Param('id') id: string) {
+        return this.commentSubjService.getCommentsBySubjectId(id);
+    }
+
 }

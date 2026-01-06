@@ -64,9 +64,9 @@ export const SubjectCard = ( subject: Subject) => {
         <div className="card" >
             <div>
                 <h2>{subject.title}</h2>
-                <p>Ocjena očekivanja: {subject.ratingExpectations}</p>
-                <p>Ocjena praktičnosti: {subject.ratingPracticality}</p>
-                <p>Ocjena težine: {subject.ratingDifficulty}</p>
+                <p>Ocjena očekivanja: {subject.ratingExpectations.toFixed(2)}</p>
+                <p>Ocjena praktičnosti: {subject.ratingPracticality.toFixed(2)}</p>
+                <p>Ocjena težine: {subject.ratingDifficulty.toFixed(2)}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button

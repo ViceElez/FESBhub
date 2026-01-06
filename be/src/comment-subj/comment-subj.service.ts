@@ -182,5 +182,26 @@ export class CommentSubjService {
           }
       });
   }
+
+  async getCommentsBySubjectId(id: string) {
+      return this.prisma.commentOnSubject.findMany({
+          where: {subjectId: parseInt(id)},
+          select: {
+              id: true,
+              content: true,
+              ratingExceptions: true,
+              ratingDiffuculty: true,
+              ratingPracicality: true,
+              verified: true,
+              createdAt:true,
+              user: {
+                  select: {
+                      firstName: true,
+                      lastName: true,
+                  }
+              }
+          }
+      });
+  }
 }
 

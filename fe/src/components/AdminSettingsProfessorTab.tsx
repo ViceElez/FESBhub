@@ -72,7 +72,7 @@ export const AdminSettingsProfessorTab = () => {
                     </h2>
                     <p className="admin-professor-specialization">Specialization: {professor.specialization}</p>
                     <p className="admin-professor-education">Education: {professor.education}</p>
-                    <p className="admin-professor-rating">Rating: {professor.rating}</p>
+                    <p className="admin-professor-rating">Rating: {professor.rating.toFixed(2)}</p>
 
                     <button
                         className="admin-professor-delete-btn"

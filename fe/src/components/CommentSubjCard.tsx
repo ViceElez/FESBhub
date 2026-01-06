@@ -29,9 +29,9 @@ export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
         >
             <div>
                 <h4>{userFirstName} {userLastName} je komentirao:</h4>
-                <h2>Ocjena tezine: {comment.ratingDifficulty}</h2>
-                <h2>Ocjena korisnosti: {comment.ratingPracticality}</h2>
-                <h2>Ocjena očekivanja: {comment.ratingExpectation}</h2>
+                <h2>Ocjena tezine: {comment.ratingDifficulty.toFixed(2)}</h2>
+                <h2>Ocjena korisnosti: {comment.ratingPracticality.toFixed(2)}</h2>
+                <h2>Ocjena očekivanja: {comment.ratingExpectation.toFixed(2)}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
         </div>

@@ -21,5 +21,4 @@ export class SubjController {
     async deleteSubjById(@Param('id') id: string) {
       return this.subjService.deleteSubjById(id);
   }
-
 }

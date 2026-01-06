@@ -102,6 +102,9 @@ export const AdminUserViewProfile = ({ open, close, user }: AdminUserViewProfile
     return (
         <div onClick={close} className="profile-modal">
             <div className="profile-container" onClick={(e) => e.stopPropagation()}>
+                <button className="view-profile-close-btn" onClick={close}>
+                    ✕
+                </button>
                 <div className="profile-left">
                     <h2>User Info</h2>
                     <p><strong>Name:</strong> {user.firstName} {user.lastName}</p>

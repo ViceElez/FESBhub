@@ -52,7 +52,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <p>Uže područje interesa: {prof.specialization}</p>
                 <p>Obrazovanje: {prof.education}</p>
                 <p>Email: {prof.email}</p>
-                <p>Ocjena: {prof.rating}</p>
+                <p>Ocjena: {prof.rating.toFixed(2)}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button

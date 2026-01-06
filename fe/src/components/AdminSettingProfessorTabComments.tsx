@@ -63,7 +63,7 @@ export const AdminSettingProfessorTabComments = ({open, close, professor}: Admin
                         </p>
                     ) : (
                         profComments.map((comment) => (
-                            <div key={comment.id} className="comment-card">
+                            <div key={comment.id} className="comment-card-view-comments">
                                 <p>
                                     User:
                                     <strong> {comment.user.firstName}{" "} {comment.user.lastName}
@@ -71,7 +71,7 @@ export const AdminSettingProfessorTabComments = ({open, close, professor}: Admin
                                 </p>
                                 <p>Content: {comment.content}</p>
                                 <p>
-                                    Rating: <strong>{comment.rating}</strong>
+                                    Rating: <strong>{comment.rating.toFixed(2)}</strong>
                                 </p>
                                 <p>
                                     {comment.verified ? "Verified" : "Unverified"} •{" "}

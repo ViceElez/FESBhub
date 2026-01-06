@@ -74,7 +74,7 @@ export const CommentProfessorCardAdminSettings = ({comment,onRemove}:CommentProf
             <div className="comment-content">
                 <h2>Korisnik: {userFirstName} {userLastName}</h2>
                 <h4>ID korisnika: {comment.userId}</h4>
-                <h3>Ocjena: {comment.rating}</h3>
+                <h3>Ocjena: {comment.rating.toFixed(2)}</h3>
                 <p>{comment.content}</p>
             </div>
 

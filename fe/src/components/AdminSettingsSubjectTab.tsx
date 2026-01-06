@@ -3,13 +3,13 @@ import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
 import {deleteSubjectById, getAllSubjects, updateToken} from "../services";
 import '../index.css'
-import {AdminSettingSubjectTabComments} from "./AdminSettingSubjectTabComments.tsx";
+import {AdminSettingSubjectTabComments} from "../components";
 
 type Subject = {
     id: number;
     title: string;
-    ratingExpectation: number;
-    ratingPractical: number;
+    ratingExpectations: number;
+    ratingPracticality: number;
     ratingDifficulty: number;
     nositelj: number;
     audtiorne: number;
@@ -53,7 +53,7 @@ export const AdminSettingsSubjectTab = () => {
         }
     }
 
-    const handleViewComments = async (subj) => {
+    const handleViewComments = async (subj:Subject) => {
         token= await updateToken(token!, login, logout, navigate, []);
         setSelectedSubj(subj);
         setIsVisible(true);
@@ -66,9 +66,9 @@ export const AdminSettingsSubjectTab = () => {
             {subj.map(s => (
                 <div key={s.id} className="admin-subject-card">
                     <h2 className="admin-subject-title">{s.title}</h2>
-                    <p className="admin-subject-meta">Rating Expectation: {s.ratingExpectation}</p>
-                    <p className="admin-subject-meta">Rating Practical: {s.ratingPractical}</p>
-                    <p className="admin-subject-meta">Rating Difficulty: {s.ratingDifficulty}</p>
+                    <p className="admin-subject-meta">Rating Expectation: {s.ratingExpectations.toFixed(2)}</p>
+                    <p className="admin-subject-meta">Rating Practical: {s.ratingPracticality.toFixed(2)}</p>
+                    <p className="admin-subject-meta">Rating Difficulty: {s.ratingDifficulty.toFixed(2)}</p>
 
                     <button
                         className="admin-subject-delete-btn"
@@ -79,7 +79,7 @@ export const AdminSettingsSubjectTab = () => {
 
                     <button
                         className="admin-subject-comments-btn"
-                        onClick={() => handleViewComments(s.id)}
+                        onClick={() => handleViewComments(s)}
                     >
                         View Comments
                     </button>

@@ -1,5 +1,4 @@
 import type { CommentSubject } from "../constants";
-import {useState} from "react";
 import { verifySubjectComment, deleteSubjectComment,updateToken } from "../services";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
@@ -51,9 +50,9 @@ export const CommentSubjectCardAdminSettings = ({comment,onRemove}:CommentSubjec
             <div className="comment-content">
                 <h2>Subject ID: {comment.subjId}</h2>
                 <h2>User ID: {comment.userId}</h2>
-                <h3>Ocjena korisnosti: {comment.ratingPracticality}</h3>
-                <h3>Ocjena težine: {comment.ratingDifficulty}</h3>
-                <h3>Ocjena očekivanja: {comment.ratingExpectation}</h3>
+                <h3>Ocjena korisnosti: {comment.ratingPracticality.toFixed(2)}</h3>
+                <h3>Ocjena težine: {comment.ratingDifficulty.toFixed(2)}</h3>
+                <h3>Ocjena očekivanja: {comment.ratingExpectation.toFixed(2)}</h3>
                 <p>Komentar: {comment.content}</p>
             </div>
             <div className="comment-actions">
