@@ -2,6 +2,8 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
 import {deleteSubjectById, getAllSubjects, updateToken} from "../services";
+import '../index.css'
+import {AdminSettingSubjectTabComments} from "./AdminSettingSubjectTabComments.tsx";
 
 type Subject = {
     id: number;
@@ -20,6 +22,8 @@ export const AdminSettingsSubjectTab = () => {
     let { token,login,logout } = useAuth();
     const [subj, setSubj] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [selectedSubj, setSelectedSubj] = useState<Subject | null>(null);
 
     useEffect(() => {
         async function fetchProfessors() {
@@ -49,9 +53,10 @@ export const AdminSettingsSubjectTab = () => {
         }
     }
 
-    const handleViewComments = async (subId: number) => {
-        // Implement view comments functionality here
-        console.log(`View comments for subj with ID: ${subId}`);
+    const handleViewComments = async (subj) => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setSelectedSubj(subj);
+        setIsVisible(true);
     }
 
     if (loading) return <p>Loading professors...</p>;
@@ -80,8 +85,17 @@ export const AdminSettingsSubjectTab = () => {
                     </button>
                 </div>
             ))}
+            {selectedSubj && (
+                <AdminSettingSubjectTabComments
+                    open={isVisible}
+                    subj={selectedSubj}
+                    close={() =>{
+                        setIsVisible(false);
+                        setSelectedSubj(null);
+                    }}
+                />
+            )}
             {subj.length === 0 && <p>No subjects found.</p>}
         </div>
     );
-
-} //triba u prismi napravit kad se fetchaju svi subj i prof da se saom povucu i njigovi predmeti/profesori, a za ovo komntare samo kad se stisne povuc sve kometnare za tog profa/subj
+}

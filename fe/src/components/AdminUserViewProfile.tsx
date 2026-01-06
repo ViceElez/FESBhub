@@ -133,7 +133,6 @@ export const AdminUserViewProfile = ({ open, close, user }: AdminUserViewProfile
                             Posts
                         </button>
                     </div>
-
                     <div className="tab-content">
                         {activeTab === "profComments" &&
                             (profComments.length === 0 ? (

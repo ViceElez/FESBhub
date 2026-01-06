@@ -2,6 +2,8 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import {useEffect, useState} from "react";
 import {deleteProfessorById, getAllProfessors, updateToken} from "../services";
+import '../index.css'
+import {AdminSettingProfessorTabComments} from "../components";
 
 type Professor = {
     id: number;
@@ -21,6 +23,8 @@ export const AdminSettingsProfessorTab = () => {
     let { token,login,logout } = useAuth();
     const [professors, setProfessors] = useState<Professor[]>([]);
     const [loading, setLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [selectedProf, setSelectedProf] = useState<Professor | null>(null);
 
     useEffect(() => {
         async function fetchProfessors() {
@@ -50,9 +54,10 @@ export const AdminSettingsProfessorTab = () => {
         }
     }
 
-    const handleViewComments = async (professorId: number) => {
-        // Implement view comments functionality here
-        console.log(`View comments for professor with ID: ${professorId}`);
+    const handleViewComments = async (professor:Professor) => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setSelectedProf(professor);
+        setIsVisible(true);
     }
 
     if (loading) return <p>Loading professors...</p>;
@@ -78,13 +83,22 @@ export const AdminSettingsProfessorTab = () => {
 
                     <button
                         className="admin-professor-comments-btn"
-                        onClick={() => handleViewComments(professor.id)}
+                        onClick={() => handleViewComments(professor)}
                     >
                         View Comments
                     </button>
                 </div>
             ))}
-
+            {selectedProf && (
+                <AdminSettingProfessorTabComments
+                    open={isVisible}
+                    professor={selectedProf}
+                    close={() => {
+                        setIsVisible(false);
+                        setSelectedProf(null);
+                    }}
+                />
+            )}
             {professors.length === 0 && <p>No professors found.</p>}
         </div>
     );

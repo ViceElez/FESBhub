@@ -55,5 +55,10 @@ export class CommentProfController {
         return this.commentProfService.getCommentsByUserId(id);
     }
 
+    @Get('professor/:id')
+    async getCommentsByProfessorId(@Param('id') id: string) {
+        return this.commentProfService.getCommentsByProfessorId(parseInt(id));
+    }
+
 }
 

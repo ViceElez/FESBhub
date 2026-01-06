@@ -130,3 +130,17 @@ export async function getProfessorCommentsByUserId(userId:number, token?: string
         return
     }
 }
+
+export async function getAllCommentsByProfessorId(profId:number, token?: string | null){
+    try{
+        console.log(`Fetching comments for professor ID: ${profId}`);
+        return axios.get(`${route}/comment-prof/professor/${profId}`, {
+            headers: {
+                Authorization:`Bearer ${token}`
+            }
+        })
+    }catch (e){
+        alert('Error fetching professor comments.');
+        return
+    }
+}
