@@ -8,6 +8,10 @@ export interface Post {
   userId: number;
   verified: boolean;
   createdAt: string;
+  photos?:
+   { id: number; 
+    url: string
+   }[];
   user?: {
     id: number;
     firstName: string;
@@ -66,13 +70,41 @@ export async function deletePost(postId: number, token: string): Promise<void> {
   }
 }   
 
-export async function createPost(
-  dto: { title: string; content: string },
+export async function createPost( 
+  dto: { title: string; content: string; photoFiles: File[] },
   token: string
 ): Promise<Post> {
   
   try {
-    const response = await axios.post(`${route}/posts`, dto, {
+    let photosBase64: string[] = [];
+    
+    if (dto.photoFiles && dto.photoFiles.length > 0) {
+      // Check each file size
+      for (const file of dto.photoFiles) {
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+          alert(`Image ${file.name} must be less than 5MB`);
+          return {} as Post;
+        }
+      }
+      
+      // Convert all files to base64
+      photosBase64 = await Promise.all(
+        dto.photoFiles.map(file => 
+          new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result as string);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+          })
+        )
+      );
+    }
+
+    const response = await axios.post(`${route}/posts`, {
+      title: dto.title,
+      content: dto.content,
+      photos: photosBase64.length > 0 ? photosBase64 : undefined,
+    }, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

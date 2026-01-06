@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { tokenIsAdmin } from '../services';
 import { useAuth } from "../hooks";
 import type { Post } from '../services/PostAdminApi.ts';
-import { createPost, fetchAllPosts , approvePost, deletePost} from '../services/PostAdminApi.ts';
+import { createPost, fetchAllPosts } from '../services/PostAdminApi.ts';
 
 export const NewsPage = () => {
  
@@ -16,6 +16,39 @@ export const NewsPage = () => {
     const [message, setMessage] = useState(String);
     const [isAdmin,setIsAdmin]=useState<boolean>(false);
     const [loading, setLoading] = useState(false);
+    const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+    const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
+
+  
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
+        const validFiles = files.filter(file => file.type.startsWith('image/'));
+        if (validFiles.length !== files.length) {
+            alert('Some files were not images and have been ignored.');
+          
+        }
+        setPhotoFiles(validFiles);
+        
+        if (validFiles.length > 0) {
+            const previews: string[] = [];
+            let loadedCount = 0;
+            
+            validFiles.forEach((file) => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    previews.push(reader.result as string);
+                    loadedCount++;
+                    if (loadedCount === validFiles.length) {
+                        setPhotoPreviews(previews);
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+        } else {
+            setPhotoPreviews([]);
+        }
+    };
+
     useEffect(() => {
         async function checkAdmin() {
             if (!token) {
@@ -63,7 +96,7 @@ export const NewsPage = () => {
         }
 
         try {
-            await createPost({ title, content }, token);
+            await createPost({ title, content, photoFiles }, token);
             if (isAdmin) {
                 setMessage('Post created and published successfully');
             } else {
@@ -71,6 +104,8 @@ export const NewsPage = () => {
             }
             setTitle('');
             setContent('');
+            setPhotoFiles([]);
+            setPhotoPreviews([]);
             const updatedPosts = await fetchAllPosts();
             setAllPosts(updatedPosts);
         } catch (err: any) {
@@ -132,7 +167,30 @@ export const NewsPage = () => {
               />
             </div>
 
-            <div>
+            <div style={{ marginTop: 12 }}>
+              <label>Attach Images (optional)</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handlePhotoChange}
+                style={{ display: 'block', marginTop: 4 }}
+              />
+              {photoPreviews.length > 0 && (
+                <div style={{ marginTop: 8, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                  {photoPreviews.map((preview, index) => (
+                    <img
+                      key={index}
+                      src={preview}
+                      alt={`Preview ${index + 1}`}
+                      style={{ maxWidth: 150, maxHeight: 150, border: '1px solid #ccc' }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: 12 }}>
               <button type="submit" disabled={loading}>
                 {loading ? 'Creating...' : 'Create Post'}
               </button>
@@ -161,7 +219,7 @@ export const NewsPage = () => {
           flexWrap: 'wrap',
         }}
       >
-        {allPosts
+        {!loadingPosts && allPosts
           .filter(post => post.verified === true)
           .map(post => (
             <li
@@ -181,6 +239,19 @@ export const NewsPage = () => {
                 by {post.user?.firstName ?? ''} {post.user?.lastName ?? ''}
                 <br />
                 verified: {post.verified ? 'yes' : 'no'}
+                <br />
+                {post.photos && post.photos.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginTop: 8 }}>
+                    {post.photos.map((photo, index) => (
+                      <img
+                        key={photo.id}
+                        src={photo.url}
+                        alt={`Post image ${index + 1}`}
+                        style={{ maxWidth: '100%', maxHeight: 150, border: '1px solid #ccc' }}
+                      />
+                    ))}
+                  </div>
+                )}
                 <br />
                 created at: {new Date(post.createdAt).toLocaleString()}
               </div>

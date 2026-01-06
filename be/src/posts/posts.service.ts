@@ -6,13 +6,18 @@ import { CreatePostDto } from './dtos/create-post.dto';
 export class PostsService {
     constructor(private readonly prisma: PrismaService) {}
 
-    async create(dto: CreatePostDto, userId: number, isAdmin: boolean) {
+    async create(dto: CreatePostDto, userId: number, isAdmin: boolean, ) {
         return this.prisma.post.create({
             data: {
                 title: dto.title,
                 content: dto.content,
                 userId,
-                verified: isAdmin,
+                 verified: isAdmin,
+                   photos: dto.photos && dto.photos.length > 0
+                    ? {
+                          create: dto.photos.map(url => ({ url })),
+                      }
+                    : undefined,
             },
         });
     }
@@ -20,7 +25,7 @@ export class PostsService {
     async findAll() {
         return this.prisma.post.findMany({
             orderBy: { createdAt: 'desc' },
-            include: { user: { select: { id: true, firstName: true, lastName: true } } },
+            include: { photos: true, user: { select: { id: true, firstName: true, lastName: true } } },
         });
     }
     //dovoljno razlicite ig
@@ -37,11 +42,11 @@ export class PostsService {
         return this.prisma.post.delete({ where: { id: postId } });
     }
 
-    async update(id: number, dto: Partial<{ title: string; content: string }>) {
+    async update(id: number, dto: Partial<{ title: string; content: string; photos: string[] }>) {
         const existing = await this.prisma.post.findUnique({ where: { id } });
         if (!existing) return null;
 
-        const data: { title?: string; content?: string } = {};
+        const data: any = {};
 
         if (dto.title !== undefined) {
             if (dto.title.trim() === '') throw new BadRequestException('Title cannot be empty');
@@ -51,6 +56,14 @@ export class PostsService {
         if (dto.content !== undefined) {
             if (dto.content.trim() === '') throw new BadRequestException('Content cannot be empty');
             data.content = dto.content;
+        }
+
+        if (dto.photos !== undefined) {
+            // Delete existing photos and create new ones
+            data.photos = {
+                deleteMany: {},
+                create: dto.photos.map(url => ({ url })),
+            };
         }
 
         if (Object.keys(data).length === 0) {
@@ -67,7 +80,7 @@ export class PostsService {
         return this.prisma.post.findMany({
             where: { userId },
             orderBy: { createdAt: 'desc' },
-            include: { user: { select: { id: true, firstName: true, lastName: true } } },
+            include: { photos: true, user: { select: { id: true, firstName: true, lastName: true } } },
         });
     }
 
