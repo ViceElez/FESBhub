@@ -30,10 +30,14 @@ export const AdminSubjectComments = () => {
         void fetch();
     }, []);
 
+    const removeComment = (id: number) => {
+        setSubjComments(prev => prev.filter(c => c.id !== id));
+    }
+
     return (
         <div className="admin-comments-wrapper">
             {subjComments.map(C => (
-                <CommentSubjectCardAdminSettings key={C.id} {...C} />
+                <CommentSubjectCardAdminSettings key={C.id} comment={C} onRemove={removeComment}/>
             ))}
             {subjComments.length === 0 && <p>No comments to display.</p>}
         </div>

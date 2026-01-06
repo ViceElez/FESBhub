@@ -29,10 +29,14 @@ export const AdminProfessorComments = () => {
         void fetch();
     }, );
 
+    const removeComment = (id: number) => {
+        setProfComments(prev => prev.filter(c => c.id !== id));
+    }
+
     return (
         <div className="admin-comments-wrapper">
             {profComments.map(C => (
-                <CommentProfessorCardAdminSettings key={C.id} {...C} />
+                <CommentProfessorCardAdminSettings key={C.id} comment={C} onRemove={removeComment} />
             ))}
             {profComments.length === 0 && <p>No comments to display.</p>}
         </div>

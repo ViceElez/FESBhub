@@ -5,10 +5,14 @@ import { useAuth } from "../hooks";
 import type { CommentProfessor } from "../constants";
 import '../index.css';
 
-export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => {
+type CommentProfessorCardAdminSettingsProps = {
+    comment: CommentProfessor;
+    onRemove: (id: number) => void;
+}
+
+export const CommentProfessorCardAdminSettings = ({comment,onRemove}:CommentProfessorCardAdminSettingsProps) => {
     const [userFirstName, setUserFirstName] = useState<string>("");
     const [userLastName, setUserLastName] = useState<string>("");
-    const [deleted, setDeleted] = useState(false);
 
     const { token, login, logout } = useAuth();
     const navigate = useNavigate();
@@ -38,13 +42,15 @@ export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => 
         void fetchUser();
     }, [comment.userId, token]);
 
-    if (deleted) return null;
-
     const handleVerify = async () => {
         const newToken = await updateToken(token!, login, logout, navigate, []);
         const res = await verifyProfessorComment(comment.profId, comment.userId, comment.rating, comment.content, newToken);
         if (res?.status === 200) {
-            alert("Comment verified successfully");
+            alert("Comment verified successfully ");
+            onRemove(comment.id);
+        }
+        else{
+            alert("Error verifying comment");
         }
     };
 
@@ -55,8 +61,11 @@ export const CommentProfessorCardAdminSettings = (comment: CommentProfessor) => 
         }
         const res = await deleteProfessorComment(comment.profId, newToken, comment.userId);
         if (res?.status === 200){
-            setDeleted(true);
             alert("Comment deleted successfully");
+            onRemove(comment.id);
+        }
+        else{
+            alert("Error deleting comment");
         }
     };
 

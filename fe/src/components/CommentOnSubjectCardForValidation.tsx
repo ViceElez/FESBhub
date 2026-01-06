@@ -4,12 +4,13 @@ import { verifySubjectComment, deleteSubjectComment,updateToken } from "../servi
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 
-export const CommentSubjectCardAdminSettings = (comment: CommentSubject) => {
-    const [deleted, setDeleted] = useState(false);
+type CommentSubjectCardAdminSettingsProps = {
+    comment: CommentSubject;
+    onRemove: (id: number) => void;
+}
+export const CommentSubjectCardAdminSettings = ({comment,onRemove}:CommentSubjectCardAdminSettingsProps) => {
     let { token, login, logout } = useAuth();
     const navigate = useNavigate();
-
-    if (deleted) return <div></div>;
 
     const handleVerify = async () => {
         token = await updateToken(token!, login, logout, navigate, []);
@@ -24,22 +25,23 @@ export const CommentSubjectCardAdminSettings = (comment: CommentSubject) => {
         );
         if (response?.status === 200) {
             alert("Successfully verified comment");
+            onRemove(comment.id);
+        }
+        else{
+            alert("Error verifying comment");
         }
     };
 
     const handleDelete = async () => {
-        setDeleted(true);
         token = await updateToken(token!, login, logout, navigate, []);
         if(!confirm('Are you sure you want to delete this comment?')) {
-            setDeleted(false);
             return;
         }
         const response = await deleteSubjectComment(comment.subjId, token, comment.userId);
         if (response?.status === 200) {
-            setDeleted(true)
             alert("Successfully deleted comment");
+            onRemove(comment.id);
         } else {
-            setDeleted(false);
             alert("Error deleting comment");
         }
     };

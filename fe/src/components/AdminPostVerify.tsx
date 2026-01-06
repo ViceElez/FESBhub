@@ -20,10 +20,14 @@ export const AdminPostVerify = () => {
         void fetch();
     }, []);
 
+    const removePost = (id: number) => {
+        setPosts(prev => prev.filter(p => p.id !== id));
+    };
+
     return (
         <div className='admin-comments-wrapper'>
             {posts.map(p=>(
-                <PostCardForValidation key={p.id} {...p}/>
+                <PostCardForValidation key={p.id} post={p} onRemove={removePost}/>
             ))}
             {posts.length === 0 && <p>No posts to display.</p>}
         </div>

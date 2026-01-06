@@ -1,36 +1,38 @@
 import {deletePost, type Post, verifyPost,updateToken} from "../services";
-import {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 
-export const PostCardForValidation = (post:Post) => {
-    const [deleted, setDeleted] = useState(false);
+type PostCardForValidationProps ={
+    post: Post;
+    onRemove: (id: number) => void;
+}
+
+export const PostCardForValidation = ({post,onRemove}:PostCardForValidationProps) => {
     let{ token, login, logout } = useAuth();
     const navigate = useNavigate();
-
-    if(deleted) return <div></div>;
 
     const handleVerify = async () => {
         token = await updateToken(token!, login, logout, navigate, []);
         const res=await verifyPost(post.id, token);
         if(res?.status === 200){
             alert("Successfully verified post");
+            onRemove(post.id)
+        }
+        else {
+            alert("Error verifying post");
         }
      }
 
     const handleDelete = async () => {
-        setDeleted(true);
         token= await updateToken(token!, login, logout, navigate, []);
         if(!confirm('Are you sure you want to delete this post?')){
-            setDeleted(false);
             return;
         }
         const res=await deletePost(post.id, token);
         if(res?.status === 200){
-            setDeleted(true);
             alert("Successfully deleted post");
+            onRemove(post.id)
         }else{
-            setDeleted(false);
             alert("Error deleting post");
         }
     }
