@@ -1,5 +1,4 @@
-import {deletePost, type Post} from "../services";
-import {updateToken} from "../services";
+import {deletePost, type Post, verifyPost,updateToken} from "../services";
 import {useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
@@ -13,7 +12,10 @@ export const PostCardForValidation = (post:Post) => {
 
     const handleVerify = async () => {
         token = await updateToken(token!, login, logout, navigate, []);
-        // Verification logic here
+        const res=await verifyPost(post.id, token);
+        if(res?.status === 200){
+            alert("Successfully verified post");
+        }
      }
 
     const handleDelete = async () => {

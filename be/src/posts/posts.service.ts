@@ -103,4 +103,13 @@ export class PostsService{
             }
         });
     }
+
+    async verifyPost(id:number){
+        const existing=await this.prisma.post.findUnique({where:{id}});
+        if(!existing) return null;
+        return this.prisma.post.update({
+            where:{id},
+            data:{verified:true}
+        });
+    }
 }

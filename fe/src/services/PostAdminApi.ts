@@ -102,3 +102,15 @@ export async function getPostsByUserId(userId: number, token?: string | null) {
         return
     }
 }
+
+export async function verifyPost(id: number, token: string | null) {
+    try {
+        return axios.patch(`${route}/posts/verify/${id}`, {}, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e) {
+        throw e;
+    }
+}
