@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
 import '../index.css';
-import { getAllCommentsBySubjectId, updateToken } from '../services';
+import {deleteSubjectComment, getAllCommentsBySubjectId, updateToken} from '../services';
 
 type AdminSettingSubjectTabCommentsProps = {
     open: boolean;
@@ -19,6 +19,7 @@ type SubjComment = {
     verified: boolean;
     createdAt: string;
     user: {
+        id: number;
         firstName: string;
         lastName: string;
     };
@@ -53,6 +54,20 @@ export const AdminSettingSubjectTabComments = ({open, close, subj}: AdminSetting
 
         void fetchSubjComments();
     }, [open, subj.id]);
+
+    const handleDelete = async (userId:number) => {
+        token = await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+        const response = await deleteSubjectComment(subj.id, token, userId);
+        if (response?.status === 200) {
+            setSubjComments(prevComments => prevComments.filter(comment => comment.user.id !== userId));
+            alert("Successfully deleted comment");
+        } else {
+            alert("Error deleting comment");
+        }
+    }
 
     if (!open) return null;
 
@@ -115,6 +130,7 @@ export const AdminSettingSubjectTabComments = ({open, close, subj}: AdminSetting
                                         comment.createdAt
                                     ).toLocaleDateString()}
                                 </p>
+                                <button className="delete-btn" onClick={()=>handleDelete(comment.user.id)}>Delete</button>
                             </div>
                         ))
                     )}

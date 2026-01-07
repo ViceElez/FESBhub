@@ -2,7 +2,7 @@ import type { Professor } from "../constants";
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
-import { getAllCommentsByProfessorId, updateToken } from "../services";
+import {deleteProfessorComment, getAllCommentsByProfessorId, updateToken} from "../services";
 import "../index.css";
 
 type AdminSettingProfessorTabCommentsProps = {
@@ -18,6 +18,7 @@ type ProfComment = {
     verified: boolean;
     createdAt: string;
     user: {
+        id: number;
         firstName: string;
         lastName: string;
     };
@@ -41,6 +42,21 @@ export const AdminSettingProfessorTabComments = ({open, close, professor}: Admin
 
         void fetchProfComments();
     }, [open, professor.id]);
+
+    const handleDelete = async (userId:number) => {
+         token = await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this comment?')) {
+            return;
+        }
+        const res = await deleteProfessorComment(professor.id, token, userId);
+        if (res?.status === 200){
+            setProfComments(prevComments => prevComments.filter(comment => comment.user.id !== userId));
+            alert("Comment deleted successfully");
+        }
+        else{
+            alert("Error deleting comment");
+        }
+    };
 
     if (!open) return null;
 
@@ -77,6 +93,7 @@ export const AdminSettingProfessorTabComments = ({open, close, professor}: Admin
                                     {comment.verified ? "Verified" : "Unverified"} •{" "}
                                     {new Date(comment.createdAt).toLocaleDateString()}
                                 </p>
+                                <button className="delete-btn" onClick={()=>handleDelete(comment.user.id)}>Delete</button>
                             </div>
                         ))
                     )}

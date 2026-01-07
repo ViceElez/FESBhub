@@ -46,6 +46,14 @@ export const AdminSettingsPage = () => {
         void checkAdmin();
     }, [token]);
 
+    useEffect(() => {
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.body.style.overflow = "auto";
+        };
+    }, []);
+
+
     const setUserView = async () => {
         token= await updateToken(token!, login, logout, navigate, []);
         setAdminView('users');
