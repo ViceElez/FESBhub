@@ -52,6 +52,11 @@ export const SubjectCard = (subject: Subject) => {
         void fetchVerifiedComments();
     }, [subject.id]);
 
+    const handleDelete = () => {
+        setExistingComment(false);
+        setVerifiedComments(prev => prev.filter(comment => comment.userId !== Number(userId)));
+    }
+
     return (
         <div className="subject-card">
             <div className="subject-card-header">
@@ -83,7 +88,7 @@ export const SubjectCard = (subject: Subject) => {
                 isOpen={isOpenDelete}
                 id={subject.id}
                 onClose={() => setIsOpenDelete(false)}
-                onSuccess={() => setExistingComment(false)}
+                onSuccess={handleDelete}
             />
             <UpdateSubjectCommentPopup
                 isOpen={isOpenUpdate}

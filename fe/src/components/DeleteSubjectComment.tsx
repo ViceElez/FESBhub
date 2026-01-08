@@ -30,7 +30,7 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
         const response = await deleteSubjectComment(id, token, Number(userId));
         if (response?.status === 200) {
             alert("Deleted successfully");
-            onSuccess?.();
+            onSuccess?.(id);
         } else console.log("Error", response);
         onClose();
     };
