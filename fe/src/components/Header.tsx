@@ -19,6 +19,7 @@ export const Header = () => {
         }
     }
     const handleSettingsClick=async ()=>{
+        token=await updateToken(token!, login, logout, navigate, []);
         if(!token){
             navigate(routes.LOGIN)
             return

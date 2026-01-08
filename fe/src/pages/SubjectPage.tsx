@@ -1,131 +1,124 @@
-import {Link} from "react-router-dom";
-import {routes} from "../constants";
-import type {Subject} from "../constants";
-import { useEffect, useState, useMemo} from 'react';
+import { Link } from "react-router-dom";
+import { routes } from "../constants";
+import type { Subject } from "../constants";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import {getAllSubjects, updateToken} from "../services";
+import { getAllSubjects, updateToken } from "../services";
 import { SubjectCard } from "../components";
-import '../index.css';
+import '../index.css'
 
-export const SubjectPage=()=>{
-
+export const SubjectPage = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
-
-    let {token, login, logout} = useAuth();
-    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [ascending, setAscending] = useState(true);
+    const [page, setPage] = useState(1);
 
-    const rating = (d: number, e: number, p: number) => {
-        return (d + e + p) / 3;
-    };
+    const { token: authToken, login, logout } = useAuth();
+    const navigate = useNavigate();
+    let token = authToken;
 
-    const handleSort = (direction: boolean) => {
-        setSubjects((list) =>
-            [...list].sort((a, b) =>
-                direction ?
-                    rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality) - 
-                    rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality) :
-                    rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality) - 
-                    rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality)
-            )
+    const rating = (d: number, e: number, p: number) => (d + e + p) / 3;
+
+    const handleSort = (direction: boolean, list: Subject[]) => {
+        return [...list].sort((a, b) =>
+            direction
+                ? rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality) -
+                rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality)
+                : rating(b.ratingDifficulty, b.ratingExpectations, b.ratingPracticality) -
+                rating(a.ratingDifficulty, a.ratingExpectations, a.ratingPracticality)
         );
-    }
+    };
 
     useEffect(() => {
         const fetchSubjects = async () => {
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
-                const response = await getAllSubjects(token)
-                setSubjects(response?.data);
-
-            }catch(error){
+                const response = await getAllSubjects(token);
+                if (response?.data) {
+                    const sorted = handleSort(ascending, response.data);
+                    setSubjects(sorted);
+                }
+            } catch (error) {
                 console.error("Error fetching subjects:", error);
             }
-            handleSort(ascending);
         };
         void fetchSubjects();
     }, []);
 
-    const [page, setPage] = useState(1);
-        const pageCount = Math.max(1, Math.ceil(subjects.filter(subject => {
-            subject.title.toLowerCase().includes(searchTerm.toLowerCase())
-        }).length / 12));
-    
-        if (page > pageCount) setPage(pageCount);
-    
-        const pageCards = useMemo(() => {
-            const start = (page - 1) * 12;
-            return subjects.slice(start, start + 12);
-        }, [subjects, page]);
+    const filteredSubjects = subjects.filter((s) =>
+        s.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-    return(
-        <div>
-            <Link to={routes.MATERIALSPAGE}>
-                <button>MATERIALSPAGE</button>
-            </Link>
-            <Link to={routes.NEWSPAGE}>
-                <button>NEWSPAGE</button>
-            </Link>
-            <Link to={routes.PROFESSORPAGE}>
-                <button>PROFESSORPAGE</button>
-            </Link>
-            <Link to={routes.ADMINSETTINGSPAGE}>
-                <button>ADMINSETTINGSPAGE</button>
-            </Link>
-            <h1>Subject Page</h1>
-            <div>
+    const pageCount = Math.max(1, Math.ceil(filteredSubjects.length / 12));
+    if (page > pageCount) setPage(pageCount);
+
+    const pageCards = useMemo(() => {
+        const start = (page - 1) * 12;
+        return filteredSubjects.slice(start, start + 12);
+    }, [filteredSubjects, page]);
+
+    return (
+        <div className="subject-page">
+            <nav className="subject-nav">
+                <Link to={routes.MATERIALSPAGE}>
+                    <button>MATERIALS</button>
+                </Link>
+                <Link to={routes.NEWSPAGE}>
+                    <button>NEWS</button>
+                </Link>
+                <Link to={routes.PROFESSORPAGE}>
+                    <button>PROFESSORS</button>
+                </Link>
+                <Link to={routes.ADMINSETTINGSPAGE}>
+                    <button>ADMIN</button>
+                </Link>
+            </nav>
+
+            <h1 className="page-title">Explore Subjects</h1>
+
+            <div className="subject-controls">
                 <input
                     type="text"
                     placeholder="Search subjects..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    className="search-input"
                 />
                 <button
-                    onClick={() =>
-                        setAscending((prev) => {
-                            const newAsc = !prev;
-                            handleSort(prev);
-                            return newAsc;
-                        })
-                    }
+                    className="sort-button"
+                    onClick={() => setAscending((prev) => !prev)}
                 >
                     {ascending ? "Ascending" : "Descending"}
                 </button>
             </div>
-            <div
-                style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
-                {//ovde i za profesore triba popravit sta ovo dohvaca samo predmete i profesorce 
-                // koji su na toj stranici jer uzima pageCards
-                pageCards.filter(subject =>
-                    subject.title.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map(subject => (
-                    <div key={subject.id}>
-                        <SubjectCard {...subject}/>
-                    </div>
+
+            <div className="subjects-grid">
+                {pageCards.map((subject) => (
+                    <SubjectCard key={subject.id} {...subject} />
                 ))}
             </div>
-            <div className="pages" style={{ marginTop: "20px", textAlign: "center" }}>
+
+            <div className="pagination">
                 <button onClick={() => setPage(1)} disabled={page === 1}>
-                « First
+                    « First
                 </button>
                 <button onClick={() => setPage((p) => p - 1)} disabled={page === 1}>
-                ‹ Prev
+                    ‹ Prev
                 </button>
-
-                <span style={{ padding: "0 8px" }}>
-                Page {page} / {pageCount}
-                </span>
-
-                <button onClick={() => setPage((p) => p + 1)} disabled={page === pageCount}>
-                Next ›
+                <span>
+          Page {page} / {pageCount}
+        </span>
+                <button
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={page === pageCount}
+                >
+                    Next ›
                 </button>
                 <button onClick={() => setPage(pageCount)} disabled={page === pageCount}>
-                Last »
+                    Last »
                 </button>
             </div>
         </div>
-    )
-}
-
+    );
+};

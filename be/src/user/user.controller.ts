@@ -8,17 +8,6 @@ export class UserController {
     constructor(
         private readonly UserService: UserService,
     ) {}
-
-    @Get('unverifiedUsers')
-    async getUnverifiedUsers() {
-        return this.UserService.getUnverifiedUsers();
-    }
-
-    @Get('verifiedUsers')
-    async getVerifiedUsers() {
-        return this.UserService.getVerifiedUsers();
-    }
-
     @Get('allUsers')
     async getAllUsers() {
         return this.UserService.getAllUsers();

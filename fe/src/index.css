@@ -9,6 +9,11 @@
 @import url('./styles/AdminSettingsVerifyContentTabStyle.css');
 @import url('./styles/AdminUserViewProfileStyle.css');
 @import url('./styles/AdminSettingProfessorTabCommentsStyle.css');
+@import url('./styles/AddSubjectCommentStyle.css');
+@import url('./styles/DeleteSubjectCommentStyle.css');
+@import url('./styles/UpdateSubjectCommentStyle.css');
+@import url('styles/SubjectCardStyle.css');
+@import url('styles/SubjectPageStyle.css');
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

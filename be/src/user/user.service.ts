@@ -14,6 +14,17 @@ export class UserService {
         return this.prisma.user.findUnique({
             where:{
                 id:parseInt(userId)
+            },
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
+                studij:true,
+                currentStudyYear:true,
+                createdAt:true,
+                isVerified:true,
+                isAdmin:true,
             }
         })
     }
@@ -24,34 +35,6 @@ export class UserService {
             throw new Error('User not found');
         }
         return user?.isAdmin;
-    }
-
-    async getUnverifiedUsers(){
-        return this.prisma.user.findMany({
-            where:{
-                isVerified:false
-            },
-            select:{
-                id:true,
-                firstName:true,
-                lastName:true,
-                email:true,
-            }
-        })
-    }
-
-    async getVerifiedUsers(){
-        return this.prisma.user.findMany({
-            where:{
-                isVerified:true
-            },
-            select:{
-                id:true,
-                firstName:true,
-                lastName:true,
-                email:true,
-            }
-        });
     }
 
     async getUserByUsername(username:string){

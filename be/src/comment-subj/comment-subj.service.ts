@@ -204,5 +204,28 @@ export class CommentSubjService {
           }
       });
   }
+
+  async getCommentBySubjAndUserId(subjId: string, userId: string) {
+      const exists= await this.prisma.commentOnSubject.findFirst({
+          where: {subjectId: parseInt(subjId), userId: parseInt(userId)},
+          select:{
+              id:true,
+              content:true,
+              createdAt:true,
+                ratingExceptions:true,
+                ratingDiffuculty:true,
+                ratingPracicality:true,
+              subject:{
+                    select:{
+                        title:true,
+                    }
+              }
+          }
+      });
+      if(!exists){
+          throw new Error("Comment not found");
+      }
+      return exists;
+  }
 }
 
