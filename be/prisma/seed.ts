@@ -12,7 +12,7 @@ async function main() {
         currentStudyYear: 3,
         isAdmin: true,
         isVerified: true,
-        password: '123',
+        password: '123456',
     },
     { email: 'bob@example.com', 
         firstName: 'Bob', 
