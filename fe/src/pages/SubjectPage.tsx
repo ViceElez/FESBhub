@@ -4,15 +4,18 @@ import type { Subject } from "../constants";
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
-import { getAllSubjects, updateToken } from "../services";
+import {getAllSubjects, getSubjByName, updateToken} from "../services";
 import { SubjectCard } from "../components";
 import '../index.css'
+import {useDebounce} from "../hooks";
 
 export const SubjectPage = () => {
     const [subjects, setSubjects] = useState<Subject[]>([]);
     const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm);
     const [ascending, setAscending] = useState(true);
     const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const { token: authToken, login, logout } = useAuth();
     const navigate = useNavigate();
@@ -32,6 +35,7 @@ export const SubjectPage = () => {
 
     useEffect(() => {
         const fetchSubjects = async () => {
+            setLoading(true)
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
                 const response = await getAllSubjects(token);
@@ -41,22 +45,60 @@ export const SubjectPage = () => {
                 }
             } catch (error) {
                 console.error("Error fetching subjects:", error);
+            } finally{
+                setLoading(false);
             }
         };
         void fetchSubjects();
     }, []);
 
-    const filteredSubjects = subjects.filter((s) =>
-        s.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    useEffect(() => {
+        const fetchSearchedSubjects = async () => {
+            if (!debouncedSearchTerm) {
+                setLoading(true);
+                try {
+                    token = await updateToken(token!, login, logout, navigate, []);
+                    const res = await getAllSubjects(token);
+                    if (res?.data) setSubjects(res.data);
+                    else setSubjects([]);
+                } catch (err) {
+                    console.error(err);
+                    setSubjects([]);
+                } finally {
+                    setLoading(false);
+                }
+                return;
+            }
 
-    const pageCount = Math.max(1, Math.ceil(filteredSubjects.length / 12));
+            setLoading(true);
+            try {
+                token = await updateToken(token!, login, logout, navigate, []);
+                const res = await getSubjByName(debouncedSearchTerm, token);
+                if (res?.status === 200) {
+                    setSubjects(res.data);
+                } else {
+                    setSubjects([]);
+                }
+            } catch (err) {
+                console.error(err);
+                setSubjects([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        void fetchSearchedSubjects();
+    }, [debouncedSearchTerm]);
+
+
+
+    const pageCount = Math.max(1, Math.ceil(subjects.length / 12));
     if (page > pageCount) setPage(pageCount);
 
     const pageCards = useMemo(() => {
-        const start = (page - 1) * 12;
-        return filteredSubjects.slice(start, start + 12);
-    }, [filteredSubjects, page]);
+        const start = (page - 1) * 2; //odi izminit
+        return subjects.slice(start, start + 2);
+    }, [subjects, page]);
 
     return (
         <div className="subject-page">
@@ -78,13 +120,21 @@ export const SubjectPage = () => {
             <h1 className="page-title">Explore Subjects</h1>
 
             <div className="subject-controls">
-                <input
-                    type="text"
-                    placeholder="Search subjects..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="search-input"
-                />
+                <div className="search-wrapper">
+                    <input
+                        type="text"
+                        placeholder="Search subjects..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="search-input"
+                    />
+                    <button
+                        className="search-button"
+                        aria-label="Search"
+                    >
+                        🔍
+                    </button>
+                </div>
                 <button
                     className="sort-button"
                     onClick={() => setAscending((prev) => !prev)}
@@ -92,12 +142,17 @@ export const SubjectPage = () => {
                     {ascending ? "Ascending" : "Descending"}
                 </button>
             </div>
-
-            <div className="subjects-grid">
-                {pageCards.map((subject) => (
-                    <SubjectCard key={subject.id} {...subject} />
-                ))}
-            </div>
+            {loading ? (
+                <p>Loading...</p>
+            ) : subjects.length === 0 ? (
+                <p>No subjects found.</p>
+            ) : (
+                <div className="subjects-grid">
+                    {pageCards.map((subject) => (
+                        <SubjectCard key={subject.id} {...subject} />
+                    ))}
+                </div>
+            )}
 
             <div className="pagination">
                 <button onClick={() => setPage(1)} disabled={page === 1}>

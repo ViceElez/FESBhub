@@ -27,8 +27,7 @@ export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
     }
 
     return (
-        <div className="card-scroll-horizontally card"
-        >
+        <div className="card-scroll-horizontally card">
             <div>
                 <h4>{userFirstName} {userLastName} je komentirao:</h4>
                 <h2>Ocjena tezine: {comment.ratingDifficulty.toFixed(2)}</h2>

@@ -23,14 +23,14 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
             else console.log("Error fetching comment", res);
         };
         void fetchComment();
-    }, [isOpen]);
+    }, [isOpen,id,userId]);
 
     const handleCommentDelete = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);
         const response = await deleteSubjectComment(id, token, Number(userId));
         if (response?.status === 200) {
             alert("Deleted successfully");
-            onSuccess?.(id);
+            onSuccess?.();
         } else console.log("Error", response);
         onClose();
     };
@@ -68,4 +68,4 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
         </div>,
         document.body
     );
-};  //kad se delete triba napravit ono sa filter da se automatski makne, za ovi update mislin da ce tribat ostat refresh
+};

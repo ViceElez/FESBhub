@@ -1,4 +1,4 @@
-import {Controller, Get, Param, UseGuards,Delete} from '@nestjs/common';
+import {Controller, Get, Param, UseGuards,Delete,Query} from '@nestjs/common';
 import { SubjService } from './subj.service';
 import { UserGuard } from '../guards';
 
@@ -7,8 +7,14 @@ import { UserGuard } from '../guards';
 export class SubjController {
   constructor(private readonly subjService: SubjService) {}
 
+    @Get('search')
+    async getSubjByName(@Query('q') subjName: string) {
+        return this.subjService.getSubjByName(subjName);
+    }
+
   @Get(':id')
     async getSubjById(@Param('id') id: string) {
+      console.log('hita sa id')
         return this.subjService.getSubjById(id);
     }
 
