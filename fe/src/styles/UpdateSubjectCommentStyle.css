@@ -31,6 +31,9 @@
 .subject-update-comment-modal-current p {
     margin: 4px 0;
     line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .subject-update-comment-modal-inputs {
@@ -75,6 +78,10 @@
 }
 .subject-update-comment-modal-confirm-btn:hover {
     background: #1d4ed8;
+}
+
+.modal-open {
+    overflow: hidden;
 }
 
 @keyframes subject-update-comment-modal-pop {

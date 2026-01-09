@@ -1,8 +1,6 @@
-import { Link } from "react-router-dom";
-import { routes } from "../constants";
-import type { Subject } from "../constants";
+import { Link, useNavigate } from "react-router-dom";
+import { routes, type Subject } from "../constants";
 import { useEffect, useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks";
 import {getAllSubjects, getSubjByName, updateToken} from "../services";
 import { SubjectCard } from "../components";
@@ -34,32 +32,17 @@ export const SubjectPage = () => {
     };
 
     useEffect(() => {
-        const fetchSubjects = async () => {
-            setLoading(true)
-            try {
-                token = await updateToken(token!, login, logout, navigate, []);
-                const response = await getAllSubjects(token);
-                if (response?.data) {
-                    const sorted = handleSort(ascending, response.data);
-                    setSubjects(sorted);
-                }
-            } catch (error) {
-                console.error("Error fetching subjects:", error);
-            } finally{
-                setLoading(false);
-            }
-        };
-        void fetchSubjects();
-    }, []);
-
-    useEffect(() => {
         const fetchSearchedSubjects = async () => {
+            setPage(1);
             if (!debouncedSearchTerm) {
                 setLoading(true);
                 try {
                     token = await updateToken(token!, login, logout, navigate, []);
                     const res = await getAllSubjects(token);
-                    if (res?.data) setSubjects(res.data);
+                    if (res?.data){
+                        const sorted = handleSort(ascending, res.data);
+                        setSubjects(sorted);
+                    }
                     else setSubjects([]);
                 } catch (err) {
                     console.error(err);
@@ -88,16 +71,14 @@ export const SubjectPage = () => {
         };
 
         void fetchSearchedSubjects();
-    }, [debouncedSearchTerm]);
+    }, [debouncedSearchTerm,ascending]);
 
-
-
-    const pageCount = Math.max(1, Math.ceil(subjects.length / 12));
+    const pageCount = Math.max(1, Math.ceil(subjects.length / 4));
     if (page > pageCount) setPage(pageCount);
 
     const pageCards = useMemo(() => {
-        const start = (page - 1) * 2; //odi izminit
-        return subjects.slice(start, start + 2);
+        const start = (page - 1) * 4; //odi izminit
+        return subjects.slice(start, start + 4);
     }, [subjects, page]);
 
     return (

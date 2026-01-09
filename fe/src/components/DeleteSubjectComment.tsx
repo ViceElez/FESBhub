@@ -14,6 +14,8 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
     const userId = decode?.sub;
     const navigate = useNavigate();
 
+
+
     useEffect(() => {
         if (!isOpen) return;
         const fetchComment = async () => {
@@ -24,6 +26,15 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
         };
         void fetchComment();
     }, [isOpen,id,userId]);
+
+    useEffect(() => {
+        if(isOpen){
+            document.body.classList.add('modal-open');
+        }
+        return () => {
+            document.body.classList.remove('modal-open');
+        }
+    }, [isOpen]);
 
     const handleCommentDelete = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);

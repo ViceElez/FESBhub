@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
 import type {PopupProperties} from "../constants";
@@ -17,7 +17,18 @@ export const AddSubjectComments = ({isOpen, onClose, id, onSuccess}: PopupProper
     const userId = decode?.sub;
     const navigate=useNavigate();
 
+
+    useEffect(() => {
+        if(isOpen){
+            document.body.classList.add('modal-open');
+        }
+        return () => {
+            document.body.classList.remove('modal-open');
+        }
+    }, [isOpen]);
+
     if (!isOpen) return null;
+
 
     const handleCommentSubmit = async () => {
         const funcs = [onClose];

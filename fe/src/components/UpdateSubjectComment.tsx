@@ -19,6 +19,7 @@ export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id }: PopupProperti
     const userId = decode?.sub;
     const navigate = useNavigate();
 
+
     useEffect(() => {
         if (!isOpen) return;
         const fetchComment = async () => {
@@ -28,6 +29,15 @@ export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id }: PopupProperti
             else console.log("Error fetching comment", res);
         };
         void fetchComment();
+    }, [isOpen]);
+
+    useEffect(() => {
+        if(isOpen){
+            document.body.classList.add('modal-open');
+        }
+        return () => {
+            document.body.classList.remove('modal-open');
+        }
     }, [isOpen]);
 
     const handleCommentUpdate = async () => {

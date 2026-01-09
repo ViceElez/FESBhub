@@ -31,6 +31,9 @@
 .subject-delete-comment-modal-content p {
     margin: 4px 0;
     line-height: 1.4;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .subject-delete-comment-modal-actions {
