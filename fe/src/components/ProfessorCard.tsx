@@ -7,6 +7,12 @@ import {useNavigate} from "react-router-dom";
 import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
 import { CPCardNormal } from "./index";
 
+const calculateAverageRating = (comments: CommentProfessor[]): number => {
+    if (comments.length === 0) return 0;
+    const total = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    return total / comments.length;
+};
+
 export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
     const [isOpenAdd, setIsOpenAdd] = useState(false)
@@ -45,17 +51,45 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
         void fetchVerifiedComments();
     }, [profId]);
 
+    const renderRatingStars = (rating: number) => {
+        const fullStars = Math.floor(rating);
+        const halfStar = rating - fullStars >= 0.5;
+        const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+        return (
+            <>
+                {'★'.repeat(fullStars)}
+                {halfStar && '½'}
+                {'☆'.repeat(emptyStars)}
+            </>
+        );
+    };
+
+    const averageRating = calculateAverageRating(verifiedComments);
+
+
     return (
         <div className = "card" >
-            <div>
-                <h2>{prof.firstName} {prof.lastName}</h2>
-                <p>Uže područje interesa: {prof.specialization}</p>
-                <p>Obrazovanje: {prof.education}</p>
-                <p>Email: {prof.email}</p>
-                <p>Ocjena: {prof.rating.toFixed(2)}</p>
-            </div>
-            <div style = {{ marginBottom: '10px' }} >
-                <button
+            <img src={prof.imageUrl ? prof.imageUrl : '/default-profile-image.png'}/>
+            <h2>{prof.firstName} {prof.lastName}</h2>
+            <p>Uže područje interesa: {prof.specialization}</p>
+            <p>Obrazovanje: {prof.education}</p>
+            <p>Email: {prof.email}</p>
+            <p>Ocjena: {verifiedComments.length > 0 
+                         ? <>{renderRatingStars(averageRating)} ({averageRating.toFixed(2)})</>
+                         : "Nema ocjena"}</p>
+            <h4>Predmeti:</h4>
+            <ul>
+                {prof.subjects && prof.subjects.length > 0 ? (
+                    prof.subjects.map((subject, index) => (
+                        <li key={index}>{subject}</li>
+                    ))
+                ) : (
+                    <li>Nema dodanih predmeta</li>
+                )}
+            </ul>
+            <div className = "buttons" style = {{ marginBottom: '10px' }} >
+                <button className = "btn-add"
                     disabled={!token || !userId || existingComment}
                     onClick={() => {
                         setIsOpenAdd(true)
@@ -66,7 +100,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                     Dodaj komentar
                 </button>
 
-                <button
+                <button className = "btn-delete"
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
                         setIsOpenDelete(true)
@@ -78,7 +112,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 </button>
 
 
-                <button
+                <button className = "btn-update"
                     disabled={!token || !userId || !existingComment}
                     onClick={() => {
                         setIsOpenUpdate(true)

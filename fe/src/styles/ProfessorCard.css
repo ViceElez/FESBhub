@@ -1,0 +1,146 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #1D2D44;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+  
+.card img {
+    display: block;
+    margin: 0 auto 12px;   
+    width: 140px;           
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+.card h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #F0EBD8;
+}
+
+.card p {
+    margin: 5px 0;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+  
+/* Specifične boje */
+.btn-add {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-delete {
+background-color: #dc2626;   /* crveni */
+}
+
+
+.btn-update {
+background-color: #3b82f6;   /* plavi */
+}
+
+.buttons button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.cards-container-scroll-horizontally {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-top: 15px;
+    align-items: flex-start;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar {
+    height: 8px;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar-thumb {
+    background-color: #3E5C76;
+    border-radius: 4px;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+@media (max-width: 600px) {
+    .buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .buttons button {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .cards-container-scroll-horizontally {
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .card-scroll-horizontally {
+        min-width: 200px;
+        max-width: 220px;
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+
+    .card img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .card h2 {
+        font-size: 1.3rem;
+    }
+
+    .card p {
+        font-size: 0.85rem;
+    }
+}
+
+.rating-stars {
+    color: #FFD700; /* zlatne zvjezdice */
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.rating-number {
+    color: #F0EBD8;
+    font-size: 1rem;
+    margin-left: 6px;
+}

@@ -6,6 +6,7 @@ import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../hooks";
 import {getAllProfessors, updateToken} from "../services";
 import '../index.css';
+import '../styles/ProfessorCard.css';
 
 export const ProfessorPage = () => {
     const [professors, setProfessors] = useState<Professor[]>([]);

@@ -6,4 +6,6 @@ export interface Professor {
   education: string;
   email: string;
   rating: number;
+  imageUrl? : string;
+  subjects?: string[];
 }
