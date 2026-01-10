@@ -2,7 +2,7 @@ import {useState} from "react";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
 import type {PopupProperties} from "../constants";
-import {addProfessorComment} from "../services";
+import {addProfessorComment, getUserById, verifyProfessorComment} from "../services";
 import {useNavigate} from "react-router-dom";
 import {updateToken} from "../services";
 
@@ -20,15 +20,27 @@ export const AddProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: PopupP
     const handleCommentSubmit =async () => {
         const funcs = [onClose];
         token = await updateToken(token!,login,logout,navigate,funcs);
-        const response=await addProfessorComment(id,rating,content,token,userId)
-        if(response?.status===201){
-            alert('Success')
-            onSuccess?.();
-            onClose();
+        const user = await getUserById(+userId!, token!);
+        if(user?.request.status === 200){
+            const response = await addProfessorComment(id,rating,content,token,userId)
+            if(response?.status===201){
+                alert('Success')
+                onSuccess?.();
+                onClose();
+                if(user.data.isVerified == true){
+                    const verifyResponse = await verifyProfessorComment(id,+userId!,rating,content,token);
+                    if(verifyResponse?.status !== 200){
+                        alert('Error verifying comment.');
+                    }
+                }
+            }
+            else {
+                alert("Error")
+                console.log(response)
+            }
         }
-        else {
-            alert("Error")
-            console.log(response)
+        else{
+            alert("Error fetching user data.");
         }
         onClose();
     };
