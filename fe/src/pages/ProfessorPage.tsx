@@ -1,15 +1,16 @@
-import { useEffect, useState, useMemo} from 'react';
-import type { Professor } from '../constants';
+import { useEffect, useState, useMemo, use} from 'react';
+import type { Professor, Subject } from '../constants';
 import { routes } from '../constants';
 import {ProfessorCard} from '../components'
 import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../hooks";
-import {getAllProfessors, updateToken} from "../services";
+import {getAllProfessors, updateToken, getAllSubjects} from "../services";
 import '../index.css';
 import '../styles/ProfessorCard.css';
 
 export const ProfessorPage = () => {
     const [professors, setProfessors] = useState<Professor[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
 
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
@@ -32,6 +33,41 @@ export const ProfessorPage = () => {
             );
         };
         void fetchProfessors();
+    }, []);
+
+    useEffect(() => {
+        const fetchSubjects = async () => {
+            try{
+                token= await updateToken(token!, login, logout, navigate, []);
+                const response=await getAllSubjects(token)
+
+                interface SubjectFromAPI {
+                    id: number;
+                    title: string;
+                    idNositelja: number;
+                    idAuditornih: number;
+                    ratingExpectations: number;
+                    ratingPracticality: number;
+                    ratingDifficulty: number;
+                  }
+                  
+                  const mappedSubjects: Subject[] = response?.data.map((subj: SubjectFromAPI) => ({
+                      id: subj.id,
+                      title: subj.title,
+                      lecturerId: subj.idNositelja,
+                      assistentId: subj.idAuditornih,
+                      ratingExpectations: subj.ratingExpectations,
+                      ratingPracticality: subj.ratingPracticality,
+                      ratingDifficulty: subj.ratingDifficulty
+                  }));
+                  
+
+                setSubjects(mappedSubjects)
+            }catch(error){
+                console.error("Error fetching subjects:", error);
+            }
+        };
+        void fetchSubjects();
     }, []);
 
     const [page, setPage] = useState(1);
@@ -91,11 +127,19 @@ export const ProfessorPage = () => {
                 {pageCards.filter((professor) => 
                     professor.firstName.toLowerCase().includes(searchTerm.toLowerCase())
                     || professor.lastName.toLowerCase().includes(searchTerm.toLowerCase()))
-                    .map(professor => (
+                    .map(professor => {
+                        const professorSubjects = subjects.filter((subject : Subject)=>
+                            subject.lecturerId === professor.id);
+                    return (
                     <div key={professor.id}>
-                        <ProfessorCard prof = {professor} profId = {professor.id}/>
+                        <ProfessorCard 
+                        prof = {{...professor,
+                                subjects: professorSubjects
+                        }} 
+                        profId = {professor.id}/>
                     </div>
-                ))}
+                );
+                })}
             </div>
             <div className="pages" style={{ marginTop: "20px", textAlign: "center" }}>
                 <button onClick={() => setPage(1)} disabled={page === 1}>

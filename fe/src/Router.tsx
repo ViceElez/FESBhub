@@ -32,6 +32,7 @@ export const Router = () => {
                             <Route path={routes.NEWSPAGE} element={<NewsPage/>}/>
                             <Route path={routes.MATERIALSPAGE} element={<MaterialsPage/>}/>
                             <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
+                            <Route path ={routes.SUBJECTPAGE + '/:subjectId'} element={<SubjectPage/>}/>
                             <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
                             <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>
                             <Route path={routes.USERSETTINGSPAGE}

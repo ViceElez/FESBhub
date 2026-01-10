@@ -1,4 +1,4 @@
-import type {CardProperties, CommentProfessor} from "../constants";
+import type {CardProperties, CommentProfessor,Subject} from "../constants";
 import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
@@ -6,6 +6,7 @@ import {useAuth} from "../hooks";
 import {useNavigate} from "react-router-dom";
 import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
 import { CPCardNormal } from "./index";
+import { getAllSubjects } from "../services";
 
 const calculateAverageRating = (comments: CommentProfessor[]): number => {
     if (comments.length === 0) return 0;
@@ -81,8 +82,10 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
             <h4>Predmeti:</h4>
             <ul>
                 {prof.subjects && prof.subjects.length > 0 ? (
-                    prof.subjects.map((subject, index) => (
-                        <li key={index}>{subject}</li>
+                    prof.subjects.map((subject) => (
+                        <li key={subject.id} style ={{cursor: 'pointer', textDecoration: 'underline', color : 'white'}}
+                        onClick={() => navigate(`/subject/${subject.id}`)}>
+                        {subject.title}</li>
                     ))
                 ) : (
                     <li>Nema dodanih predmeta</li>
