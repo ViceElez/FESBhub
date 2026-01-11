@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useAuth} from "../hooks";
 import {jwtDecode} from "jwt-decode";
 import type {PopupProperties} from "../constants";
-import {addSubjectComment, updateToken} from "../services";
+import {addSubjectComment, updateToken, getUserById, verifySubjectComment} from "../services";
 import {useNavigate} from "react-router-dom";
 import {createPortal} from "react-dom";
 
@@ -33,14 +33,27 @@ export const AddSubjectComments = ({isOpen, onClose, id, onSuccess}: PopupProper
     const handleCommentSubmit = async () => {
         const funcs = [onClose];
         token = await updateToken(token!, login, logout, navigate, funcs);
-        const response = await addSubjectComment(id, ratingPract, ratingDiff, ratingExpect, content, token, userId)
-        if(response?.status === 201){
-            alert('Success')
-            onSuccess?.();
-            onClose();
-        } else {
-            alert("Error")
-            console.log(response)
+        const user = await getUserById(+userId!, token!);
+        if(user?.request.status === 200){
+            const response = await addSubjectComment(id,ratingPract,ratingDiff,ratingExpect,content,token,userId)
+            if(response?.status === 201){
+                alert('Success')
+                onSuccess?.();
+                onClose();
+                if(user.data.isVerified == true){
+                    const verifyResponse = await verifySubjectComment(id,+userId!,ratingPract,ratingDiff,ratingExpect,content,token);
+                    if(verifyResponse?.status !== 200){
+                        alert('Error verifying comment.');
+                    }
+                }
+            }
+            else {
+                alert("Error")
+                console.log(response)
+            }
+        }
+        else{
+            alert("Error fetching user data.");
         }
     };
 

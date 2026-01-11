@@ -20,6 +20,11 @@ export const SubjectCard = (subject: Subject) => {
     const decode = rawToken ? jwtDecode(rawToken) : null;
     const userId = decode?.sub;
     let token = rawToken;
+    const [displayRatings, setDisplayRatings] = useState({
+        expectation: subject.ratingExpectations,
+        practicality: subject.ratingPracticality,
+        difficulty: subject.ratingDifficulty,
+    });
 
     const CorrectType = (raw: any): CommentSubject => ({
         id: raw.id,
@@ -52,18 +57,56 @@ export const SubjectCard = (subject: Subject) => {
         void fetchVerifiedComments();
     }, [subject.id]);
 
+
+    const calculateAverages = (comments: CommentSubject[]) => {
+        if (comments.length === 0) {
+            return {
+                expectation: 0,
+                practicality: 0,
+                difficulty: 0,
+            };
+        }
+
+        const totals = comments.reduce(
+            (acc, c) => {
+                acc.expectation += c.ratingExpectation;
+                acc.practicality += c.ratingPracticality;
+                acc.difficulty += c.ratingDifficulty;
+                return acc;
+            },
+            { expectation: 0, practicality: 0, difficulty: 0 }
+        );
+
+        return {
+            expectation: totals.expectation / comments.length,
+            practicality: totals.practicality / comments.length,
+            difficulty: totals.difficulty / comments.length,
+        };
+    };
+
+
     const handleDelete = () => {
         setExistingComment(false);
-        setVerifiedComments(prev => prev.filter(comment => comment.userId !== Number(userId)));
-    }
+
+        setVerifiedComments(prev => {
+            const updated = prev.filter(
+                comment => comment.userId !== Number(userId)
+            );
+
+            setDisplayRatings(calculateAverages(updated));
+            return updated;
+        });
+    };
+
+
 
     return (
         <div className="subject-card">
             <div className="subject-card-header">
                 <h2>{subject.title}</h2>
-                <p>Ocjena očekivanja: {subject.ratingExpectations.toFixed(2)}</p>
-                <p>Ocjena praktičnosti: {subject.ratingPracticality.toFixed(2)}</p>
-                <p>Ocjena težine: {subject.ratingDifficulty.toFixed(2)}</p>
+                <p>Ocjena očekivanja: {displayRatings.expectation.toFixed(2)}</p>
+                <p>Ocjena praktičnosti: {displayRatings.practicality.toFixed(2)}</p>
+                <p>Ocjena težine: {displayRatings.difficulty.toFixed(2)}</p>
             </div>
 
             <div className="subject-card-buttons">
