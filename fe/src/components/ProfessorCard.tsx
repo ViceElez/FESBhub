@@ -72,7 +72,10 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     return (
         <div className = "card" >
             <img src={prof.imageUrl ? prof.imageUrl : '/default-profile-image.png'}/>
-            <h2>{prof.firstName} {prof.lastName}</h2>
+            <h2 onClick={() => navigate(`/professor/${profId}`)}
+                style ={{cursor: 'pointer', textDecoration: 'underline', color : 'white'}}>
+                    {prof.firstName} {prof.lastName}
+            </h2>
             {/* <p>Uže područje interesa: {prof.specialization}</p>
             <p>Obrazovanje: {prof.education}</p>
             <p>Email: {prof.email}</p> */}
