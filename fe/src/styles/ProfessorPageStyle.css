@@ -1,0 +1,105 @@
+.professor-page{
+    padding: 20px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #F0EBD8;
+}
+
+.professor-nav {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.professor-nav button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.professor-nav button:hover {
+    background-color: #303f9f;
+}
+
+.page-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.professor-controls {
+    display: flex;
+    justify-content: center;
+    gap: 200px;
+    margin-bottom: 20px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    width: 300px;
+    padding: 8px 44px 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.search-button {
+    position: absolute;
+    right: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #F0EBD8;
+    display: flex;
+    align-items: center;
+}
+
+.search-button:hover {
+    opacity: 0.8;
+}
+
+.sort-button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.sort-button:hover {
+    background-color: #1D2D44;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #3E5C76;
+    cursor: pointer;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    padding: 0 8px;
+}

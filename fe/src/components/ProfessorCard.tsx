@@ -73,10 +73,10 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
         <div className = "card" >
             <img src={prof.imageUrl ? prof.imageUrl : '/default-profile-image.png'}/>
             <h2>{prof.firstName} {prof.lastName}</h2>
-            <p>Uže područje interesa: {prof.specialization}</p>
+            {/* <p>Uže područje interesa: {prof.specialization}</p>
             <p>Obrazovanje: {prof.education}</p>
-            <p>Email: {prof.email}</p>
-            <p>Ocjena: {verifiedComments.length > 0 
+            <p>Email: {prof.email}</p> */}
+            <p className="rating-stars">Ocjena: {verifiedComments.length > 0 
                          ? <>{renderRatingStars(averageRating)} ({averageRating.toFixed(2)})</>
                          : "Nema ocjena"}</p>
             <h4>Predmeti:</h4>
@@ -149,12 +149,12 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                     id = {profId}
                 />
             </div>
-            <div>
+            <div className = "professor-card-comments-toggle">
                 <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
                     {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
                 </button>
             </div>
-            <div className = "cards-container-scroll-horizontally">
+            <div className = "professor-card-comments">
                 {verifiedComments.map(comment => (
                     <div key={comment.id}>
                         <CPCardNormal comment = {comment} show = {showVerifiedComments}/>
@@ -164,4 +164,3 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
         </div>
     )
 }
-

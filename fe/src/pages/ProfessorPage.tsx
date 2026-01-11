@@ -6,7 +6,8 @@ import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../hooks";
 import {getAllProfessors, updateToken, getAllSubjects} from "../services";
 import '../index.css';
-import '../styles/ProfessorCard.css';
+import '../styles/ProfessorCardStyle.css';
+import '../styles/ProfessorPageStyle.css';
 
 export const ProfessorPage = () => {
     const [professors, setProfessors] = useState<Professor[]>([]);
@@ -85,28 +86,41 @@ export const ProfessorPage = () => {
 
 
     return(
-        <div>
-            <Link to={routes.NEWSPAGE}>
-                <button>NEWSPAGE</button>
-            </Link>
-            <Link to={routes.SUBJECTPAGE}>
-                <button>SUBJECTPAGE</button>
-            </Link>
-            <Link to={routes.MATERIALSPAGE}>
-                <button>MATERIALS</button>
-            </Link>
-            <Link to={routes.ADMINSETTINGSPAGE}>
-                <button>ADMINSETTINGSPAGE</button>
-            </Link>
-            <h1>Professor Page</h1>
-            <div>
-                <input
-                    type="text"
-                    placeholder="Search professors..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button
+        <div className = "professor-page">
+            <nav className = "professor-nav">
+                <Link to={routes.NEWSPAGE}>
+                    <button>NEWSPAGE</button>
+                </Link>
+                <Link to={routes.SUBJECTPAGE}>
+                    <button>SUBJECTPAGE</button>
+                </Link>
+                <Link to={routes.MATERIALSPAGE}>
+                    <button>MATERIALS</button>
+                </Link>
+                <Link to={routes.ADMINSETTINGSPAGE}>
+                    <button>ADMINSETTINGSPAGE</button>
+                </Link>
+            </nav>
+            
+            <h1 className = "page-title">Explore Professors</h1>
+            <div className = "professor-controls">
+                <div className = "search-wrapper">
+                    <input
+                        type="text"
+                        placeholder="Search professors..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className = "search-input"
+                    />
+                    <button 
+                        className = "search-button"
+                        aria-label = "Search"
+                    >
+                        🔍
+                    </button>
+                </div>
+                
+                <button className = "sort-button"
                     onClick={() =>
                         setAscending((prev) => {
                             const newAsc = !prev;
@@ -141,7 +155,7 @@ export const ProfessorPage = () => {
                 );
                 })}
             </div>
-            <div className="pages" style={{ marginTop: "20px", textAlign: "center" }}>
+            <div className="pagination" style={{ marginTop: "20px", textAlign: "center" }}>
                 <button onClick={() => setPage(1)} disabled={page === 1}>
                 « First
                 </button>

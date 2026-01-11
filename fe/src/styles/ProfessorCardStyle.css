@@ -1,0 +1,290 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #1D2D44;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    overflow: hidden;
+    flex: 0 0 auto;
+    /* max-height: 450px; */
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+  
+.card img {
+    display: block;
+    margin: 0 auto 12px;   
+    width: 140px;           
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+.card h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: rgb(255, 174, 0);
+}
+
+.card p {
+    margin: 5px 0;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+  
+/* Specifične boje */
+.btn-add {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-delete {
+background-color: #dc2626;   /* crveni */
+}
+
+
+.btn-update {
+background-color: #3b82f6;   /* plavi */
+}
+
+.buttons button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+/* .cards-container-scroll-horizontally {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-top: 15px;
+    align-items: flex-start;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar {
+    height: 8px;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar-thumb {
+    background-color: #3E5C76;
+    border-radius: 4px;
+}
+
+.cards-container-scroll-horizontally::-webkit-scrollbar-track {
+    background-color: transparent;
+} */
+
+@media (max-width: 600px) {
+    /* .card {
+        padding: 15px;
+        max-height: 400px;
+    } */
+    .buttons {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .buttons button {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .cards-container-scroll-horizontally {
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .card-scroll-horizontally {
+        min-width: 200px;
+        max-width: 220px;
+        padding: 12px;
+        font-size: 0.85rem;
+    }
+
+    .card img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .card h2 {
+        font-size: 1.3rem;
+    }
+
+    .card p {
+        font-size: 0.85rem;
+    }
+}
+
+.rating-stars {
+    color: #FFD700; /* zlatne zvjezdice */
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.card p .rating-stars{
+    color: #FFD700;
+}
+
+.rating-number {
+    color: #F0EBD8;
+    font-size: 1rem;
+    margin-left: 6px;
+}
+
+.card ul {
+    padding: 0;
+    margin: 5px 0 0 0;
+    max-height: 25px;
+    list-style-type: square;
+    overflow-y: auto;
+    padding-left: 20px;
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2A3A52, #1D2D44);
+}
+
+.card ul li {
+    margin-bottom: 4px;
+    color: #D1D5DB;
+    font-size: 0. nine5rem;
+    transition: color 0.2s;
+}
+
+/* .card ul li:hover {
+    color: #FFD700;
+    cursor: pointer;
+} */
+
+.card h4 {
+    margin: 10px 0 5px 0;
+    color: #F0EBD8;
+}
+
+/* .card-scroll-horizontally {
+    min-width: 280px;
+    max-width: 360px;
+    padding: 16px;
+} */
+
+.card-scroll-horizontally ul{
+    max-height: 10px;
+    overflow-y: auto;
+    width: 100%;
+    margin-top: 5px;
+    text-align: left;
+}
+
+/* .card-scroll-horizontally h2 {
+    font-size: 1.2rem;
+    color: white;
+} */
+
+.professor-card-comments-toggle {
+    margin-top: 15px;
+}
+
+.professor-card-comments-toggle button {
+    background-color: #3E5C76;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.professor-card-comments-toggle button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.professor-card-comments{
+    display: flex;
+    flex-direction: column;
+    overflow-x: auto;
+    gap: 5px;
+    padding-top: 15px;
+    align-items: flex-start;
+    max-height: 120px;
+    overflow-y: auto;
+}
+
+.professor-card-comments::-webkit-scrollbar {
+    height: 8px;
+}
+
+.professor-card-comments::-webkit-scrollbar-thumb {
+    background-color: #3E5C76;
+    border-radius: 4px;
+}
+
+.subject-card-comments::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.card-scroll-horizontally {
+    min-width: 250px;
+    max-width: 300px;
+    padding: 15px;
+    background-color: #748CAB;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.card-scroll-horizontally h2,
+.card-scroll-horizontally h4 {
+    margin: 4px 0;
+    font-size: 0.95rem;
+    color: #F0EBD8;
+}
+
+.card-scroll-horizontally h2 {
+    font-weight: 500;
+}
+
+.card-scroll-horizontally h4 {
+    font-weight: 400;
+    color: #c9c9c9;
+}
+
+@media (max-width: 600px) {
+    .professor-card-comments {
+        gap: 10px;
+        padding-top: 10px;
+    }
+    .card-scroll-horizontally {
+        min-width: 200px;
+        max-width: 220px;
+        padding: 12px;
+    }
+}
