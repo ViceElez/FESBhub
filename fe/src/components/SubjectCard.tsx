@@ -57,7 +57,6 @@ export const SubjectCard = (subject: Subject) => {
         void fetchVerifiedComments();
     }, [subject.id]);
 
-
     const calculateAverages = (comments: CommentSubject[]) => {
         if (comments.length === 0) {
             return {
@@ -87,7 +86,6 @@ export const SubjectCard = (subject: Subject) => {
 
     const handleDelete = () => {
         setExistingComment(false);
-
         setVerifiedComments(prev => {
             const updated = prev.filter(
                 comment => comment.userId !== Number(userId)
@@ -97,6 +95,19 @@ export const SubjectCard = (subject: Subject) => {
             return updated;
         });
     };
+
+    const handleUpdate = (updatedComment: CommentSubject) => {
+        setVerifiedComments(prev => {
+            const updated = prev.map(comment =>
+                comment.userId === updatedComment.userId
+                    ? updatedComment
+                    : comment
+            );
+            setDisplayRatings(calculateAverages(updated));
+            return updated;
+        });
+    };
+
 
 
 
@@ -137,6 +148,7 @@ export const SubjectCard = (subject: Subject) => {
                 isOpen={isOpenUpdate}
                 id={subject.id}
                 onClose={() => setIsOpenUpdate(false)}
+                onSuccess={handleUpdate}
             />
 
             <div className="subject-card-comments-toggle">
@@ -155,3 +167,4 @@ export const SubjectCard = (subject: Subject) => {
         </div>
     );
 };
+//triba stavit kad se doda kometar od verificiranog usera da se odma sve azurira i da se rating doda i da se moze vidit kometnar odma

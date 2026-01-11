@@ -3,11 +3,11 @@ import { useAuth } from "../hooks";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { editSubjectComments, getSubjectCommentBySubjectAndUserId, updateToken } from "../services";
-import type { PopupProperties } from "../constants";
 import { createPortal } from "react-dom";
 import '../index.css'
+import type {UpdateCommentPopupProperties} from "../constants";
 
-export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id }: PopupProperties) => {
+export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: UpdateCommentPopupProperties) => {
     const [content, setContent] = useState("");
     const [ratingPract, setRatingPract] = useState(0);
     const [ratingDiff, setRatingDiff] = useState(0);
@@ -43,7 +43,21 @@ export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id }: PopupProperti
     const handleCommentUpdate = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);
         const response = await editSubjectComments(id, ratingPract, ratingDiff, ratingExpect, content, token, userId);
-        if (response?.status === 200) alert("Success");
+        if (response?.status === 200) {
+            alert("Updated successfully");
+            const updatedComment = {
+                id: comment.id,
+                userId: Number(userId),
+                subjId: id,
+                ratingPracticality: ratingPract,
+                ratingDifficulty: ratingDiff,
+                ratingExpectation: ratingExpect,
+                content,
+                verified: true,
+            };
+            onSuccess?.(updatedComment);
+            onClose();
+        }
         else console.log("Error", response);
         onClose();
     };
