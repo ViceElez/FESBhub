@@ -79,6 +79,13 @@
     background-color: #1D2D44;
 }
 
+.professor-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+
 .pagination {
     display: flex;
     justify-content: center;
