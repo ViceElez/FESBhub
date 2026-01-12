@@ -7,6 +7,7 @@ import {ProfessorCard} from '../components'
 import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../hooks";
 import {getAllProfessors, updateToken, getAllSubjects} from "../services";
+import { useParams } from 'react-router-dom';
 import '../index.css';
 import '../styles/ProfessorCardStyle.css';
 import '../styles/ProfessorDetailsPageStyle.css';
@@ -17,12 +18,17 @@ export const ProfessorDetailsPage = () => {
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
 
+    const {professorId} = useParams<{professorId: string}>();
+    // console.log("Professor ID from params:", id);
+
     useEffect(() => {
+        // console.log("Fetching details for professor ID:", id);
+        if (!professorId) return;
         const fetchProfessor = async () => {
             try{
                 token = await updateToken(token!, login, logout, navigate, []);
                 const response = await getAllProfessors(token)
-                const found = response?.data.find((prof: Professor) => prof.id === 1); 
+                const found = response?.data.find((prof: Professor) => prof.id === Number(professorId)); 
                 setProfessors(found ? [found] : []);
 
                 const subjectResponse = await getAllSubjects(token);
@@ -36,13 +42,13 @@ export const ProfessorDetailsPage = () => {
                     ratingDifficulty: subj.ratingDifficulty,
                 }));
 
-                setSubjects(mappedSubjects.filter((subj) => subj.lecturerId === 1 || subj.assistentId === 1));
+                setSubjects(mappedSubjects.filter((subj) => subj.lecturerId === Number(professorId) || subj.assistentId === Number(professorId)));
             }catch(error){
                 console.error("Error fetching professors:", error);
             }
         };
         void fetchProfessor();
-    }, []);
+    }, [professorId]);
 
     return (
         <div className ="professor-details-page">
@@ -75,7 +81,7 @@ export const ProfessorDetailsPage = () => {
                                 <li key={subj.id}>{subj.title}</li>
                             ))}
                         </ul> */}
-                        <ProfessorCard prof={prof} profId={prof.id} showDetails = {true} />
+                        <ProfessorCard prof={{...prof, subjects}} profId={prof.id} showDetails = {true} />
                     </div>
                 ))}
             </div>
