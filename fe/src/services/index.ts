@@ -8,4 +8,5 @@ export * from './professorCommentsApi.ts'
 export * from './updateToken.ts'
 export * from './subjectCommentsApi.ts'
 export * from './PostAdminApi.ts'
+export * from './materialsApi.ts'
 

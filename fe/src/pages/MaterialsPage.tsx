@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '../hooks';
+import { useNavigate } from 'react-router-dom';
+import {getAllMaterialsApi, updateToken,getFilesInCurrentFolderApi} from "../services";
 
 type FileItem = {
     id: number;
@@ -15,32 +18,44 @@ type FolderNode = {
 const FILE_FOLDERS = ['Video', 'Skripta', 'Ostalo'];
 
 export const MaterialsPage: React.FC = () => {
-    const [rootFolder, setRootFolder] = useState<FolderNode | null>(null);
     const [currentFolder, setCurrentFolder] = useState<FolderNode | null>(null);
     const [stack, setStack] = useState<FolderNode[]>([]);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState(false);
+    let {token, login, logout} = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:3000/mats/folders')
-            .then(res => res.json())
-            .then(data => {
-                setRootFolder(data);
-                setCurrentFolder(data);
-            });
+        const fetchMaterials = async () =>{
+            token = await updateToken(token!, login, logout, navigate, []);
+            const res=await getAllMaterialsApi(token)
+            if (res?.status===200){
+                setCurrentFolder(res.data);
+            }
+            else{
+                alert('Error fetching materials');
+            }
+        }
+        void fetchMaterials();
     }, []);
 
     useEffect(() => {
         if (!currentFolder) return;
-
         if (FILE_FOLDERS.includes(currentFolder.name)) {
             setLoading(true);
-            fetch(`http://localhost:3000/mats/folders/${currentFolder.id}/files`)
-                .then(res => res.json())
-                .then(data => setFiles(data))
-                .finally(() => setLoading(false));
-        } else {
-            setFiles([]);
+            const fetchFiles = async () => {
+                token = await updateToken(token!, login, logout, navigate, []);
+                const res = await getFilesInCurrentFolderApi(currentFolder.id, token);
+                if (res?.status === 200) {
+                    setFiles(res.data);
+                    setLoading(false)
+                } else {
+                    alert('Error fetching files in folder');
+                    setFiles([])
+                    setLoading(false)
+                }
+            }
+            void fetchFiles();
         }
     }, [currentFolder]);
 
@@ -191,5 +206,3 @@ const iconStyle: React.CSSProperties = {
   fontSize: '2.5rem',
   marginBottom: 6,
 };
-
-export default MaterialsPage;

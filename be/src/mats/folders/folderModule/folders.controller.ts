@@ -1,6 +1,8 @@
-import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe,UseGuards } from '@nestjs/common';
 import { FoldersService } from './folders.service';
+import {UserGuard} from "../../../guards";
 
+@UseGuards(UserGuard)
 @Controller('mats')
 export class FoldersController {
   constructor(private readonly foldersService: FoldersService) {}   
@@ -11,7 +13,6 @@ export class FoldersController {
 
   @Get('folders/:id/files')
   getFiles(@Param('id', ParseIntPipe) id: number) {
-    console.log('Fetching files for folder ID:', id);
     return this.foldersService.getFilesByFolderId(id);
   }
 }
