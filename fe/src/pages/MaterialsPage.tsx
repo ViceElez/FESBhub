@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../hooks';
 import { useNavigate } from 'react-router-dom';
-import {getAllMaterialsApi, updateToken,getFilesInCurrentFolderApi} from "../services";
+import {
+    getAllMaterialsApi,
+    updateToken,
+    getFilesInCurrentFolderApi,
+} from '../services';
+import '../index.css'
 
 type FileItem = {
     id: number;
@@ -22,40 +27,48 @@ export const MaterialsPage: React.FC = () => {
     const [stack, setStack] = useState<FolderNode[]>([]);
     const [files, setFiles] = useState<FileItem[]>([]);
     const [loading, setLoading] = useState(false);
-    let {token, login, logout} = useAuth();
+
+    let { token, login, logout } = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        const fetchMaterials = async () =>{
+        const fetchMaterials = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const res=await getAllMaterialsApi(token)
-            if (res?.status===200){
+            const res = await getAllMaterialsApi(token);
+
+            if (res?.status === 200) {
                 setCurrentFolder(res.data);
-            }
-            else{
+            } else {
                 alert('Error fetching materials');
             }
-        }
+        };
+
         void fetchMaterials();
     }, []);
 
     useEffect(() => {
         if (!currentFolder) return;
+
         if (FILE_FOLDERS.includes(currentFolder.name)) {
             setLoading(true);
+
             const fetchFiles = async () => {
                 token = await updateToken(token!, login, logout, navigate, []);
                 const res = await getFilesInCurrentFolderApi(currentFolder.id, token);
+
                 if (res?.status === 200) {
                     setFiles(res.data);
-                    setLoading(false)
                 } else {
-                    alert('Error fetching files in folder');
-                    setFiles([])
-                    setLoading(false)
+                    alert('Error fetching files');
+                    setFiles([]);
                 }
-            }
+
+                setLoading(false);
+            };
+
             void fetchFiles();
+        } else {
+            setFiles([]);
         }
     }, [currentFolder]);
 
@@ -73,136 +86,51 @@ export const MaterialsPage: React.FC = () => {
     if (!currentFolder) return null;
 
     return (
-        <div
-            style={{
-                minHeight: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <div style={containerStyle}>
-
-                <div style={headerStyle}>
+        <div className="materials-page">
+            <div className="materials-container">
+                <header className="materials-header">
                     {stack.length > 0 && (
-                        <button onClick={goBack} style={backButtonStyle}>
+                        <button className="back-button" onClick={goBack}>
                             ← Back
                         </button>
                     )}
-                    <h2 style={titleStyle}>{currentFolder.name}</h2>
-                </div>
+                    <h2 className="materials-title">{currentFolder.name}</h2>
+                </header>
 
-                <div style={gridStyle}>
+                <div className="materials-grid">
                     {currentFolder.subfolders?.map(folder => (
                         <div
                             key={folder.id}
-                            style={cardStyle}
+                            className="material-card"
                             onClick={() => goIntoFolder(folder)}
                         >
-                            <div style={iconStyle}>📁</div>
-                            <div>{folder.name}</div>
+                            <span className="material-icon">📁</span>
+                            <span className="material-name">{folder.name}</span>
                         </div>
                     ))}
 
-                    {loading && <div>Loading files…</div>}
+                    {loading && <div className="materials-empty">Loading files…</div>}
 
                     {files.map(file => (
                         <div
                             key={file.id}
-                            style={cardStyle}
+                            className="material-card"
                             onClick={() =>
                                 window.open(file.url, '_blank', 'noopener,noreferrer')
                             }
                         >
-                            <div style={iconStyle}>📄</div>
-                            <div>{file.name}</div>
+                            <span className="material-icon">📄</span>
+                            <span className="material-name">{file.name}</span>
                         </div>
                     ))}
 
                     {!loading &&
                         currentFolder.subfolders?.length === 0 &&
                         files.length === 0 && (
-                            <div style={{ opacity: 0.6 }}>This folder is empty.</div>
+                            <div className="materials-empty">This folder is empty.</div>
                         )}
                 </div>
             </div>
         </div>
     );
-
-};
-const containerStyle: React.CSSProperties = {
-  width: '100%',
-  minHeight: 'auto',          // ⬅ stop forcing height
-  maxWidth: 1400,             // ⬅ wider
-
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-
-  padding: '32px 48px',
-  borderRadius: 40,           // ⬅ oval edges
-  background: '#e5e7eb',      // light gray (matches dark UI contrast)
-};
-
-
-
-const headerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column', 
-  alignItems: 'center',
-  gap: 12,
-  marginBottom: 24,
-};
-
-
-const titleStyle: React.CSSProperties = {
-    fontSize: '2rem',
-    fontWeight: 700,
-};
-
-const backButtonStyle: React.CSSProperties = {
-    padding: '10px 20px',
-    borderRadius: 12,
-    border: 'none',
-    background: '#2563eb',
-    color: '#fff',
-    cursor: 'pointer',
-};
-
-const gridStyle: React.CSSProperties = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
-  gap: 24,
-  width: '100%',
-  maxWidth: 1200, // ⬅ controls how wide the grid can grow
-  justifyItems: 'center',
-};
-
-
-const cardStyle: React.CSSProperties = {
-  width: 220,
-  height: 150,                // ⬅ flatter
-  padding: '20px 16px',
-
-  borderRadius: 36,           // ⬅ oval / pill shape
-  background: '#1e293b',      // dark slate (matches FESBHub)
-  color: '#e5e7eb',
-
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  gap: 10,
-
-  cursor: 'pointer',
-  fontWeight: 600,
-  textAlign: 'center',
-
-  transition: 'transform 0.15s ease, background 0.15s ease',
-};
-
-
-const iconStyle: React.CSSProperties = {
-  fontSize: '2.5rem',
-  marginBottom: 6,
 };
