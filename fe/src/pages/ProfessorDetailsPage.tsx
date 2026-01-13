@@ -73,14 +73,6 @@ export const ProfessorDetailsPage = () => {
             <div className = "professor-details-container">
                 {professors.map((prof) => (
                     <div key={prof.id} className = "professor-details-card">
-                        {/* <h2>{prof.firstName} {prof.lastName}</h2>
-                        <p>Ocjena: {prof.rating.toFixed(2)}</p>
-                        <h3>Predmeti:</h3>
-                        <ul>
-                            {subjects.map((subj) => (
-                                <li key={subj.id}>{subj.title}</li>
-                            ))}
-                        </ul> */}
                         <ProfessorCard prof={{...prof, subjects}} profId={prof.id} showDetails = {true} />
                     </div>
                 ))}

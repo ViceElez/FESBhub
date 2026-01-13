@@ -72,7 +72,6 @@ export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
           <img src={prof.imageUrl ? prof.imageUrl : '/default-profile-image.png'} />
           <h2
             onClick={() => navigate(`/professor/${profId}`)}
-            style={{ cursor: 'pointer', textDecoration: 'underline', color: 'gold' }}
           >
             {prof.firstName} {prof.lastName}
           </h2>
@@ -94,7 +93,6 @@ export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
                   ? prof.subjects.map(subject => (
                       <li
                         key={subject.id}
-                        style={{ cursor: 'pointer', textDecoration: 'underline', color: 'white' }}
                         onClick={() => navigate(`/subject/${subject.id}`)}
                       >
                         {subject.title}
