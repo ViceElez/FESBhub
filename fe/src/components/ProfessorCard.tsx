@@ -103,7 +103,7 @@ export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
             </>
           )}
       
-          <div className="buttons" style={{ marginBottom: '10px' }}>
+          <div className="buttons">
             <button className="btn-add"
               disabled={!token || !userId || existingComment}
               onClick={() => { setIsOpenAdd(true); setIsOpenDelete(false); setIsOpenUpdate(false); }}
@@ -154,8 +154,8 @@ export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
       
           <div className="professor-card-comments">
             {verifiedComments.map(comment => (
-              <CPCardNormal key={comment.id} comment={comment} show={showVerifiedComments} />
-            ))}
+              <CPCardNormal key={comment.id} comment={comment} show={showVerifiedComments}/>
+              ))}
           </div>
         </div>
       );
