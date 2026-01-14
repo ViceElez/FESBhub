@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { routes } from "../constants/routes.ts";
 import { useEffect, useState } from "react";
 import { tokenIsAdmin } from "../services";
 import { useAuth } from "../hooks";
@@ -32,7 +30,12 @@ export const NewsPage = () => {
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
 
-  // lock body scroll when any modal open
+  useEffect(() => {
+    if (!message) return;
+    const t = window.setTimeout(() => setMessage(""), 2500);
+    return () => window.clearTimeout(t);
+  }, [message]);
+
   useEffect(() => {
     const anyModalOpen = isNewPostOpen || selectedImageUrl !== null;
     if (!anyModalOpen) return;
@@ -190,9 +193,7 @@ export const NewsPage = () => {
   };
 
   return (
-
     <div className="news-page-container">
-      {/* TOP CENTER TOGGLE */}
       <div className="news-top-toggle">
         <div className="news-top-toggle-inner">
           <button
@@ -218,39 +219,49 @@ export const NewsPage = () => {
       </div>
 
       <div className="news-body">
-        <div
-          style={{
-            display: "flex",
-            gap: 10,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <Link to={routes.MATERIALSPAGE}>
-            <button>Materials</button>
-          </Link>
-          <Link to={routes.SUBJECTPAGE}>
-            <button>Subjects</button>
-          </Link>
-          <Link to={routes.PROFESSORPAGE}>
-            <button>Professors</button>
-          </Link>
-          {isAdmin && (
-            <Link to={routes.ADMINSETTINGSPAGE}>
-              <button>admin settings page</button>
-            </Link>
+        <div className="news-panel">
+          {mainView === "fesbnews" && (
+            <div className="news-placeholder">
+              <h3 style={{ marginTop: 0, color: "#F0EBD8" }}>FESBnews</h3>
+              <p>Skeleton — logiku ubacujemo kasnije.</p>
+            </div>
           )}
-        </div>
 
-        <div className="news-main-layout">
-          <div className="news-panel">
-            {mainView === "fesbnews" && (
-              <div className="news-placeholder">
-                <h3 style={{ marginTop: 0, color: "#F0EBD8" }}>FESBnews</h3>
-                <p>Skeleton — logiku ubacujemo kasnije.</p>
+          {mainView === "userPosts" && (
+            <>
+              <div className="news-userposts-header">
+                <h3 style={{ margin: 0 }}>User Posts</h3>
+
+                <button
+                  type="button"
+                  className="news-newpost-btn"
+                  onClick={openNewPost}
+                  disabled={!token}
+                  title={!token ? "You must be logged in to create a post." : ""}
+                >
+                  New post
+                </button>
               </div>
             )}
 
+              {message && <div className={messageClass}>{message}</div>}
+
+              <div className="news-feed">
+                {loadingPosts ? (
+                  <p>Loading...</p>
+                ) : (
+                  allPosts
+                    .filter((post) => post.verified === true)
+                    .slice(0, 10)
+                    .map((post) => (
+                      <div className="news-post-card" key={post.id}>
+                        <div className="news-post-header">
+                          <div className="news-avatar">
+                            {initialsOf(
+                              post.user?.firstName,
+                              post.user?.lastName
+                            )}
+                          </div>
             {mainView === "userPosts" && (
               <>
                 <div className="news-userposts-header">
@@ -357,6 +368,7 @@ export const NewsPage = () => {
           )}
         </div>
       </div>
+
       {isNewPostOpen && (
         <div className="news-modal-overlay" onClick={closeNewPost}>
           <div className="news-modal" onClick={(e) => e.stopPropagation()}>
@@ -435,6 +447,7 @@ export const NewsPage = () => {
           </div>
         </div>
       )}
+
       {selectedImageUrl && (
         <div
           className="news-modal-overlay"
