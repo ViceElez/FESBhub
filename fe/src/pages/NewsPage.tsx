@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { tokenIsAdmin } from "../services";
 import { useAuth } from "../hooks";
 import type { Post } from "../services/PostAdminApi.ts";
-import { createPost, fetchAllPosts } from "../services/PostAdminApi.ts";
+import { createPost, fetchAllPosts, searchPosts } from "../services/PostAdminApi.ts";
 import "../styles/NewsPageStyle.css";
 
 type MainView = "userPosts" | "fesbnews";
@@ -23,6 +23,9 @@ export const NewsPage = () => {
   const [message, setMessage] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -106,13 +109,30 @@ export const NewsPage = () => {
 
   useEffect(() => {
     setLoadingPosts(true);
-    fetchAllPosts()
-      .then((posts) => setAllPosts(posts))
-      .catch((err: any) =>
-        setMessage(`Error fetching posts: ${err?.message ?? "Unknown error"}`)
-      )
-      .finally(() => setLoadingPosts(false));
-  }, []);
+    let isActive = true;
+
+    const run = async () => {
+      try {
+        const posts = searchQuery.trim()
+          ? await searchPosts(searchQuery)
+          : await fetchAllPosts();
+        if (isActive) setAllPosts(posts);
+        if (isActive) setCurrentPage(1);
+      } catch (err: any) {
+        if (isActive) {
+          setMessage(`Error fetching posts: ${err?.message ?? "Unknown error"}`);
+        }
+      } finally {
+        if (isActive) setLoadingPosts(false);
+      }
+    };
+
+    void run();
+
+    return () => {
+      isActive = false;
+    };
+  }, [searchQuery]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -160,6 +180,17 @@ export const NewsPage = () => {
         ? "news-message error"
         : "news-message success"
       : "";
+
+  const visiblePosts = allPosts.filter((post) => post.verified === true);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(visiblePosts.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const paginatedPosts = visiblePosts.slice(startIdx, endIdx);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="news-page-container">
@@ -211,6 +242,7 @@ export const NewsPage = () => {
                   New post
                 </button>
               </div>
+            )}
 
               {message && <div className={messageClass}>{message}</div>}
 
@@ -230,39 +262,109 @@ export const NewsPage = () => {
                               post.user?.lastName
                             )}
                           </div>
+            {mainView === "userPosts" && (
+              <>
+                <div className="news-userposts-header">
+                  <h3 style={{ margin: 0 }}>User Posts</h3>
 
-                          <div className="news-post-header-text">
-                            <div className="news-post-author">
-                              {post.user?.firstName ?? ""}{" "}
-                              {post.user?.lastName ?? ""}
+                  <button
+                    type="button"
+                    className="news-newpost-btn"
+                    onClick={openNewPost}
+                    disabled={!token}
+                    title={!token ? "You must be logged in to create a post." : ""}
+                  >
+                    New post
+                  </button>
+                </div>
+
+                {message && <div className={messageClass}>{message}</div>}
+
+                <div className="news-feed-column">
+                  <div className="news-feed">
+                    {loadingPosts ? (
+                      <p>Loading...</p>
+                    ) : (
+                      paginatedPosts.map((post) => (
+                          <div className="news-post-card" key={post.id}>
+                            <div className="news-post-header">
+                              <div className="news-avatar">
+                                {initialsOf(
+                                  post.user?.firstName,
+                                  post.user?.lastName
+                                )}
+                              </div>
+
+                              <div className="news-post-header-text">
+                                <div className="news-post-author">
+                                  {post.user?.firstName ?? ""}{" "}
+                                  {post.user?.lastName ?? ""}
+                                </div>
+                                <div className="news-post-date">
+                                  {new Date(post.createdAt).toLocaleString()}
+                                </div>
+                              </div>
                             </div>
-                            <div className="news-post-date">
-                              {new Date(post.createdAt).toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
 
-                        <div className="news-post-title">{post.title}</div>
-                        <p className="news-post-content">{post.content}</p>
+                            <div className="news-post-title">{post.title}</div>
+                            <p className="news-post-content">{post.content}</p>
 
-                        {post.photos && post.photos.length > 0 && (
-                          <div className="news-post-photos">
-                            {post.photos.map((photo, index) => (
-                              <img
-                                key={photo.id}
-                                className="news-photo-thumb"
-                                src={photo.url}
-                                alt={`Post image ${index + 1}`}
-                                onClick={() => setSelectedImageUrl(photo.url)}
-                              />
-                            ))}
+                            {post.photos && post.photos.length > 0 && (
+                              <div className="news-post-photos">
+                                {post.photos.map((photo, index) => (
+                                  <img
+                                    key={photo.id}
+                                    className="news-photo-thumb"
+                                    src={photo.url}
+                                    alt={`Post image ${index + 1}`}
+                                    onClick={() => setSelectedImageUrl(photo.url)}
+                                  />
+                                ))}
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    ))
-                )}
-              </div>
-            </>
+                        ))
+                    )}
+                  </div>                  <div style={{ marginTop: "12px", fontSize: "0.85rem", color: "#748CAB" }}>
+                    Showing {startIdx + 1}-{Math.min(endIdx, visiblePosts.length)} of {visiblePosts.length} posts
+                  </div>                  {totalPages > 1 && (
+                    <div className="news-pagination">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <button
+                            key={page}
+                            className={`news-pagination-btn ${
+                              currentPage === page ? "active" : ""
+                            }`}
+                            onClick={() => handlePageChange(page)}
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {mainView === "userPosts" && (
+            <aside className="news-side-panel">
+              <div className="news-side-title">Search</div>
+              <input
+                type="text"
+                className="news-side-input"
+                placeholder="Type here..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <p className="news-side-hint">
+                Search for user posts by keywords in the title or content.
+              </p>
+
+            
+            </aside>
           )}
         </div>
       </div>

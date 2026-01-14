@@ -8,6 +8,9 @@ export type MyPost = {
     content: string;
     verified: boolean;
     createdAt: string;
+    updatedAt: string;
+    photoUrl: string | null;
+    photos?: { id: number; url: string; postId: number }[];
 };
 export type MyProfile = {
     id: number;
