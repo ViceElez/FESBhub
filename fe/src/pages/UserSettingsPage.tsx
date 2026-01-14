@@ -331,6 +331,18 @@ export const UserSettingsPage = () => {
                     </div>
 
                     <p style={{ marginTop: 8 }}>{p.content}</p>
+                    {p.photos && p.photos.length > 0 && (
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 8 }}>
+                        {p.photos.map((photo) => (
+                          <img 
+                            key={photo.id} 
+                            src={photo.url} 
+                            alt="Post photo" 
+                            style={{ maxWidth: '200px', maxHeight: '200px', objectFit: 'cover', borderRadius: 8 }} 
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -392,7 +404,7 @@ export const UserSettingsPage = () => {
                         >
                         Verificiraj
                         </button>
-
+                          
                         <button
                           onClick={async () => {
                             if(!token) {

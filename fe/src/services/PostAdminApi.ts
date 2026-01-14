@@ -26,13 +26,26 @@ export async function fetchAllPosts(): Promise<Post[]> {
     const response = await axios.get(`${route}/posts`);
     const posts = response.data;
    
-    return Array.isArray(posts) ? posts.slice(0, 10) : [];
+    return Array.isArray(posts) ? posts : [];
   } catch (error: any) {
     if (error.response?.status === 400) {
       console.log("No posts available");
       return [];
     }
     throw new Error(error.response?.data?.message ?? error.message ?? 'Failed to load posts');
+  }
+}
+
+export async function searchPosts(query: string): Promise<Post[]> {
+  const q = query.trim();
+  if (!q) return [];
+
+  try {
+    const response = await axios.get(`${route}/posts/search`, { params: { q } });
+    const posts = response.data;
+    return Array.isArray(posts) ? posts : [];
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message ?? error.message ?? "Failed to search posts");
   }
 }
 
@@ -74,10 +87,11 @@ export async function createPost(
   dto: { title: string; content: string; photoFiles: File[] },
   token: string
 ): Promise<Post> {
-  
+
   try {
     let photosBase64: string[] = [];
-    
+   
+
     if (dto.photoFiles && dto.photoFiles.length > 0) {
       // Check each file size
       for (const file of dto.photoFiles) {

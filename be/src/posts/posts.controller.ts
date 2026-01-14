@@ -8,6 +8,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    Query,
     Request,
     UseGuards,
 } from '@nestjs/common';
@@ -23,6 +24,19 @@ export class PostsController {
     @Get()
     async getAll() {
         return this.postsService.findAll();
+    }
+
+    @Get('search')
+    async search(@Query('q') q?: string) {
+        return this.postsService.search(q || '');
+    }
+
+    // Get current user's posts
+    @UseGuards(UserGuard)
+    @Get('me')
+    async getMine(@Request() req) {
+        const userId = Number(req.user?.sub);
+        return this.postsService.findMine(userId);
     }
 
     // Authenticated users can create posts (admins auto-verify)
@@ -50,14 +64,6 @@ export class PostsController {
         const updated = await this.postsService.update(id, dto);
         if (!updated) throw new NotFoundException('Post not found');
         return updated;
-    }
-
-    // Get current user's posts
-    @UseGuards(UserGuard)
-    @Get('me')
-    async getMine(@Request() req) {
-        const userId = Number(req.user?.sub);
-        return this.postsService.findMine(userId);
     }
 
     // Delete one of current user's posts (admins can delete any)
