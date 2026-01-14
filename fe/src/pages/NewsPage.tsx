@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { routes } from "../constants/routes.ts";
 import { useEffect, useState } from "react";
 import { tokenIsAdmin } from "../services";
 import { useAuth } from "../hooks";
@@ -29,7 +27,12 @@ export const NewsPage = () => {
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
 
-  // lock body scroll when any modal open
+  useEffect(() => {
+    if (!message) return;
+    const t = window.setTimeout(() => setMessage(""), 2500);
+    return () => window.clearTimeout(t);
+  }, [message]);
+
   useEffect(() => {
     const anyModalOpen = isNewPostOpen || selectedImageUrl !== null;
     if (!anyModalOpen) return;
@@ -159,9 +162,7 @@ export const NewsPage = () => {
       : "";
 
   return (
-
     <div className="news-page-container">
-      {/* TOP CENTER TOGGLE */}
       <div className="news-top-toggle">
         <div className="news-top-toggle-inner">
           <button
@@ -187,30 +188,6 @@ export const NewsPage = () => {
       </div>
 
       <div className="news-body">
-        <div
-          style={{
-            display: "flex",
-            gap: 10,
-            justifyContent: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <Link to={routes.MATERIALSPAGE}>
-            <button>Materials</button>
-          </Link>
-          <Link to={routes.SUBJECTPAGE}>
-            <button>Subjects</button>
-          </Link>
-          <Link to={routes.PROFESSORPAGE}>
-            <button>Professors</button>
-          </Link>
-          {isAdmin && (
-            <Link to={routes.ADMINSETTINGSPAGE}>
-              <button>admin settings page</button>
-            </Link>
-          )}
-        </div>
-
         <div className="news-panel">
           {mainView === "fesbnews" && (
             <div className="news-placeholder">
@@ -236,6 +213,7 @@ export const NewsPage = () => {
               </div>
 
               {message && <div className={messageClass}>{message}</div>}
+
               <div className="news-feed">
                 {loadingPosts ? (
                   <p>Loading...</p>
@@ -288,6 +266,7 @@ export const NewsPage = () => {
           )}
         </div>
       </div>
+
       {isNewPostOpen && (
         <div className="news-modal-overlay" onClick={closeNewPost}>
           <div className="news-modal" onClick={(e) => e.stopPropagation()}>
@@ -366,6 +345,7 @@ export const NewsPage = () => {
           </div>
         </div>
       )}
+
       {selectedImageUrl && (
         <div
           className="news-modal-overlay"

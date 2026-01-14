@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { routes } from "../constants/routes";
 import { useAuth } from "../hooks";
 import {
-  tokenIsAdmin,
   tokenIsExpired,
   getMyProfile,
   updateMyProfile,
@@ -12,63 +11,112 @@ import {
   deleteMyPost,
   type MyPost,
 } from "../services";
-import type { Post } from '../services/PostAdminApi.ts';
-import { fetchAllPosts,approvePost,deletePost } from "../services/PostAdminApi.ts";
-
-type Tab =
-  | "profile"
-  | "my-posts"
-  | "admin-drive"
-  | "admin-posts";
-
-type TabDef = {
-  key: Tab;
-  label: string;
-  adminOnly?: boolean;
-};
-
-const ALL_TABS: TabDef[] = [
-  { key: "profile", label: "Profil" },
-  { key: "my-posts", label: "Moji postovi" },
-
-  // admin-only
-  { key: "admin-drive", label: "Admin: Drive", adminOnly: true },
-  { key: "admin-posts", label: "Admin: Postovi", adminOnly: true },
-];
+import "../styles/UserSettingsPageStyle.css";
 
 export const UserSettingsPage = () => {
   const navigate = useNavigate();
-  const [params, setParams] = useSearchParams();
   const { token } = useAuth();
 
   const expired = token ? tokenIsExpired(token) : true;
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminLoaded, setAdminLoaded] = useState(false);
   const [profile, setProfile] = useState<MyProfile | null>(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+
   const [msg, setMsg] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
-        const [loadingPosts, setLoadingPosts] = useState(false);
-
-  const [allPosts, setAllPosts] = useState<Post[]>([]);
   const [myPosts, setMyPosts] = useState<MyPost[]>([]);
   const [myPostsLoading, setMyPostsLoading] = useState(false);
   const [myPostsErr, setMyPostsErr] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
 
-  const availableTabs = useMemo(() => {
-    return ALL_TABS.filter((t) => (t.adminOnly ? isAdmin : true));
-  }, [isAdmin]);
+  const [nameTouched, setNameTouched] = useState(false);
 
-  const activeTab = (params.get("tab") as Tab | null) ?? "profile";
+  useEffect(() => {
+    if (!token) return;
+    if (profileLoading || profile) return;
+
+    setProfileLoading(true);
+    setErr(null);
+
+    (async () => {
+      try {
+        const res = await getMyProfile(token);
+        setProfile(res.data);
+
+        if (!nameTouched) {
+          setFirstName(res.data.firstName ?? "");
+          setLastName(res.data.lastName ?? "");
+        }
+      } catch {
+        setErr("Ne mogu dohvatiti profil.");
+      } finally {
+        setProfileLoading(false);
+      }
+    })();
+  }, [token, profile, profileLoading, nameTouched]);
+
+  const loadMyPosts = async () => {
+    if (!token) return;
+
+    setMyPostsLoading(true);
+    setMyPostsErr(null);
+
+    try {
+      const posts = await fetchMyPosts(token);
+      setMyPosts(posts);
+    } catch {
+      setMyPostsErr("Ne mogu dohvatiti tvoje postove.");
+    } finally {
+      setMyPostsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!token) return;
+    if (expired) return;
+    void loadMyPosts();
+  }, [token, expired]);
+
+  const handleSaveProfile = async () => {
+    setMsg(null);
+    setErr(null);
+
+    const fn = firstName.trim();
+    const ln = lastName.trim();
+
+    if (!fn) {
+      setErr("Ime je obavezno.");
+      return;
+    }
+    if (!token) {
+      setErr("Nema tokena.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const res = await updateMyProfile(token, {
+        firstName: fn,
+        lastName: ln ? ln : null,
+      });
+      setProfile(res.data);
+      setMsg("Spremljeno");
+      window.setTimeout(() => setMsg(null), 2500);
+    } catch {
+      setErr("Spremanje nije uspjelo.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleDeleteMyPost = async (id: number) => {
     if (!token) return;
+
     const ok = window.confirm("Jesi siguran da želiš obrisati ovaj post?");
     if (!ok) return;
 
@@ -85,339 +133,153 @@ export const UserSettingsPage = () => {
     }
   };
 
-  
-  useEffect(() => {
-    if (!token) return;
-    if (activeTab !== "my-posts") return;
-
-    setMyPostsLoading(true);
-    setMyPostsErr(null);
-
-    (async () => {
-      try {
-        const posts = await fetchMyPosts(token);
-        setMyPosts(posts);
-      } catch {
-        setMyPostsErr("Ne mogu dohvatiti tvoje postove.");
-      } finally {
-        setMyPostsLoading(false);
-      }
-    })();
-  }, [token, activeTab]);
-
-  useEffect(() => {
-    if (!token) return;
-    if (activeTab !== "profile") return;
-    if (profileLoading || profile) return;
-
-    setProfileLoading(true);
-    setErr(null);
-
-    (async () => {
-      try {
-        const res = await getMyProfile(token);
-        setProfile(res.data);
-        setFirstName(res.data.firstName ?? "");
-        setLastName(res.data.lastName ?? "");
-       
-      } catch {
-        setErr("Ne mogu dohvatiti profil.");
-      } finally {
-        setProfileLoading(false);
-      }
-    })();
-  }, [token, activeTab, profile, profileLoading]);
-
-  const handleSaveProfile = async () => {
-    setMsg(null);
-    setErr(null);
-
-    const fn = firstName.trim();
-    const ln = lastName.trim();
-   
-
-    if (!fn) {
-      setErr("Ime je obavezno.");
-      return;
-    }
-
-    setSaving(true);
-    try {
-      const res = await updateMyProfile(token, {
-        firstName: fn,
-        lastName: ln ? ln : null,
-         });
-      setProfile(res.data);
-      setMsg("Spremljeno ✅");
-    } catch {
-      setErr("Spremanje nije uspjelo.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  useEffect(() => {
-    let mounted = true;
-
-    async function checkAdmin() {
-      if (!token) {
-        if (!mounted) return;
-        setIsAdmin(false);
-        setAdminLoaded(true);
-        return;
-      }
-
-      const result = await tokenIsAdmin(token);
-      if (!mounted) return;
-
-      setIsAdmin(result);
-      setAdminLoaded(true);
-    }
-
-    setAdminLoaded(false);
-    void checkAdmin();
-
-    return () => {
-      mounted = false;
-    };
-  }, [token]);
-
-
-  useEffect(() => {
-    const ok = availableTabs.some((t) => t.key === activeTab);
-    if (!ok && availableTabs.length > 0) {
-      setParams({ tab: availableTabs[0].key }, { replace: true });
-    }
-  }, [activeTab, availableTabs, setParams]);
- useEffect(() => {
-      
-        setLoadingPosts(true);
-        fetchAllPosts()
-            .then((posts) => {
-             
-                setAllPosts(posts);
-            })
-            .catch((err: any) => {
-               
-              postMessage(`Error fetching posts: ${err?.message ?? 'Unknown error'}`);
-            })
-            .finally(() => {
-                
-                setLoadingPosts(false);
-            });
-
-        return () => {};
-        
-    }, []);
-    
-
- 
   if (!token) {
     return (
-      <div>
-        <h1>Settings</h1>
-        <p>Moraš biti ulogiran da vidiš postavke.</p>
-        <button onClick={() => navigate(routes.LOGIN)}>Login</button>
+      <div className="settings-page-bg">
+        <div className="settings-page">
+          <div className="settings-card">
+            <div className="settings-header">
+              <h1 className="settings-title">Settings</h1>
+            </div>
+
+            <p>Moraš biti ulogiran da vidiš postavke.</p>
+
+            <div className="settings-actions">
+              <button type="button" onClick={() => navigate(routes.LOGIN)}>
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (expired) {
     return (
-      <div>
-        <h1>Settings</h1>
-        <p>Sesija je istekla. Ulogiraj se opet.</p>
-        <button onClick={() => navigate(routes.LOGIN)}>Login</button>
+      <div className="settings-page-bg">
+        <div className="settings-page">
+          <div className="settings-card">
+            <div className="settings-header">
+              <h1 className="settings-title">Settings</h1>
+            </div>
+
+            <p>Sesija je istekla. Ulogiraj se opet.</p>
+
+            <div className="settings-actions">
+              <button type="button" onClick={() => navigate(routes.LOGIN)}>
+                Login
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
 
-  if (!adminLoaded) {
-    return <p>Loading settings...</p>;
-  }
-
-  const setTab = (t: Tab) => setParams({ tab: t }, { replace: true });
-
   return (
-    <div style={{ width: "100%", maxWidth: 1000 }}>
-      <h1 style={{ marginBottom: 12 }}>Settings</h1>
-
-      <div style={{ display: "flex", gap: 16, alignItems: "flex-start" }}>
-        {/* Sidebar */}
-        <aside style={{ minWidth: 220, border: "1px solid #444", borderRadius: 12, padding: 12 }}>
-          <div style={{ marginBottom: 10, opacity: 0.85 }}>
-            Uloga: <strong>{isAdmin ? "Admin" : "User"}</strong>
+    <div className="settings-page-bg">
+      <div className="settings-page">
+        <div className="settings-card">
+          <div className="settings-header">
+            <h1 className="settings-title">Settings</h1>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {availableTabs.map((t) => {
-              const selected = t.key === activeTab;
-              return (
-                <button
-                  key={t.key}
-                  onClick={() => setTab(t.key)}
-                  style={{
-                    textAlign: "left",
-                    border: selected ? "1px solid #646cff" : "1px solid transparent",
-                  }}
-                >
-                  {t.label}
-                </button>
-              );
-            })}
+          <div className="settings-section-head">
+            <h2 className="settings-section-title" style={{ margin: 0 }}>
+              Profil
+            </h2>
+            {msg && <div className="settings-badge success">{msg}</div>}
           </div>
-        </aside>
 
-        {/* Content */}
-        <section style={{ flex: 1, border: "1px solid #444", borderRadius: 12, padding: 16 }}>
-          {activeTab === "profile" && (
-            <div>
-              <h2>Profil</h2>
+          {profileLoading && <p>Učitavanje...</p>}
+          {err && <div className="settings-msg error">{err}</div>}
 
-              {profileLoading && <p>Učitavanje...</p>}
-              {err && <p style={{ color: "crimson" }}>{err}</p>}
-              {msg && <p style={{ color: "limegreen" }}>{msg}</p>}
+          <div className="settings-form">
+            <label>
+              Ime*
+              <input
+                value={firstName}
+                onChange={(e) => {
+                  setNameTouched(true);
+                  setFirstName(e.target.value);
+                }}
+              />
+            </label>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 420 }}>
-                <label>
-                  Ime*
-                  <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
-                </label>
+            <label>
+              Prezime
+              <input
+                value={lastName}
+                onChange={(e) => {
+                  setNameTouched(true);
+                  setLastName(e.target.value);
+                }}
+              />
+            </label>
 
-                <label>
-                  Prezime
-                  <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-                </label>
-
-               
-                <button onClick={handleSaveProfile} disabled={saving || profileLoading}>
-                  {saving ? "Spremam..." : "Spremi promjene"}
-                </button>
-              </div>
+            <div className="settings-actions">
+              <button
+                type="button"
+                className="settings-primary-btn"
+                onClick={handleSaveProfile}
+                disabled={saving || profileLoading}
+              >
+                {saving ? "Spremam..." : "Spremi promjene"}
+              </button>
             </div>
+          </div>
+
+          <div className="settings-divider" />
+
+          <div className="settings-section-head">
+            <h2 className="settings-section-title" style={{ margin: 0 }}>
+              Moji postovi
+            </h2>
+
+            <button
+              type="button"
+              onClick={loadMyPosts}
+              disabled={myPostsLoading}
+              className="settings-secondary-btn"
+            >
+              {myPostsLoading ? "Učitavam..." : "Refresh"}
+            </button>
+          </div>
+
+          {myPostsErr && <div className="settings-msg error">{myPostsErr}</div>}
+
+          {!myPostsLoading && myPosts.length === 0 && (
+            <p style={{ opacity: 0.85 }}>Nemaš još postova.</p>
           )}
 
-          {activeTab === "my-posts" && (
-            <div>
-              <h2>Moji postovi</h2>
-
-              {myPostsLoading && <p>Učitavanje...</p>}
-              {myPostsErr && <p style={{ color: "crimson" }}>{myPostsErr}</p>}
-
-              {!myPostsLoading && myPosts.length === 0 && (
-                <p>Nemaš još postova.</p>
-              )}
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {myPosts.map((p) => (
-                  <div
-                    key={p.id}
-                    style={{ border: "1px solid #444", borderRadius: 12, padding: 12 }}
-                  >
-                    <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-                      <div>
-                        <strong>{p.title}</strong>
-                        <div style={{ opacity: 0.8, fontSize: 12 }}>
-                          {new Date(p.createdAt).toLocaleString()} • {p.verified ? "Verified" : "Pending"}
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => handleDeleteMyPost(p.id)}
-                        disabled={deletingId === p.id}
-                      >
-                        {deletingId === p.id ? "Brišem..." : "Obriši"}
-                      </button>
+          <div className="settings-posts">
+            {myPosts.map((p) => (
+              <div key={p.id} className="settings-post-card">
+                <div className="settings-post-top">
+                  <div>
+                    <div className="settings-post-title">{p.title}</div>
+                    <div className="settings-post-meta">
+                      {new Date(p.createdAt).toLocaleString()} •{" "}
+                      {p.verified ? "Verified" : "Pending"}
                     </div>
-
-                    <p style={{ marginTop: 8 }}>{p.content}</p>
                   </div>
-                ))}
+
+                  <button
+                    type="button"
+                    className="settings-danger-btn"
+                    onClick={() => handleDeleteMyPost(p.id)}
+                    disabled={deletingId === p.id}
+                  >
+                    {deletingId === p.id ? "Brišem..." : "Obriši"}
+                  </button>
+                </div>
+
+                <p className="settings-post-content">{p.content}</p>
               </div>
-            </div>
-          )}
-
-          {activeTab === "admin-drive" && isAdmin && (
-            <div>
-              <h2>Admin: Drive</h2>
-              <p>Ovdje će biti admin opcije za drive (upload, delete, permissions...).</p>
-            </div>
-          )}
-
-          {activeTab === "admin-posts" && isAdmin && (
-            <div>
-              <h2>Admin: Postovi</h2>
-              
-              {loadingPosts && <p>Učitavanje...</p>}
-           
-
-              {!loadingPosts && allPosts.filter(post => !post.verified).length === 0 && (
-                <p>Nema postova koji čekaju verifikaciju.</p>
-              )}
-
-              <div >
-                {allPosts
-                  .filter(post => !post.verified)
-                  .map(post => (
-                    <div
-                      key={post.id}
-                      style={{ border: "1px solid #444", borderRadius: 12, padding: 12 }}
-                    >
-                      <div >
-                        <strong >{post.title}</strong>
-                        <div >
-                          {new Date(post.createdAt).toLocaleString()} • 
-                          Autor: {post.user?.firstName ?? ""} {post.user?.lastName ?? ""}
-                        </div>
-                      </div>
-
-                      <p>{post.content}</p>
-
-                      <div style={{ display: "flex", gap: 8 }}>
-                        <button
-                          onClick={async () => {if(!token) {
-                            setMsg('no token available');
-                            return;
-                          }
-                          try{
-                            await approvePost(post.id, token);
-                            const updated = await fetchAllPosts();
-                            setAllPosts(updated);
-                            alert('Post uspješno verificiran');
-                          }catch(err:any){
-                            alert(`Greška pri verifikaciji posta: ${err?.message ?? 'Nepoznata greška'}`);
-                          }
-                          }}
-                          
-                        >
-                        Verificiraj
-                        </button>
-
-                        <button
-                          onClick={async () => {
-                            if(!token) {
-                              alert('No token available');
-                              return;
-                            }
-                            try {
-                              await deletePost(post.id, token);
-                              const updated = await fetchAllPosts();
-                              setAllPosts(updated);
-                              alert('Post uspješno obrisan');
-                            } catch(err:any) {
-                              alert(`Greška pri brisanju posta: ${err?.message ?? 'Nepoznata greška'}`);
-                            }
-                          }}
-                        >
-                          Obriši
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          )}
-        </section>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
