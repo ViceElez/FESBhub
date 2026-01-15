@@ -242,50 +242,15 @@ export const NewsPage = () => {
                   New post
                 </button>
               </div>
-            )}
 
               {message && <div className={messageClass}>{message}</div>}
 
-              <div className="news-feed">
-                {loadingPosts ? (
-                  <p>Loading...</p>
-                ) : (
-                  allPosts
-                    .filter((post) => post.verified === true)
-                    .slice(0, 10)
-                    .map((post) => (
-                      <div className="news-post-card" key={post.id}>
-                        <div className="news-post-header">
-                          <div className="news-avatar">
-                            {initialsOf(
-                              post.user?.firstName,
-                              post.user?.lastName
-                            )}
-                          </div>
-            {mainView === "userPosts" && (
-              <>
-                <div className="news-userposts-header">
-                  <h3 style={{ margin: 0 }}>User Posts</h3>
-
-                  <button
-                    type="button"
-                    className="news-newpost-btn"
-                    onClick={openNewPost}
-                    disabled={!token}
-                    title={!token ? "You must be logged in to create a post." : ""}
-                  >
-                    New post
-                  </button>
-                </div>
-
-                {message && <div className={messageClass}>{message}</div>}
-
-                <div className="news-feed-column">
-                  <div className="news-feed">
-                    {loadingPosts ? (
-                      <p>Loading...</p>
-                    ) : (
-                      paginatedPosts.map((post) => (
+              <div className="news-feed-column">
+                <div className="news-feed">
+                  {loadingPosts ? (
+                    <p>Loading...</p>
+                  ) : (
+                    paginatedPosts.map((post) => (
                           <div className="news-post-card" key={post.id}>
                             <div className="news-post-header">
                               <div className="news-avatar">
@@ -325,9 +290,13 @@ export const NewsPage = () => {
                           </div>
                         ))
                     )}
-                  </div>                  <div style={{ marginTop: "12px", fontSize: "0.85rem", color: "#748CAB" }}>
+                  </div>
+
+                  <div style={{ marginTop: "12px", fontSize: "0.85rem", color: "#748CAB" }}>
                     Showing {startIdx + 1}-{Math.min(endIdx, visiblePosts.length)} of {visiblePosts.length} posts
-                  </div>                  {totalPages > 1 && (
+                  </div>
+
+                  {totalPages > 1 && (
                     <div className="news-pagination">
                       {Array.from({ length: totalPages }, (_, i) => i + 1).map(
                         (page) => (
@@ -347,27 +316,24 @@ export const NewsPage = () => {
                 </div>
               </>
             )}
-          </div>
-
-          {mainView === "userPosts" && (
-            <aside className="news-side-panel">
-              <div className="news-side-title">Search</div>
-              <input
-                type="text"
-                className="news-side-input"
-                placeholder="Type here..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <p className="news-side-hint">
-                Search for user posts by keywords in the title or content.
-              </p>
-
-            
-            </aside>
-          )}
         </div>
       </div>
+
+      {mainView === "userPosts" && (
+        <aside className="news-side-panel">
+          <div className="news-side-title">Search</div>
+          <input
+            type="text"
+            className="news-side-input"
+            placeholder="Type here..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <p className="news-side-hint">
+            Search for user posts by keywords in the title or content.
+          </p>
+        </aside>
+      )}
 
       {isNewPostOpen && (
         <div className="news-modal-overlay" onClick={closeNewPost}>

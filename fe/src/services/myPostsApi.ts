@@ -38,6 +38,12 @@ export async function deleteMyPost(token: string, postId: number) {
     });
 }
 
+export async function updateMyPost(token: string, postId: number, data: { title: string; content: string }) {
+    return axios.patch(`${route}/posts/me/${postId}`, data, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+}
+
 export async function getMyProfile(token?: string) {
     return axios.get(`${route}/user/me`, {
         headers: { Authorization: `Bearer ${token}` },

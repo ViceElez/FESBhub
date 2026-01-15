@@ -77,6 +77,17 @@ export class PostsController {
         return deleted;
     }
 
+    // Update one of current user's posts
+    @UseGuards(UserGuard)
+    @Patch('me/:id')
+    async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
+        const userId = Number(req.user?.sub);
+        const isAdmin = Boolean(req.user?.isAdmin);
+        const updated = await this.postsService.updateMine(id, userId, isAdmin, dto);
+        if (!updated) throw new NotFoundException('Post not found');
+        return updated;
+    }
+
     // admin-only: verify a post (set verified=true)
     @UseGuards(UserGuard, AdminGuard)
     @Patch(':id/verify')
