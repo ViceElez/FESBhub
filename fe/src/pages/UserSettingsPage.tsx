@@ -9,6 +9,7 @@ import {
   type MyProfile,
   fetchMyPosts,
   deleteMyPost,
+  updateMyPost,
   type MyPost,
 } from "../services";
 import "../styles/UserSettingsPageStyle.css";
@@ -16,7 +17,7 @@ import "../styles/UserSettingsPageStyle.css";
 export const UserSettingsPage = () => {
   const navigate = useNavigate();
   const { token } = useAuth();
-
+  
   const expired = token ? tokenIsExpired(token) : true;
 
   const [profile, setProfile] = useState<MyProfile | null>(null);
@@ -33,6 +34,11 @@ export const UserSettingsPage = () => {
   const [myPostsLoading, setMyPostsLoading] = useState(false);
   const [myPostsErr, setMyPostsErr] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [editSaving, setEditSaving] = useState(false);
 
   const [nameTouched, setNameTouched] = useState(false);
 
@@ -130,6 +136,57 @@ export const UserSettingsPage = () => {
       setMyPostsErr("Brisanje nije uspjelo.");
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleStartEdit = (post: MyPost) => {
+    setEditingId(post.id);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditTitle("");
+    setEditContent("");
+  };
+
+  const handleSaveEdit = async (postId: number) => {
+    if (!token) return;
+
+    const t = editTitle.trim();
+    const c = editContent.trim();
+
+    if (!t) {
+      setMyPostsErr("Naslov ne može biti prazan.");
+      return;
+    }
+    if (!c) {
+      setMyPostsErr("Sadržaj ne može biti prazan.");
+      return;
+    }
+
+    setEditSaving(true);
+    setMyPostsErr(null);
+
+    try {
+      const response = await updateMyPost(token, postId, { title: t, content: c });
+      setMyPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId ? { ...p, title: t, content: c, verified: response.data.verified } : p
+        )
+      );
+      handleCancelEdit();
+      
+      // Show message if post needs re-approval
+      if (!response.data.verified) {
+        setMyPostsErr("Post updated successfully. It will need admin approval before being published.");
+        setTimeout(() => setMyPostsErr(null), 3000);
+      }
+    } catch {
+      setMyPostsErr("Spremanje nije uspjelo.");
+    } finally {
+      setEditSaving(false);
     }
   };
 
@@ -256,26 +313,86 @@ export const UserSettingsPage = () => {
           <div className="settings-posts">
             {myPosts.map((p) => (
               <div key={p.id} className="settings-post-card">
-                <div className="settings-post-top">
-                  <div>
-                    <div className="settings-post-title">{p.title}</div>
-                    <div className="settings-post-meta">
-                      {new Date(p.createdAt).toLocaleString()} •{" "}
-                      {p.verified ? "Verified" : "Pending"}
+                {editingId === p.id ? (
+                  <div className="settings-edit-form">
+                    <label>
+                      Naslov
+                      <input
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                      />
+                    </label>
+                    <label>
+                      Sadržaj
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        rows={4}
+                      />
+                    </label>
+                    <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
+                      <button
+                        type="button"
+                        className="settings-primary-btn"
+                        onClick={() => handleSaveEdit(p.id)}
+                        disabled={editSaving}
+                      >
+                        {editSaving ? "Spremam..." : "Spremi"}
+                      </button>
+                      <button
+                        type="button"
+                        className="settings-secondary-btn"
+                        onClick={handleCancelEdit}
+                        disabled={editSaving}
+                      >
+                        Odustani
+                      </button>
                     </div>
                   </div>
+                ) : (
+                  <>
+                    <div className="settings-post-top">
+                      <div>
+                        <div className="settings-post-title">{p.title}</div>
+                        <div className="settings-post-meta">
+                          {new Date(p.createdAt).toLocaleString()} •{" "}
+                          {p.verified ? "Verified" : "Pending"}
+                        </div>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <button
+                          type="button"
+                          className="settings-secondary-btn"
+                          onClick={() => handleStartEdit(p)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="settings-danger-btn"
+                          onClick={() => handleDeleteMyPost(p.id)}
+                          disabled={deletingId === p.id}
+                        >
+                          {deletingId === p.id ? "Brišem..." : "Obriši"}
+                        </button>
+                      </div>
+                    </div>
 
-                  <button
-                    type="button"
-                    className="settings-danger-btn"
-                    onClick={() => handleDeleteMyPost(p.id)}
-                    disabled={deletingId === p.id}
-                  >
-                    {deletingId === p.id ? "Brišem..." : "Obriši"}
-                  </button>
-                </div>
-
-                <p className="settings-post-content">{p.content}</p>
+                    <p className="settings-post-content">{p.content}</p>
+                    {p.photos && p.photos.length > 0 && (
+                      <div className="news-post-photos">
+                        {p.photos.map((photo, index) => (
+                          <img
+                            key={photo.id}
+                            className="news-photo-thumb"
+                            src={photo.url}
+                            alt={`Post image ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             ))}
           </div>

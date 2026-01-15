@@ -207,6 +207,41 @@
     cursor: not-allowed;
 }
 
+.settings-edit-form {
+    background: rgba(13, 19, 33, 0.5);
+    border: 1px solid rgba(240, 235, 216, 0.12);
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 8px;
+}
+
+.settings-edit-form label {
+    display: block;
+    margin-bottom: 10px;
+    color: #F0EBD8;
+    font-weight: 600;
+}
+
+.settings-edit-form input,
+.settings-edit-form textarea {
+    width: 100%;
+    background-color: #0D1321;
+    color: #F0EBD8;
+    border: 1px solid rgba(240, 235, 216, 0.12);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    margin-top: 4px;
+    box-sizing: border-box;
+}
+
+.settings-edit-form input:focus,
+.settings-edit-form textarea:focus {
+    outline: none;
+    border-color: rgba(240, 235, 216, 0.35);
+}
+
 .settings-badge {
     padding: 8px 12px;
     border-radius: 999px;
