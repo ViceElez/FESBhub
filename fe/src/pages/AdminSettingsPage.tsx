@@ -102,6 +102,7 @@ export const AdminSettingsPage = () => {
                 <button onClick={() => navigate(routes.LOGIN)}>Login</button>
             </div>
         );
+        //refreshaj token kad expirea ak nedobije kickaj
     }
 
     if (!adminLoaded) {

@@ -9,5 +9,5 @@ export const Layout=()=>{
                 <Outlet />
             </main>
         </div>
-    )
-}
+    );
+};

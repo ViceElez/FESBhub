@@ -44,4 +44,14 @@ export class UserController {
     async deleteUser(@Param('id') id: string) {
         return this.UserService.deleteUser(id);
     }
+     @Get('me')
+    async me(@Req() req) {
+        const userId = Number(req.user?.sub);
+        return this.UserService.getMyProfile(userId);
+    }
+     @Patch('me')
+    async updateMe(@Req() req, @Body() dto: UpdateProfileDto) {
+        const userId = Number(req.user?.sub);
+        return this.UserService.updateMyProfile(userId, dto);
+    }
 }

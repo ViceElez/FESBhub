@@ -10,3 +10,10 @@ export * from './subjectCommentsApi.ts'
 export * from './PostAdminApi.ts'
 export * from './materialsApi.ts'
 
+
+
+export * from "./newAccesTokenApi";
+export * from "./auth";
+
+export * from "./professorCommentsApi";
+export * from "./myPostsApi";

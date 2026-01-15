@@ -1,178 +1,444 @@
-import { Link } from "react-router-dom";
-import { routes } from "../constants/routes.ts";
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { tokenIsAdmin } from '../services';
+import { useEffect, useState } from "react";
+import { tokenIsAdmin } from "../services";
 import { useAuth } from "../hooks";
-import type { Post } from '../services/PostAdminApi.ts';
-import { createPost, fetchAllPosts } from '../services/PostAdminApi.ts';
+import type { Post } from "../services/PostAdminApi.ts";
+import { createPost, fetchAllPosts, searchPosts } from "../services/PostAdminApi.ts";
+import "../styles/NewsPageStyle.css";
+
+type MainView = "userPosts" | "fesbnews";
 
 export const NewsPage = () => {
-    const [title, setTitle] = useState('');
-    const [content, setContent] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState<string | null>(null);
-    const [allPosts, setAllPosts] = useState<Post[]>([]);
-    const [loadingPosts, setLoadingPosts] = useState(false);
-    const [postsError, setPostsError] = useState<string | null>(null);
-    const navigate = useNavigate();
-    const { token } = useAuth();
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [adminLoaded, setAdminLoaded] = useState<boolean>(false);
+  const [mainView, setMainView] = useState<MainView>("userPosts");
 
-    useEffect(() => {
-        async function checkAdmin() {
-            if (!token) {
-                setIsAdmin(false);
-                setAdminLoaded(true);
-                return;
-            }
+  const [isNewPostOpen, setIsNewPostOpen] = useState(false);
+  const [selectedImageUrl, setSelectedImageUrl] = useState<string | null>(null);
 
-            const result = await tokenIsAdmin(token);
-            setIsAdmin(result);
-            setAdminLoaded(true);
-        }
-        void checkAdmin();
-    }, [token]);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
 
-    useEffect(() => {
-        let mounted = true;
-        setLoadingPosts(true);
-        setPostsError(null);
+  const [allPosts, setAllPosts] = useState<Post[]>([]);
+  const { token } = useAuth();
 
-        fetchAllPosts()
-            .then((posts) => {
-                if (!mounted) return;
-                setAllPosts(posts);
-            })
-            .catch((err: any) => {
-                if (!mounted) return;
-                setPostsError(err?.message ?? 'Failed to load posts');
-            })
-            .finally(() => {
-                if (!mounted) return;
-                setLoadingPosts(false);
-            });
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [message, setMessage] = useState<string>("");
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-        return () => {
-            mounted = false;
-        };
-    }, []);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setMessage(null);
-        setLoading(true);
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
 
-        if (!token) {
-            setMessage('Error: No token available');
-            setLoading(false);
-            return;
-        }
+  useEffect(() => {
+    if (!message) return;
+    const t = window.setTimeout(() => setMessage(""), 2500);
+    return () => window.clearTimeout(t);
+  }, [message]);
 
-        try {
-            await createPost({ title, content }, token);
-            if (isAdmin) {
-                setMessage('Post created and published successfully');
-            } else {
-                setMessage('Post submitted for review. An admin will approve it soon.');
-            }
-            setTitle('');
-            setContent('');
-            const updatedPosts = await fetchAllPosts();
-            setAllPosts(updatedPosts);
-        } catch (err: any) {
-            if (err?.message?.includes('Unauthorized')) {
-                navigate(routes.LOGIN);
-            } else {
-                setMessage(`Error: ${err?.message ?? 'Failed to create post'}`);
-            }
-        } finally {
-            setLoading(false);
-        }
+  useEffect(() => {
+    const anyModalOpen = isNewPostOpen || selectedImageUrl !== null;
+    if (!anyModalOpen) return;
+
+    const old = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = old || "auto";
+    };
+  }, [isNewPostOpen, selectedImageUrl]);
+
+  const initialsOf = (first?: string, last?: string) => {
+    const f = (first ?? "").trim();
+    const l = (last ?? "").trim();
+    const i1 = f ? f[0].toUpperCase() : "U";
+    const i2 = l ? l[0].toUpperCase() : "";
+    return i1 + i2;
+  };
+
+  const openNewPost = () => {
+    if (!token) return;
+    setMessage("");
+    setIsNewPostOpen(true);
+  };
+
+  const closeNewPost = () => {
+    setIsNewPostOpen(false);
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter((file) => file.type.startsWith("image/"));
+
+    if (validFiles.length !== files.length) {
+      alert("Some files were not images and have been ignored.");
     }
 
-    return (
-       
-        <div>
-            <h1>News Page</h1>
-        <div>
-                <h2>Other Pages</h2>
-                <Link to={routes.MATERIALSPAGE}>
-                    <button >Materials</button>
-                </Link>
-                <Link to={routes.SUBJECTPAGE}>
-                    <button >Subjects</button>
-                </Link>
-                <Link to={routes.PROFESSORPAGE}>
-                    <button >Professors</button>
-                </Link>
-                <Link to={routes.ADMINSETTINGSPAGE}>
-                    <button>Admin Settings</button>
-                </Link>
-            </div>
-            {token  && (
-                <section style={{ marginBottom: 24, padding: 12, border: '1px solid #ddd' }}>
-                    <h2>Create a New Post</h2>
-                    <form onSubmit={handleSubmit} style={{ maxWidth: 700 }}>
-                        <div>
-                            <label>Title</label>
-                            <input
-                                value={title}
-                                onChange={(e) => setTitle(e.target.value)}
-                                required
-                                style={{ width: '100%', padding: 8, marginTop: 4 }}
-                            />
-                        </div>
+    setPhotoFiles(validFiles);
 
-                        <div>
-                            <label>Content</label>
-                            <textarea
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                                required
-                                rows={8}
-                                style={{ width: '100%', padding: 8, marginTop: 4 }}
-                            />
-                        </div>
+    if (validFiles.length > 0) {
+      const previews: string[] = [];
+      let loadedCount = 0;
 
-                        <div>
-                            <button type="submit" disabled={loading}>
-                                {loading ? 'Creating...' : 'Create Post'}
-                            </button>
-                        </div>
-                    </form>
+      validFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          previews.push(reader.result as string);
+          loadedCount++;
+          if (loadedCount === validFiles.length) {
+            setPhotoPreviews(previews);
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    } else {
+      setPhotoPreviews([]);
+    }
+  };
 
-                    {message && (
-                        <div style={{ marginTop: 12, color: message.startsWith('Error') ? 'crimson' : 'green' }}>
-                            {message}
-                        </div>
-                    )}
-                </section>
-            )}
+  useEffect(() => {
+    async function checkAdmin() {
+      if (!token) {
+        setIsAdmin(false);
+        return;
+      }
+      const result = await tokenIsAdmin(token);
+      setIsAdmin(result);
+    }
+    void checkAdmin();
+  }, [token]);
 
-            <section style={{ marginBottom: 24 }}>
-                <h2>All Posts</h2>
-                {loadingPosts && <p>Loading posts...</p>}
-                {postsError && <p >{postsError}</p>}
-                {!loadingPosts && allPosts.length === 0 && <p>No posts yet.</p>}
-                <ul>
-                    {allPosts.map((post) => (
-                        <li key={post.id} style={{ marginBottom: 16, padding: 12, border: '1px solid #ccc' }}>
-                            <strong>{post.title}</strong>
-                            <div >
-                                by {post.user?.firstName ?? ''} {post.user?.lastName ?? ''}
-                            </div>
-                            <p >{post.content}</p>
-                            <div>
-                                {post.verified ? '✓ Published' : 'Pending approval'}
-                            </div>
-                        </li>
-                    ))}
-                </ul>
-            </section>
+  useEffect(() => {
+    setLoadingPosts(true);
+    let isActive = true;
 
-            
+    const run = async () => {
+      try {
+        const posts = searchQuery.trim()
+          ? await searchPosts(searchQuery)
+          : await fetchAllPosts();
+        if (isActive) setAllPosts(posts);
+        if (isActive) setCurrentPage(1);
+      } catch (err: any) {
+        if (isActive) {
+          setMessage(`Error fetching posts: ${err?.message ?? "Unknown error"}`);
+        }
+      } finally {
+        if (isActive) setLoadingPosts(false);
+      }
+    };
+
+    void run();
+
+    return () => {
+      isActive = false;
+    };
+  }, [searchQuery]);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    if (!token) {
+      setMessage("Error: No token available");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      await createPost({ title, content, photoFiles }, token);
+
+      setMessage(
+        isAdmin
+          ? "Post created and published successfully"
+          : "Post submitted for review. An admin will approve it soon."
+      );
+
+      setTitle("");
+      setContent("");
+      setPhotoFiles([]);
+      setPhotoPreviews([]);
+
+      const updatedPosts = await fetchAllPosts();
+      setAllPosts(updatedPosts);
+
+      closeNewPost();
+    } catch (err: any) {
+      if (err?.response?.data?.message) {
+        setMessage(`Error: ${err.response.data.message}`);
+      } else {
+        setMessage(`Error: ${err?.message ?? "Failed to create post"}`);
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const messageClass =
+    message.length > 0
+      ? message.startsWith("Error")
+        ? "news-message error"
+        : "news-message success"
+      : "";
+
+  const visiblePosts = allPosts.filter((post) => post.verified === true);
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(visiblePosts.length / itemsPerPage);
+  const startIdx = (currentPage - 1) * itemsPerPage;
+  const endIdx = startIdx + itemsPerPage;
+  const paginatedPosts = visiblePosts.slice(startIdx, endIdx);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  return (
+    <div className="news-page-container">
+      <div className="news-top-toggle">
+        <div className="news-top-toggle-inner">
+          <button
+            type="button"
+            className={`news-top-toggle-btn ${mainView === "userPosts" ? "active" : ""
+              }`}
+            onClick={() => setMainView("userPosts")}
+          >
+            User Posts
+          </button>
+
+          <span style={{ color: "#748CAB", opacity: 0.9 }}>/</span>
+
+          <button
+            type="button"
+            className={`news-top-toggle-btn ${mainView === "fesbnews" ? "active" : ""
+              }`}
+            onClick={() => setMainView("fesbnews")}
+          >
+            FESBnews
+          </button>
         </div>
-    );
+      </div>
+
+      <div className="news-body">
+        <div className="news-panel">
+          {mainView === "fesbnews" && (
+            <div className="news-placeholder">
+              <h3 style={{ marginTop: 0, color: "#F0EBD8" }}>FESBnews</h3>
+              <p>Skeleton — logiku ubacujemo kasnije.</p>
+            </div>
+          )}
+
+          {mainView === "userPosts" && (
+            <>
+              <div className="news-userposts-header">
+                <h3 style={{ margin: 0 }}>User Posts</h3>
+
+                <button
+                  type="button"
+                  className="news-newpost-btn"
+                  onClick={openNewPost}
+                  disabled={!token}
+                  title={!token ? "You must be logged in to create a post." : ""}
+                >
+                  New post
+                </button>
+              </div>
+
+              {message && <div className={messageClass}>{message}</div>}
+
+              <div className="news-feed-column">
+                <div className="news-feed">
+                  {loadingPosts ? (
+                    <p>Loading...</p>
+                  ) : (
+                    paginatedPosts.map((post) => (
+                          <div className="news-post-card" key={post.id}>
+                            <div className="news-post-header">
+                              <div className="news-avatar">
+                                {initialsOf(
+                                  post.user?.firstName,
+                                  post.user?.lastName
+                                )}
+                              </div>
+
+                              <div className="news-post-header-text">
+                                <div className="news-post-author">
+                                  {post.user?.firstName ?? ""}{" "}
+                                  {post.user?.lastName ?? ""}
+                                </div>
+                                <div className="news-post-date">
+                                  {new Date(post.createdAt).toLocaleString()}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="news-post-title">{post.title}</div>
+                            <p className="news-post-content">{post.content}</p>
+
+                            {post.photos && post.photos.length > 0 && (
+                              <div className="news-post-photos">
+                                {post.photos.map((photo, index) => (
+                                  <img
+                                    key={photo.id}
+                                    className="news-photo-thumb"
+                                    src={photo.url}
+                                    alt={`Post image ${index + 1}`}
+                                    onClick={() => setSelectedImageUrl(photo.url)}
+                                  />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ))
+                    )}
+                  </div>
+
+                  <div style={{ marginTop: "12px", fontSize: "0.85rem", color: "#748CAB" }}>
+                    Showing {startIdx + 1}-{Math.min(endIdx, visiblePosts.length)} of {visiblePosts.length} posts
+                  </div>
+
+                  {totalPages > 1 && (
+                    <div className="news-pagination">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <button
+                            key={page}
+                            className={`news-pagination-btn ${
+                              currentPage === page ? "active" : ""
+                            }`}
+                            onClick={() => handlePageChange(page)}
+                          >
+                            {page}
+                          </button>
+                        )
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+        </div>
+      </div>
+
+      {mainView === "userPosts" && (
+        <aside className="news-side-panel">
+          <div className="news-side-title">Search</div>
+          <input
+            type="text"
+            className="news-side-input"
+            placeholder="Type here..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <p className="news-side-hint">
+            Search for user posts by keywords in the title or content.
+          </p>
+        </aside>
+      )}
+
+      {isNewPostOpen && (
+        <div className="news-modal-overlay" onClick={closeNewPost}>
+          <div className="news-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="news-modal-header">
+              <h3>New post</h3>
+              <button
+                type="button"
+                className="news-modal-close"
+                onClick={closeNewPost}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="news-modal-body">
+              <form className="news-form" onSubmit={handleSubmit}>
+                <div>
+                  <label>Title</label>
+                  <input
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label>Content</label>
+                  <textarea
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    required
+                    rows={8}
+                  />
+                </div>
+
+                <div>
+                  <label>Attach Images (optional)</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handlePhotoChange}
+                  />
+
+                  {photoPreviews.length > 0 && (
+                    <div className="news-previews">
+                      {photoPreviews.map((preview, index) => (
+                        <img
+                          key={index}
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {message && (
+                  <div className={messageClass} style={{ marginTop: 0 }}>
+                    {message}
+                  </div>
+                )}
+
+                <div className="news-form-actions">
+                  <button
+                    type="submit"
+                    className="news-submit-btn"
+                    disabled={loading}
+                  >
+                    {loading ? "Creating..." : "Create Post"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedImageUrl && (
+        <div
+          className="news-modal-overlay"
+          onClick={() => setSelectedImageUrl(null)}
+        >
+          <div
+            className="news-image-viewer"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="news-modal-header">
+              <h3>Image</h3>
+              <button
+                type="button"
+                className="news-modal-close"
+                onClick={() => setSelectedImageUrl(null)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+
+            <img src={selectedImageUrl} alt="Full view" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };

@@ -15,6 +15,8 @@
 @import url('styles/SubjectCardStyle.css');
 @import url('styles/SubjectPageStyle.css');
 @import url('styles/MaterialsPageStyle.css');
+@import url('./styles/NewsPageStyle.css');
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
