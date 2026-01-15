@@ -2,32 +2,6 @@ import axios from 'axios';
 
 const route="http://localhost:3000";
 
-export async function getUnverifiedUsersApi(accessToken:string | null){
-    try{
-        return await axios.get(`${route}/user/unverifiedUsers`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            }
-        });
-    }catch (e){
-        alert('Error fetching users');
-        return;
-    }
-}
-
-export async function getAllVerifiedUsersApi(accessToken:string | null){
-    try{
-        return await axios.get(`${route}/user/verifiedUsers`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            }
-        });
-    }catch (e){
-        alert('Error fetching users');
-        return;
-    }
-}
-
 export async function getAllUsersApi(accessToken:string | null){
     try{
         return await axios.get(`${route}/user/allUsers`, {

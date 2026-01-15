@@ -1,52 +1,103 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Patch, Request, UseGuards, NotFoundException } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    NotFoundException,
+    Param,
+    ParseIntPipe,
+    Patch,
+    Post,
+    Query,
+    Request,
+    UseGuards,
+} from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dtos/create-post.dto';
 import { UpdatePostDto } from './dtos/update-post.dto';
-import { UserGuard, AdminGuard } from '../guards';
+import { AdminGuard, UserGuard } from '../guards';
 
 @Controller('posts')
-export class PostsController{
-    constructor(private readonly postsService:PostsService){}
+export class PostsController {
+    constructor(private readonly postsService: PostsService) { }
 
     //@UseGuards(UserGuard)
     @Get()
-    async getAll(){
+    async getAll() {
         return this.postsService.findAll();
     }
 
-    // Authenticated users may create posts (admins auto-publish, users need approval)
+    @Get('search')
+    async search(@Query('q') q?: string) {
+        return this.postsService.search(q || '');
+    }
+
+    // Get current user's posts
+    @UseGuards(UserGuard)
+    @Get('me')
+    async getMine(@Request() req) {
+        const userId = Number(req.user?.sub);
+        return this.postsService.findMine(userId);
+    }
+
+    // Authenticated users can create posts (admins auto-verify)
     @UseGuards(UserGuard)
     @Post()
-    async create(@Body() dto:CreatePostDto,@Request() req){
-        const userId = req.user?.sub;
+    async create(@Body() dto: CreatePostDto, @Request() req) {
+        const userId = Number(req.user?.sub);
         const isAdmin = Boolean(req.user?.isAdmin);
-        console.log(isAdmin);
-        return this.postsService.create(dto,userId,isAdmin);
+        return this.postsService.create(dto, userId, isAdmin);
     }
 
     @UseGuards(UserGuard)
     @Delete(':id')
-    async remove(@Param('id', ParseIntPipe) id:number){
+    async remove(@Param('id', ParseIntPipe) id: number) {
         const deleted = await this.postsService.remove(id);
-        if(!deleted){
-            // ovo se moze prominit da izbacuje neki error 
-            // ili nes drugo
-            throw new NotFoundException('Post not found'); 
-
-        }
+        if (!deleted) throw new NotFoundException('Post not found');
         return deleted;
     }
 
+    
+
    @UseGuards(UserGuard)
     @Patch(':id')
-    async update(
-    @Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
-    try {
-        return await this.postsService.update(id, dto);
-    } catch (e) {
-        // ako se nenade baca ti NotFoundException
-        throw new NotFoundException('Post not found');
+    async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
+        const updated = await this.postsService.update(id, dto);
+        if (!updated) throw new NotFoundException('Post not found');
+        return updated;
     }
+
+    // Delete one of current user's posts (admins can delete any)
+    @UseGuards(UserGuard)
+    @Delete('me/:id')
+    async removeMine(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        const userId = Number(req.user?.sub);
+        const isAdmin = Boolean(req.user?.isAdmin);
+        const deleted = await this.postsService.remove(id);
+        if (!deleted) throw new NotFoundException('Post not found');
+        return deleted;
+    }
+
+    // Update one of current user's posts
+    @UseGuards(UserGuard)
+    @Patch('me/:id')
+    async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
+        const userId = Number(req.user?.sub);
+        const isAdmin = Boolean(req.user?.isAdmin);
+        const updated = await this.postsService.updateMine(id, userId, isAdmin, dto);
+        if (!updated) throw new NotFoundException('Post not found');
+        return updated;
+    }
+
+    // admin-only: verify a post (set verified=true)
+    @UseGuards(UserGuard, AdminGuard)
+    @Patch(':id/verify')
+    async verify(@Param('id', ParseIntPipe) id: number) {
+        const updated = await this.postsService.approve(id);
+        if (!updated) {
+            throw new NotFoundException('Post not found');
+        }
+        return updated;
     }
 
     @UseGuards(UserGuard)

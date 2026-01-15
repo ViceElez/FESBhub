@@ -1,33 +1,17 @@
 import {Controller, Get, Req, UseGuards, Param, Patch, Delete} from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
-
+import { UpdateProfileDto } from './dto/update-profile.dto';
 @UseGuards(UserGuard)
 @Controller('user')
 export class UserController {
     constructor(
         private readonly UserService: UserService,
     ) {}
-
-    @Get('unverifiedUsers')
-    async getUnverifiedUsers() {
-        return this.UserService.getUnverifiedUsers();
-    }
-
-    @Get('verifiedUsers')
-    async getVerifiedUsers() {
-        return this.UserService.getVerifiedUsers();
-    }
-
     @Get('allUsers')
     async getAllUsers() {
         return this.UserService.getAllUsers();
     }
-    @Get(':id')
-    async getUserById(@Param('id') id: string) {
-        return this.UserService.getUserById(id);
-    }
-
     @Get('byName')
     async getUserByName(@Req() req:any) {
         const username=req.username;
@@ -54,5 +38,20 @@ export class UserController {
     @Delete(':id')
     async deleteUser(@Param('id') id: string) {
         return this.UserService.deleteUser(id);
+    }
+     @Get('me')
+    async me(@Req() req) {
+        const userId = Number(req.user?.sub);
+        return this.UserService.getMyProfile(userId);
+    }
+     @Patch('me')
+    async updateMe(@Req() req,   dto: UpdateProfileDto) {
+        const userId = Number(req.user?.sub);
+        return this.UserService.updateMyProfile(userId, dto);
+    }
+
+    @Get(':id')
+    async getUserById(@Param('id') id: string) {
+        return this.UserService.getUserById(id);
     }
 }

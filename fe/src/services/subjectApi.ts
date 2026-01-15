@@ -41,3 +41,16 @@ export async function deleteSubjectById(subjId: number, token?: string | null) {
         return
     }
 }
+
+export async function getSubjByName(subjName: string, token?: string | null) {
+    try{
+        return await axios.get(`${route}/subj/search?q=${subjName}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+    } catch (e){
+        console.log(e)
+        return
+    }
+}

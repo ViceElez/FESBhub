@@ -1,8 +1,19 @@
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MinLength, IsArray } from 'class-validator';
 
 export class UpdatePostDto {
+    @IsOptional()
+    @IsString()
+    @MinLength(1)
     title?: string;
+
+    @IsOptional()
+    @IsString()
+    @MinLength(1)
     content?: string;
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    photos?: string[]; // array of image URLs or base64 data
 }
-//odi dodat jos stvari jer moze img,datoteke dodavat i provjera jeli prazno ili nije
-// novi komentar
+//triba ogranicit photo

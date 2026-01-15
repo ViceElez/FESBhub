@@ -150,3 +150,16 @@ export async function getAllCommentsBySubjectId(subjectId: number, token?: strin
         return
     }
 }
+
+export async function getSubjectCommentBySubjectAndUserId(subjectId: number,userId?:string | null, token?: string | null) {
+    try {
+        return axios.get(`${route}/comment-subj/${subjectId}/${userId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (e) {
+        console.log(e)
+        return
+    }
+}

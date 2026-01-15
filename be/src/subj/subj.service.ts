@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import { UpdateSubjDto } from './dto/update-subj.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -127,7 +127,7 @@ export class SubjService {
       });
 
       if (!existingSubj) {
-          throw new Error('Subject not found');
+          throw new NotFoundException('Subject not found');
       }
       return existingSubj
   }
@@ -139,10 +139,25 @@ export class SubjService {
   async deleteSubjById(id: string) {
       const existingSubj=await this.getSubjById(id);
         if(!existingSubj){
-            throw new Error('Subject not found');
+            throw new NotFoundException('Subject not found');
         }
       return this.prisma.subject.delete({
           where: { id: Number(id) },
       });
   }
+
+  async getSubjByName(subjName: string) {
+      const subjects= await  this.prisma.subject.findMany({
+          where:{
+              title:{
+                    contains: subjName,
+                    mode: 'insensitive',
+              }
+          }
+      })
+        if(subjects.length===0){
+            throw new NotFoundException('No subjects found with the given name');
+        }
+      return subjects;
+    }
 }

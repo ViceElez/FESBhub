@@ -13,9 +13,11 @@ export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
     useEffect(() => {
         const fetchUser = async () => {
             token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getUserById(comment.userId, token!);
-            setUserFirstName(response.firstName);
-            setUserLastName(response.lastName);
+            const res = await getUserById(comment.userId, token!);
+            if(res?.status===200){
+                setUserFirstName(res.data.firstName);
+                setUserLastName(res.data.lastName);
+            }
         };
         void fetchUser();
     }, [comment.userId, token]);
@@ -25,8 +27,7 @@ export const CSCardNormal = ({comment, show}: CommentSubjectNormal) => {
     }
 
     return (
-        <div className="card-scroll-horizontally card"
-        >
+        <div className="card-scroll-horizontally card">
             <div>
                 <h4>{userFirstName} {userLastName} je komentirao:</h4>
                 <h2>Ocjena tezine: {comment.ratingDifficulty.toFixed(2)}</h2>
