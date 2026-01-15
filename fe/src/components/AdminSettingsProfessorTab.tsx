@@ -1,0 +1,105 @@
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../hooks";
+import {useEffect, useState} from "react";
+import {deleteProfessorById, getAllProfessors, updateToken} from "../services";
+import '../index.css'
+import {AdminSettingProfessorTabComments} from "../components";
+
+type Professor = {
+    id: number;
+    firstName: string;
+    lastName: string;
+    specialization: string;
+    education: string;
+    email: string;
+    rating: number;
+    comments:[];
+    subjectsAsAuditor:[];
+    subjectsAsNositelj:[];
+};
+
+export const AdminSettingsProfessorTab = () => {
+    const navigate = useNavigate();
+    let { token,login,logout } = useAuth();
+    const [professors, setProfessors] = useState<Professor[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isVisible, setIsVisible] = useState<boolean>(false);
+    const [selectedProf, setSelectedProf] = useState<Professor | null>(null);
+
+    useEffect(() => {
+        async function fetchProfessors() {
+            try {
+                token = await updateToken(token!, login, logout, navigate, []);
+                const response = await getAllProfessors(token);
+                if (response?.status === 200) {
+                    const professors: Professor[] = response.data;
+                    setProfessors(professors);
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+        void fetchProfessors();
+    }, []);
+
+    const handleDelete = async (professorId: number) => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        if(!confirm("Are you sure you want to delete this professor? This action cannot be undone.")) return;
+        const res=await deleteProfessorById(professorId, token);
+        if(res?.status===200){
+            setProfessors(prevProfessors =>
+                prevProfessors.filter(p => p.id !== professorId)
+            );
+            alert('Professor deleted successfully.');
+        }
+    }
+
+    const handleViewComments = async (professor:Professor) => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        setSelectedProf(professor);
+        setIsVisible(true);
+    }
+
+    if (loading) return <p>Loading professors...</p>;
+
+    return (
+        <div className="admin-professors-container">
+            {professors.map(professor => (
+                <div key={professor.id} className="admin-professor-card">
+                    <h2 className="admin-professor-name">
+                        {professor.firstName} {professor.lastName} -
+                        <span className="admin-professor-email"> {professor.email}</span>
+                    </h2>
+                    <p className="admin-professor-specialization">Specialization: {professor.specialization}</p>
+                    <p className="admin-professor-education">Education: {professor.education}</p>
+                    <p className="admin-professor-rating">Rating: {professor.rating.toFixed(2)}</p>
+
+                    <button
+                        className="admin-professor-delete-btn"
+                        onClick={() => handleDelete(professor.id)}
+                    >
+                        Delete
+                    </button>
+
+                    <button
+                        className="admin-professor-comments-btn"
+                        onClick={() => handleViewComments(professor)}
+                    >
+                        View Comments
+                    </button>
+                </div>
+            ))}
+            {selectedProf && (
+                <AdminSettingProfessorTabComments
+                    open={isVisible}
+                    professor={selectedProf}
+                    close={() => {
+                        setIsVisible(false);
+                        setSelectedProf(null);
+                    }}
+                />
+            )}
+            {professors.length === 0 && <p>No professors found.</p>}
+        </div>
+    );
+}

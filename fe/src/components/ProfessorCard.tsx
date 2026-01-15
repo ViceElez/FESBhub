@@ -1,11 +1,11 @@
-import type {CardProperties} from "../constants";
+import type {CardProperties, CommentProfessor} from "../constants";
 import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {getProfessorComments, newAccessToken, tokenIsExpired} from "../services";
-import {routes} from "../constants/routes.ts";
 import {useNavigate} from "react-router-dom";
+import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
+import { CPCardNormal } from "./index";
 
 export const ProfessorCard = ({prof, profId}: CardProperties) => {
 
@@ -15,43 +15,44 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
     let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
-    const navigate=useNavigate()
+    const navigate = useNavigate()
     const [existingComment, setExistingComment] = useState(false);
-
+    const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
+    const [showVerifiedComments, setShowVerifiedComments] = useState(false);
 
     useEffect(() => {
         const fetchProfessorComments = async () => {
-            const expired = token ? tokenIsExpired(token) : true;
-            if(expired){
-                const newAccessTokenResponse=await newAccessToken()
-                if(newAccessTokenResponse?.status!==201){
-                    alert('Please login again')
-                    logout()
-                    navigate(routes.LOGIN)
-                }
-                else{
-                    login(newAccessTokenResponse.data)
-                    token=newAccessTokenResponse.data
-                }
-            }
+            token = await updateToken(token!, login, logout, navigate, []);
             const response=await getProfessorComments(profId,token,userId)
             if(response?.status===200)
                 setExistingComment(response.data)
-
             else
                 alert('Error')
         }
         void fetchProfessorComments()
     },[]);
 
+    useEffect(() => {
+        const fetchVerifiedComments = async () => {
+            token = await updateToken(token!, login, logout, navigate, []);
+            const response = await getVerifiedProfessorComments(profId, token);
+            if (response?.status === 200) {
+                setVerifiedComments(response.data);
+            } else {
+                alert('Error fetching verified comments');
+            }
+        };
+        void fetchVerifiedComments();
+    }, [profId]);
+
     return (
-        <div style = {{ border: '1px solid black', padding: '10px', margin: '10px' }} >
+        <div className = "card" >
             <div>
                 <h2>{prof.firstName} {prof.lastName}</h2>
                 <p>Uže područje interesa: {prof.specialization}</p>
                 <p>Obrazovanje: {prof.education}</p>
                 <p>Email: {prof.email}</p>
-                <p>Ocjena: {prof.rating}</p>
+                <p>Ocjena: {prof.rating.toFixed(2)}</p>
             </div>
             <div style = {{ marginBottom: '10px' }} >
                 <button
@@ -92,7 +93,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <AddProfessorCommentPopup
                     isOpen = {isOpenAdd}
                     onClose = {() => setIsOpenAdd(false)}
-                    profId = {profId}
+                    id = {profId}
                     onSuccess={() => setExistingComment(true)}
                 />
             </div>
@@ -100,7 +101,7 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <DeleteProfessorCommentPopup
                     isOpen = {isOpenDelete}
                     onClose = {() => setIsOpenDelete(false)}
-                    profId = {profId}
+                    id = {profId}
                     onSuccess={()=> setExistingComment(false)}
                 />
             </div>
@@ -108,11 +109,22 @@ export const ProfessorCard = ({prof, profId}: CardProperties) => {
                 <UpdateProfessorCommentPopup
                     isOpen = {isOpenUpdate}
                     onClose = {() => setIsOpenUpdate(false)}
-                    profId = {profId}
+                    id = {profId}
                 />
+            </div>
+            <div>
+                <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
+                    {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
+                </button>
+            </div>
+            <div className = "cards-container-scroll-horizontally">
+                {verifiedComments.map(comment => (
+                    <div key={comment.id}>
+                        <CPCardNormal comment = {comment} show = {showVerifiedComments}/>
+                    </div>
+                ))}
             </div>
         </div>
     )
 }
-
 

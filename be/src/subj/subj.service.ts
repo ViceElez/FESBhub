@@ -1,5 +1,4 @@
-import { Injectable } from '@nestjs/common';
-import { CreateSubjDto } from './dto/create-subj.dto';
+import {Injectable, NotFoundException} from '@nestjs/common';
 import { UpdateSubjDto } from './dto/update-subj.dto';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -7,15 +6,38 @@ import { PrismaService } from '../prisma/prisma.service';
 export class SubjService {
   constructor(private prisma: PrismaService) {}
 
-  async updateAfterAdminVerification(idUser: number, idSubj: number, updateSubjDto: UpdateSubjDto) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: idUser },
-      select: { isAdmin: true },
-    });
+  async updateNormal(
+    subjId: number, 
+    oldRatingExpectation: number, 
+    newRatingExpectation: number,
+    oldRatingDifficulty: number, 
+    newRatingDifficulty: number,
+    oldRatingPracticality: number, 
+    newRatingPracticality: number) {
 
-    if(!user){
-      throw new Error('User not found or not admin');
-    }
+      const subj = await this.prisma.subject.findUnique({
+        where: { id: subjId },
+      });
+
+      if(!subj){
+        throw new Error('Subject not found');
+      }
+
+      const numberOfVerifiedComments = await this.prisma.commentOnSubject.count({
+          where: { subjectId: subjId, verified: true }
+      });
+
+      return this.prisma.subject.update({
+        where: { id: subjId },
+        data: {
+          ratingExpectations: ((subj.ratingExpectations * numberOfVerifiedComments) - oldRatingExpectation + newRatingExpectation) / numberOfVerifiedComments,
+          ratingDifficulty: ((subj.ratingDifficulty * numberOfVerifiedComments) - oldRatingDifficulty + newRatingDifficulty) / numberOfVerifiedComments,
+          ratingPracticality: ((subj.ratingPracticality * numberOfVerifiedComments) - oldRatingPracticality + newRatingPracticality) / numberOfVerifiedComments,
+        },
+      });
+  }
+
+  async updateAfterAdminVerification(idUser: number, idSubj: number, updateSubjDto: UpdateSubjDto) {
 
     const subj = await this.prisma.subject.findUnique({
       where: { id: idSubj },
@@ -53,9 +75,9 @@ export class SubjService {
     return this.prisma.subject.update({
       where: { id: idSubj },
       data: {
-        ratingExpectations: ((subj.ratingExpectations * (numberOfVerifiedComments - 1)) + subj.ratingExpectations) / numberOfVerifiedComments,
-        ratingDifficulty: ((subj.ratingDifficulty * (numberOfVerifiedComments - 1)) + subj.ratingDifficulty) / numberOfVerifiedComments,
-        ratingPracticality: ((subj.ratingPracticality * (numberOfVerifiedComments - 1)) + subj.ratingPracticality) / numberOfVerifiedComments,
+        ratingExpectations: ((subj.ratingExpectations * (numberOfVerifiedComments - 1)) + updateSubjDto.ratingExpectation) / numberOfVerifiedComments,
+        ratingDifficulty: ((subj.ratingDifficulty * (numberOfVerifiedComments - 1)) + updateSubjDto.ratingDifficulty) / numberOfVerifiedComments,
+        ratingPracticality: ((subj.ratingPracticality * (numberOfVerifiedComments - 1)) + updateSubjDto.ratingPracticality) / numberOfVerifiedComments,
       },
       });
   }
@@ -99,4 +121,43 @@ export class SubjService {
     });
   }
 
+  async getSubjById(id: string) {
+      const existingSubj = await this.prisma.subject.findUnique({
+          where: { id: Number(id) },
+      });
+
+      if (!existingSubj) {
+          throw new NotFoundException('Subject not found');
+      }
+      return existingSubj
+  }
+
+  async findAll() {
+      return this.prisma.subject.findMany();
+  }
+
+  async deleteSubjById(id: string) {
+      const existingSubj=await this.getSubjById(id);
+        if(!existingSubj){
+            throw new NotFoundException('Subject not found');
+        }
+      return this.prisma.subject.delete({
+          where: { id: Number(id) },
+      });
+  }
+
+  async getSubjByName(subjName: string) {
+      const subjects= await  this.prisma.subject.findMany({
+          where:{
+              title:{
+                    contains: subjName,
+                    mode: 'insensitive',
+              }
+          }
+      })
+        if(subjects.length===0){
+            throw new NotFoundException('No subjects found with the given name');
+        }
+      return subjects;
+    }
 }

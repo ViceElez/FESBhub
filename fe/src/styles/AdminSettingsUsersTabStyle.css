@@ -1,0 +1,85 @@
+.admin-users-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px 0 160px 0;
+    gap: 20px;
+    color: #F0EBD8;
+}
+
+.admin-card {
+    width: 75%;
+    background-color: #1D2D44;
+    border-radius: 10px;
+    padding: 16px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-card h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.admin-card h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.admin-card p {
+    margin: 2px 0 8px 0;
+    font-size: 14px;
+    text-align: center;
+}
+
+.admin-card button {
+    width: 85%;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+.verify-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.verify-btn:hover {
+    background-color: #218838;
+}
+
+.unverify-btn {
+    background-color: #007bff;
+    color: #F0EBD8;
+}
+
+.unverify-btn:hover {
+    background-color: #0069d9;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+    color: #F0EBD8;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.view-profile-btn {
+    background-color: #748CAB;
+    color: #F0EBD8;
+}
+
+.view-profile-btn:hover {
+    background-color: #5a6268;
+}

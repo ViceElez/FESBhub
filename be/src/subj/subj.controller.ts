@@ -1,20 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Controller, Get, Param, UseGuards,Delete,Query} from '@nestjs/common';
 import { SubjService } from './subj.service';
-import { CreateSubjDto } from './dto/create-subj.dto';
-import { UpdateSubjDto } from './dto/update-subj.dto';
+import { UserGuard } from '../guards';
 
+@UseGuards(UserGuard)
 @Controller('subj')
 export class SubjController {
   constructor(private readonly subjService: SubjService) {}
-  
-  @Patch('verifyComment7/:idUser/:idSubj')
-  NewRatingAfterVerification(@Param('idUser') idUser: string, @Param('idSubj') idSubj: string, @Body() updateSubjDto: UpdateSubjDto) {
-    return this.subjService.updateAfterAdminVerification(+idUser, +idSubj, updateSubjDto);
+
+    @Get('search')
+    async getSubjByName(@Query('q') subjName: string) {
+        return this.subjService.getSubjByName(subjName);
+    }
+
+  @Get(':id')
+    async getSubjById(@Param('id') id: string) {
+      console.log('hita sa id')
+        return this.subjService.getSubjById(id);
+    }
+
+  @Get()
+  async findAll(){
+      return this.subjService.findAll();
   }
 
-  @Patch('deleteComment/:idSubj/:oldRatingExceptions/:oldRatingDiffuculty/:oldRatingPracicality')
-  NewRatingAfterDeletion(@Param('idSubj') idSubj: string, @Param('oldRatingExceptions') oldRatingExceptions: string, @Param('oldRatingDiffuculty') oldRatingDiffuculty: string, @Param('oldRatingPracicality') oldRatingPracicality: string) {
-    return this.subjService.updateAfterCommentDeletion(+idSubj, +oldRatingExceptions, +oldRatingDiffuculty, +oldRatingPracicality);
+  @Delete(':id')
+    async deleteSubjById(@Param('id') id: string) {
+      return this.subjService.deleteSubjById(id);
   }
-
 }

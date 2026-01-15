@@ -1,35 +1,21 @@
 import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
-import {deleteProfessorComment, newAccessToken, tokenIsExpired} from "../services";
-import {routes} from "../constants/routes.ts";
+import {deleteProfessorComment,updateToken} from "../services";
 import {useNavigate} from "react-router-dom";
 
-export const DeleteProfessorCommentPopup = ({isOpen, onClose, profId,onSuccess}: PopupProperties) => {
+export const DeleteProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: PopupProperties) => {
 
     let {token,login,logout} = useAuth()
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
     const navigate=useNavigate()
 
-    if(!isOpen) return null;
+    if(!isOpen) return <div></div>;
 
     const handleCommentDelete=async ()=>{
-        const expired = token ? tokenIsExpired(token) : true;
-        if(expired){
-            const newAccessTokenResponse=await newAccessToken()
-            if(newAccessTokenResponse?.status!==201){
-                alert('Please login again')
-                logout()
-                onClose()
-                navigate(routes.LOGIN)
-            }
-            else{
-                login(newAccessTokenResponse.data)
-                token=newAccessTokenResponse.data
-            }
-        }
-        const response=await deleteProfessorComment(profId,token,userId)
+        token = await updateToken(token!,login,logout,navigate,[onClose]);
+        const response=await deleteProfessorComment(id,token, userId === undefined ? 0 : +userId)
         if(response?.status===200){
             alert('Success')
             onSuccess?.();

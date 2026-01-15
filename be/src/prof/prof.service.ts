@@ -7,15 +7,27 @@ import { PrismaService } from '../prisma/prisma.service';
 export class ProfService {
   constructor(private prisma: PrismaService) {}
 
-  async updateAfterAdminVerification(idAdmin: number, idProf: number, updateProfDto: UpdateProfDto) {
-    const admin = await this.prisma.user.findUnique({
-      where: { id: idAdmin },
-      select: { isAdmin: true },
+  async updateNormal(profId: number, oldRating: number, newRating: number) {
+
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: profId },
     });
 
-    if (!admin) {
-      throw new Error('User not found or not admin');
+    if(!prof){
+      throw new Error('Professor not found');
     }
+
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: profId, verified: true }
+    });
+
+    return this.prisma.professor.update({
+      where: { id: profId },
+      data: { rating: ((prof.rating * numberOfVerifiedComments) - oldRating + newRating) / numberOfVerifiedComments},
+      });
+  }
+
+  async updateAfterAdminVerification(idAdmin: number, idProf: number, updateProfDto: UpdateProfDto) {
 
     const prof = await this.prisma.professor.findUnique({
       where: { id: idProf },
@@ -67,15 +79,26 @@ export class ProfService {
   }
 
   async updateTest(id: number) {
-    return await this.prisma.professor.update({
-      where: { id: id },
-      data: { rating: 0 },
-      });
+    return this.prisma.professor.update({
+        where: {id: id},
+        data: {rating: 0},
+    });
   }
 
-  async findFirst24() {
-    return this.prisma.professor.findMany({
-      take: 24,
+  async findAll() {
+    return this.prisma.professor.findMany();
+  }
+
+  async deleteProfById(id: string) {
+      const existingProf = await this.prisma.professor.findUnique({
+          where: {id: parseInt(id)},
+      });
+
+      if (!existingProf) {
+          throw new Error('Professor not found');
+      }
+    return this.prisma.professor.delete({
+        where: {id: parseInt(id)},
     });
   }
 

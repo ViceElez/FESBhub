@@ -21,6 +21,7 @@ import { AdminGuard, UserGuard } from '../guards';
 export class PostsController {
     constructor(private readonly postsService: PostsService) { }
 
+    //@UseGuards(UserGuard)
     @Get()
     async getAll() {
         return this.postsService.findAll();
@@ -48,8 +49,7 @@ export class PostsController {
         return this.postsService.create(dto, userId, isAdmin);
     }
 
-    // Admin-only delete
-    @UseGuards(UserGuard, AdminGuard)
+    @UseGuards(UserGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number) {
         const deleted = await this.postsService.remove(id);
@@ -57,8 +57,9 @@ export class PostsController {
         return deleted;
     }
 
-    // Admin-only update
-    @UseGuards(UserGuard, AdminGuard)
+    
+
+   @UseGuards(UserGuard)
     @Patch(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
         const updated = await this.postsService.update(id, dto);
@@ -99,4 +100,27 @@ export class PostsController {
         return updated;
     }
 
+    @UseGuards(UserGuard)
+    @Get('unverified')
+    async getUnverified(){
+        return this.postsService.findUnverified();
+    }
+
+    @UseGuards(UserGuard)
+    @Get('verified')
+    async getVerified(){
+        return this.postsService.findVerified();
+    }
+
+    @UseGuards(UserGuard)
+    @Get('user/:userId')
+    async getPostsByUserId(@Param('userId', ParseIntPipe) userId:number){
+        return this.postsService.getPostByUserId(userId);
+    }
+
+    @UseGuards(UserGuard)
+    @Patch('verify/:id')
+    async verifyPost(@Param('id') userId:string){
+        return this.postsService.verifyPost(parseInt(userId));
+    }
 }

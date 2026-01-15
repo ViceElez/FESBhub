@@ -1,4 +1,22 @@
+@import url('./styles/Header.css');
+@import url('./styles/AdminSettingsPageStyle.css');
+@import url('./styles/RegisterPageStyle.css');
+@import url('./styles/LoginPageStyle.css');
+@import url('styles/AdminSettingsUsersTabStyle.css');
+@import url('./styles/AdminSettingsPostsTabStyle.css');
+@import url('./styles/AdminSettingsProfessorTabStyle.css');
+@import url('./styles/AdminSettingsSubjectTabStyle.css');
+@import url('./styles/AdminSettingsVerifyContentTabStyle.css');
+@import url('./styles/AdminUserViewProfileStyle.css');
+@import url('./styles/AdminSettingProfessorTabCommentsStyle.css');
+@import url('./styles/AddSubjectCommentStyle.css');
+@import url('./styles/DeleteSubjectCommentStyle.css');
+@import url('./styles/UpdateSubjectCommentStyle.css');
+@import url('styles/SubjectCardStyle.css');
+@import url('styles/SubjectPageStyle.css');
+@import url('styles/MaterialsPageStyle.css');
 @import url('./styles/NewsPageStyle.css');
+
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -14,32 +32,30 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
+    margin: 0;
+}
+.main-container main{
+    margin: 25px 10px;
+}
+button{
+    color: white;
+    background-color: #3e5c76;
+    border: none;
+    padding: 7px 12px;
+    border-radius: 5px;
+    transition:
+            background-color 0.25s ease,
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+}
+button:hover{
+    background-color: #1d2d44;
+    cursor: pointer;
 }
 
-.main-container main {
-  margin: 25px 10px;
-}
 
-button {
-  color: white;
-  background-color: #3e5c76;
-  border: none;
-  padding: 7px 12px;
-  border-radius: 5px;
-  transition:
-    background-color 0.25s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-button:hover {
-  background-color: #1d2d44;
-  cursor: pointer;
-}

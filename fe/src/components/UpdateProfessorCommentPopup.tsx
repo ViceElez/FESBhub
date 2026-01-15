@@ -2,11 +2,10 @@ import type {PopupProperties} from "../constants";
 import {jwtDecode} from "jwt-decode";
 import {useAuth} from "../hooks";
 import {useState} from "react";
-import {editProfessorComments, newAccessToken, tokenIsExpired} from "../services";
+import {editProfessorComments,updateToken} from "../services";
 import {useNavigate} from "react-router-dom";
-import {routes} from "../constants/routes.ts"
 
-export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProperties) => {
+export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
     let {token,login,logout} = useAuth()
@@ -17,21 +16,8 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
     if(!isOpen) return null;
 
     const handleCommentUpdate=async ()=>{
-        const expired=token?tokenIsExpired(token):true;
-        if(expired){
-            const newAccessTokenResponse=await newAccessToken()
-            if(newAccessTokenResponse?.status!==201){
-                alert('Please login again')
-                logout()
-                onClose()
-                navigate(routes.LOGIN)
-            }
-            else{
-                login(newAccessTokenResponse.data)
-                token=newAccessTokenResponse.data
-            }
-        }
-        const response=await editProfessorComments(profId,rating,content,token,userId)
+        token = await updateToken(token!,login,logout,navigate,[onClose]);
+        const response=await editProfessorComments(id,rating,content,token,userId)
         if(response?.status===200)
             alert('Success')
         else {
@@ -53,6 +39,5 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, profId}: PopupProp
         </div>
     )
 }
-//fix delete nesto, i fixat kad se botun za dodoat kometar za profa stisne(vjerojanto ista stvar s acces tokenon)
 
 

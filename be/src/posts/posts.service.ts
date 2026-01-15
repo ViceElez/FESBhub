@@ -152,4 +152,61 @@ export class PostsService {
             data: { verified: true },
         });
     }
+
+    async findUnverified(){
+        return this.prisma.post.findMany({
+            where:{verified:false},
+            orderBy:{createdAt:'desc'},
+            include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
+        });
+    }
+
+    async findVerified(){
+        return this.prisma.post.findMany({
+            where:{verified:true},
+            orderBy:{createdAt:'desc'},
+            include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
+        });
+    }
+
+    async getPostByUserId(userId:number){
+        const userExists = await this.prisma.user.findUnique({ where: { id: userId } });
+        if (!userExists) {
+            throw new BadRequestException('User does not exist');
+        }
+        return this.prisma.post.findMany({
+            where:{userId},
+            select:{
+                id:true,
+                title:true,
+                content:true,
+                verified:true,
+                createdAt:true,
+                user:{
+                    select:{
+                        firstName:true,
+                        lastName:true
+                    }
+                }
+            },
+            orderBy:{createdAt:'desc'
+            }
+        });
+    }
+
+    async verifyPost(id:number){
+        const existing=await this.prisma.post.findUnique({where:{id}});
+        if(!existing) return null;
+        return this.prisma.post.update({
+            where:{id},
+            data:{verified:true}
+        });
+    }
+
+  
+
+   
+
+
+   
 }
