@@ -1,7 +1,7 @@
 import {Controller, Get, Req, UseGuards, Param, Patch, Delete} from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
-
+import { UpdateProfileDto } from './dto/update-profile.dto';
 @UseGuards(UserGuard)
 @Controller('user')
 export class UserController {
@@ -50,7 +50,7 @@ export class UserController {
         return this.UserService.getMyProfile(userId);
     }
      @Patch('me')
-    async updateMe(@Req() req, @Body() dto: UpdateProfileDto) {
+    async updateMe(@Req() req,   dto: UpdateProfileDto) {
         const userId = Number(req.user?.sub);
         return this.UserService.updateMyProfile(userId, dto);
     }
