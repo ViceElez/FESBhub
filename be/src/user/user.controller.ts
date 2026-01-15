@@ -12,11 +12,6 @@ export class UserController {
     async getAllUsers() {
         return this.UserService.getAllUsers();
     }
-    @Get(':id')
-    async getUserById(@Param('id') id: string) {
-        return this.UserService.getUserById(id);
-    }
-
     @Get('byName')
     async getUserByName(@Req() req:any) {
         const username=req.username;
@@ -53,5 +48,10 @@ export class UserController {
     async updateMe(@Req() req,   dto: UpdateProfileDto) {
         const userId = Number(req.user?.sub);
         return this.UserService.updateMyProfile(userId, dto);
+    }
+
+    @Get(':id')
+    async getUserById(@Param('id') id: string) {
+        return this.UserService.getUserById(id);
     }
 }

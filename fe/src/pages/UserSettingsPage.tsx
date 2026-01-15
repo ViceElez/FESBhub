@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { routes } from "../constants/routes";
+import { routes } from "../constants";
 import { useAuth } from "../hooks";
 import {
   tokenIsExpired,

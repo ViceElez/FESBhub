@@ -7,7 +7,6 @@ export class UserService {
         private readonly prisma:PrismaService,
     ) {}
      async getMyProfile(userId: number) {
-        console.log("Fetching profile for user ID:", userId);
         return this.prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -45,14 +44,11 @@ export class UserService {
             },
         });
     }
-
     async getUserById(userId:string){
         if(!userId){
           throw new UnauthorizedException('User ID is required');
         }
-       console.log("vata vataefiejifewi", userId);
         return this.prisma.user.findUnique({
-           
             where:{
                 
                 id:parseInt(userId)
@@ -72,7 +68,6 @@ export class UserService {
     }
 
     async isUserAdmin(userId:string):Promise<boolean | undefined>{
-        console.log('Checking admin status for user ID:', userId);
         const user=await this.getUserById(userId)
         if (!user){
             throw new Error('User not found');
