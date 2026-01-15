@@ -1,3 +1,5 @@
+import type { Subject } from "./subjectType.ts";
+
 export interface Professor {
   id: number;
   firstName: string;
@@ -6,4 +8,6 @@ export interface Professor {
   education: string;
   email: string;
   rating: number;
+  imageUrl? : string;
+  subjects?: Subject[];
 }

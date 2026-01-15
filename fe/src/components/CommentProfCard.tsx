@@ -29,7 +29,7 @@ export const CPCardNormal = ({comment, show}: CommentProfessorNormal) => {
         <div className = "card-scroll-horizontally card" >
             <div>
                 <h4>{userFirstName} {userLastName} je komentirao:</h4>
-                <h2>Ocjena: {comment.rating}</h2>
+                <h2>Ocjena: {comment.rating.toFixed(2)}</h2>
                 <h2>Komentar: {comment.content}</h2>
             </div>
         </div>

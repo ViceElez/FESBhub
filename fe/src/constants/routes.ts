@@ -8,6 +8,7 @@ export const routes:Routes={
     MATERIALSPAGE: '/material',
     SUBJECTPAGE: '/subject',
     PROFESSORPAGE: '/professor',
+    PROFESSORDETAILSPAGE: '/professor/:professorId',
     ADMINSETTINGSPAGE: '/admin/settings',
     USERSETTINGSPAGE: '/user/settings',
     VERIFYEMAILPAGE: '/verify-email',

@@ -9,3 +9,4 @@ export * from './RegisterPage'
 export * from './VerifyEmailPage';
 export * from './UserSettingsPage.tsx';
 export * from './Layout.tsx';
+export * from './ProfessorDetailsPage.tsx';
