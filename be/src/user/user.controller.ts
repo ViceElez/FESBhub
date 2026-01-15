@@ -1,27 +1,33 @@
-import { Controller,Get,Req,UseGuards,Param } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Param, Req, UseGuards } from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 
 @UseGuards(UserGuard)
 @Controller('user')
 export class UserController {
-    constructor(
-        private readonly UserService: UserService,
-    ) {}
+    constructor(private readonly userService: UserService) { }
 
-    @Get('allUsers')
-    async getAllUsers(@Req() req) {
-        return { message: 'This action returns all users', user: req.user };
+    @Get('me')
+    async me(@Req() req) {
+        const userId = Number(req.user?.sub);
+        return this.userService.getMyProfile(userId);
     }
 
-    @Get(':id')
-    async getUserById(@Param('id') id: string) {
-        return this.UserService.getUserById(id);
+    @Patch('me')
+    async updateMe(@Req() req, @Body() dto: UpdateProfileDto) {
+        const userId = Number(req.user?.sub);
+        return this.userService.updateMyProfile(userId, dto);
     }
 
     @Get('isAdmin/:id')
     async isUserAdmin(@Param('id') id: string) {
-        const isAdmin=await this.UserService.isUserAdmin(id);
-        return {isAdmin};
+        const isAdmin = await this.userService.isUserAdmin(id);
+        return { isAdmin };
+    }
+
+    @Get(':id')
+    async getUserById(@Param('id') id: string) {
+        return this.userService.getUserById(id);
     }
 }
