@@ -3,8 +3,8 @@ import type { Professor, Subject } from '../constants';
 import { routes } from '../constants';
 import {ProfessorCard} from '../components'
 import { useNavigate,Link } from "react-router-dom";
-import { useAuth } from "../hooks";
-import {getAllProfessors, updateToken, getAllSubjects} from "../services";
+import {useAuth, useDebounce} from "../hooks";
+import {getAllProfessors, updateToken, getAllSubjects, getProfessorByName} from "../services";
 import '../index.css';
 import '../styles/ProfessorCardStyle.css';
 import '../styles/ProfessorPageStyle.css';
@@ -12,26 +12,15 @@ import '../styles/ProfessorPageStyle.css';
 export const ProfessorPage = () => {
     const [professors, setProfessors] = useState<Professor[]>([]);
     const [subjects, setSubjects] = useState<Subject[]>([]);
-
     let {token, login, logout} = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [ascending, setAscending] = useState(true);
+    const debouncedSearchTerm = useDebounce(searchTerm);
+    const [loading, setLoading] = useState(false);
     
     useEffect(() => {
         const fetchProfessors = async () => {
-            try{
-                token= await updateToken(token!, login, logout, navigate, []);
-                const response=await getAllProfessors(token)
-                setProfessors(response?.data)
-            }catch(error){
-                console.error("Error fetching professors:", error);
-            }
-            setProfessors((list) =>
-                [...list].sort((a, b) =>
-                    ascending ? a.rating - b.rating : b.rating - a.rating
-                )
-            );
         };
         void fetchProfessors();
     }, []);
@@ -61,8 +50,6 @@ export const ProfessorPage = () => {
                       ratingPracticality: subj.ratingPracticality,
                       ratingDifficulty: subj.ratingDifficulty
                   }));
-                  
-
                 setSubjects(mappedSubjects)
             }catch(error){
                 console.error("Error fetching subjects:", error);
@@ -70,6 +57,44 @@ export const ProfessorPage = () => {
         };
         void fetchSubjects();
     }, []);
+
+    useEffect(() => {
+        const fetchSearchedProfessors = async () => {
+            setPage(1)
+            if (!debouncedSearchTerm) {
+                setLoading(true)
+                try{
+                    token= await updateToken(token!, login, logout, navigate, []);
+                    const response=await getAllProfessors(token)
+                    setProfessors(response?.data)
+                }catch(error){
+                    console.error("Error fetching professors:", error);
+                }
+                setProfessors((list) =>
+                    [...list].sort((a, b) =>
+                        ascending ? a.rating - b.rating : b.rating - a.rating
+                    )
+                );
+            }
+
+            setLoading(true)
+            try{
+                token= await updateToken(token!, login, logout, navigate, []);
+                const res=await getProfessorByName(debouncedSearchTerm, token)
+                if (res?.status === 200){
+                    setProfessors(res.data)
+                } else {
+                    setProfessors([])
+                }
+            }catch (e) {
+                console.log(e)
+                setProfessors([])
+            }finally {
+                setLoading(false)
+            }
+        }
+        void fetchSearchedProfessors();
+    }, [debouncedSearchTerm]);
 
     const [page, setPage] = useState(1);
     const pageCount = Math.max(1, Math.ceil(professors.filter(

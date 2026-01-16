@@ -102,4 +102,14 @@ export class ProfService {
     });
   }
 
+    async findByName(name: string) {
+        return this.prisma.professor.findMany({
+            where: {
+                OR: [
+                    { firstName: { contains: name, mode: 'insensitive' } },
+                    { lastName: { contains: name, mode: 'insensitive' } },
+                ],
+            },
+        })
+    }
 }

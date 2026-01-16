@@ -33,7 +33,7 @@
 .professor-controls {
     display: flex;
     justify-content: center;
-    gap: 200px;
+    gap: 13px;
     margin-bottom: 20px;
 }
 

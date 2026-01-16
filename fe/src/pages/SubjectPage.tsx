@@ -77,7 +77,7 @@ export const SubjectPage = () => {
     if (page > pageCount) setPage(pageCount);
 
     const pageCards = useMemo(() => {
-        const start = (page - 1) * 4; //odi izminit
+        const start = (page - 1) * 4; 
         return subjects.slice(start, start + 4);
     }, [subjects, page]);
 

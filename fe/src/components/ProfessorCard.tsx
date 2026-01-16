@@ -1,4 +1,4 @@
-import type {CardProperties, CommentProfessor,Subject} from "../constants";
+import type {CardProperties, CommentProfessor} from "../constants";
 import {useState, useEffect} from "react";
 import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
 import {jwtDecode} from "jwt-decode";
@@ -6,7 +6,6 @@ import {useAuth} from "../hooks";
 import {useNavigate} from "react-router-dom";
 import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
 import { CPCardNormal } from "./index";
-import { getAllSubjects } from "../services";
 
 const calculateAverageRating = (comments: CommentProfessor[]): number => {
     if (comments.length === 0) return 0;
@@ -104,26 +103,31 @@ export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
           )}
       
           <div className="buttons">
-            <button className="btn-add"
-              disabled={!token || !userId || existingComment}
-              onClick={() => { setIsOpenAdd(true); setIsOpenDelete(false); setIsOpenUpdate(false); }}
-            >
-              Dodaj komentar
-            </button>
-      
-            <button className="btn-delete"
-              disabled={!token || !userId || !existingComment}
-              onClick={() => { setIsOpenDelete(true); setIsOpenAdd(false); setIsOpenUpdate(false); }}
-            >
-              Izbriši komentar
-            </button>
-      
-            <button className="btn-update"
-              disabled={!token || !userId || !existingComment}
-              onClick={() => { setIsOpenUpdate(true); setIsOpenAdd(false); setIsOpenDelete(false); }}
-            >
-              Izmjeni komentar
-            </button>
+              {!existingComment &&(
+                  <button className="btn-add"
+                          disabled={!token || !userId || existingComment}
+                          onClick={() => { setIsOpenAdd(true); setIsOpenDelete(false); setIsOpenUpdate(false); }}
+                  >
+                      Dodaj komentar
+                  </button>
+              )}
+              {existingComment && (
+                  <>
+                      <button className="btn-delete"
+                              disabled={!token || !userId || !existingComment}
+                              onClick={() => { setIsOpenDelete(true); setIsOpenAdd(false); setIsOpenUpdate(false); }}
+                      >
+                          Izbriši komentar
+                      </button>
+
+                      <button className="btn-update"
+                              disabled={!token || !userId || !existingComment}
+                              onClick={() => { setIsOpenUpdate(true); setIsOpenAdd(false); setIsOpenDelete(false); }}
+                      >
+                          Izmjeni komentar
+                      </button>
+                  </>
+              )}
           </div>
       
           <AddProfessorCommentPopup

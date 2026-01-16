@@ -167,4 +167,3 @@ export const SubjectCard = (subject: Subject) => {
         </div>
     );
 };
-//triba stavit kad se doda kometar od verificiranog usera da se odma sve azurira i da se rating doda i da se moze vidit kometnar odma

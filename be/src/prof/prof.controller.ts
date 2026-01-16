@@ -12,6 +12,11 @@ export class ProfController {
     return this.profService.findAll();
   }
 
+  @Get('search/:name')
+  findByName(@Param('name') name: string) {
+    return this.profService.findByName(name);
+  }
+
   @Delete(':id')
     async deleteProfById(@Param('id') id: string) {
         return this.profService.deleteProfById(id);
