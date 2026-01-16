@@ -1,43 +1,97 @@
-import type {PopupProperties} from "../constants";
-import {jwtDecode} from "jwt-decode";
-import {useAuth} from "../hooks";
-import {useState} from "react";
-import {editProfessorComments,updateToken} from "../services";
-import {useNavigate} from "react-router-dom";
+import { useState, useEffect } from "react";
+import type { PopupProperties } from "../constants";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../hooks";
+import { editProfessorComments, updateToken } from "../services";
+import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
+import "../index.css";
 
 export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperties) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
-    let {token,login,logout} = useAuth()
+
+    let { token, login, logout } = useAuth();
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
-    const navigate=useNavigate()
+    const navigate = useNavigate();
 
-    if(!isOpen) return null;
+    useEffect(() => {
+        if (isOpen) {
+            document.body.classList.add("modal-open");
+        }
+        return () => {
+            document.body.classList.remove("modal-open");
+        };
+    }, [isOpen]);
 
-    const handleCommentUpdate=async ()=>{
-        token = await updateToken(token!,login,logout,navigate,[onClose]);
-        const response=await editProfessorComments(id,rating,content,token,userId)
-        if(response?.status===200)
-            alert('Success')
-        else {
-            alert("Error")
-            console.log(response)
+    if (!isOpen) return null;
+
+    const handleCommentUpdate = async () => {
+        token = await updateToken(token!, login, logout, navigate, [onClose]);
+
+        const response = await editProfessorComments(
+            id,
+            rating,
+            content,
+            token,
+            userId
+        );
+
+        if (response?.status === 200) {
+            alert("Updated successfully");
+        } else {
+            alert("Error");
+            console.log(response);
         }
         onClose();
-    }
+    };
 
-    return (
-        <div>
-            <input type = "text" name = "content" placeholder = "Ovdje upišite novi komentar" onChange = {(e) => setContent(e.target.value)}/>
-            <input type = "number" name = "rating" placeholder = "Ovdje upišite novu ocjenu profesora" onChange = {(e) => setRating(Number(e.target.value))}/>
-            <button 
-            disabled = {content.length === 0 || rating < 1 || rating > 5}
-            onClick = {handleCommentUpdate}>
-                Potvrdi
-            </button>
-        </div>
-    )
-}
+    return createPortal(
+        <div className="subject-update-comment-modal-overlay">
+            <div className="subject-update-comment-modal">
+                <h2 className="subject-update-comment-modal-title">
+                    Izmijeni komentar
+                </h2>
 
+                <div className="subject-update-comment-modal-inputs">
+                    <input
+                        type="text"
+                        placeholder="Novi komentar"
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                    />
 
+                    <input
+                        type="number"
+                        placeholder="Nova ocjena profesora (1–5)"
+                        value={rating || ""}
+                        onChange={(e) => setRating(Number(e.target.value))}
+                    />
+                </div>
+
+                <div className="subject-update-comment-modal-actions">
+                    <button
+                        onClick={onClose}
+                        className="subject-update-comment-modal-cancel-btn"
+                    >
+                        Odustani
+                    </button>
+
+                    <button
+                        onClick={handleCommentUpdate}
+                        disabled={
+                            content.length === 0 ||
+                            rating < 1 ||
+                            rating > 5
+                        }
+                        className="subject-update-comment-modal-confirm-btn"
+                    >
+                        Potvrdi
+                    </button>
+                </div>
+            </div>
+        </div>,
+        document.body
+    );
+};

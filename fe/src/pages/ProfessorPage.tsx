@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, use} from 'react';
+import { useEffect, useState, useMemo} from 'react';
 import type { Professor, Subject } from '../constants';
 import { routes } from '../constants';
 import {ProfessorCard} from '../components'

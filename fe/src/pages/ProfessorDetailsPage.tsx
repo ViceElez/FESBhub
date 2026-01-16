@@ -1,8 +1,6 @@
-import { useEffect, useState, useMemo, use} from 'react';
+import { useEffect, useState} from 'react';
 import type {Professor, Subject } from '../constants';
 import { routes } from '../constants';
-// import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup, CPCardNormal} from "../components/index";
-// import {jwtDecode} from "jwt-decode";
 import {ProfessorCard} from '../components'
 import { useNavigate,Link } from "react-router-dom";
 import { useAuth } from "../hooks";
@@ -19,10 +17,7 @@ export const ProfessorDetailsPage = () => {
     const navigate = useNavigate();
 
     const {professorId} = useParams<{professorId: string}>();
-    // console.log("Professor ID from params:", id);
-
     useEffect(() => {
-        // console.log("Fetching details for professor ID:", id);
         if (!professorId) return;
         const fetchProfessor = async () => {
             try{
