@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { tokenIsAdmin } from "../services";
-import { useAuth } from "../hooks";
+import { tokenIsAdmin, updateToken } from "../services";
+import { useAuth, useDebounce } from "../hooks";
 import type { Post } from "../services/PostAdminApi.ts";
 import { createPost, fetchAllPosts, searchPosts } from "../services/PostAdminApi.ts";
 import "../styles/NewsPageStyle.css";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { routes } from "../constants";
 type MainView = "userPosts" | "fesbnews";
 
@@ -18,8 +18,8 @@ export const NewsPage = () => {
   const [content, setContent] = useState("");
 
   const [allPosts, setAllPosts] = useState<Post[]>([]);
-  const { token } = useAuth();
-
+  let { token, login, logout } = useAuth();
+  const navigate = useNavigate();
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [message, setMessage] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -27,6 +27,7 @@ export const NewsPage = () => {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const debouncedSearchTerm = useDebounce(searchQuery);
 
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
   const [photoPreviews, setPhotoPreviews] = useState<string[]>([]);
@@ -109,31 +110,43 @@ export const NewsPage = () => {
   }, [token]);
 
   useEffect(() => {
-    setLoadingPosts(true);
-    let isActive = true;
+    const fetchPosts = async () => {
+      setCurrentPage(1);
+      setLoadingPosts(true);
+      const query = debouncedSearchTerm;
 
-    const run = async () => {
       try {
-        const posts = searchQuery.trim()
-          ? await searchPosts(searchQuery)
-          : await fetchAllPosts();
-        if (isActive) setAllPosts(posts);
-        if (isActive) setCurrentPage(1);
-      } catch (err: any) {
-        if (isActive) {
-          setMessage(`Error fetching posts: ${err?.message ?? "Unknown error"}`);
+        if (!query) {
+          const posts = await fetchAllPosts();
+          setAllPosts(
+            [...posts].sort(
+              (a, b) =>
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            )
+          );
+          return;
         }
+
+        const res = await searchPosts(query, token);
+        const posts: Post[] = res?.status === 200 && Array.isArray(res.data)
+          ? res.data
+          : [];
+        setAllPosts(
+          [...posts].sort(
+            (a, b) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          )
+        );
+      } catch (error) {
+        console.error("Error fetching/searching posts:", error);
+        setAllPosts([]);
       } finally {
-        if (isActive) setLoadingPosts(false);
+        setLoadingPosts(false);
       }
     };
 
-    void run();
-
-    return () => {
-      isActive = false;
-    };
-  }, [searchQuery]);
+    void fetchPosts();
+  }, [debouncedSearchTerm]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

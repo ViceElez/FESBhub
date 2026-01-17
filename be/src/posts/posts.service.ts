@@ -30,21 +30,17 @@ export class PostsService {
     }
 
     async search(query: string) {
-        const q = query?.trim();
-        if (!q) return [];
-
-        return this.prisma.post.findMany({
-            where: {
-                verified: true,
-                OR: [
-                    { title: { contains: q, mode: 'insensitive' } },
-                    { content: { contains: q, mode: 'insensitive' } },
-                ],
-            },
-            orderBy: { createdAt: 'desc' },
-            include: { photos: true, user: { select: { id: true, firstName: true, lastName: true } } },
-        });
-    }
+            return this.prisma.post.findMany({
+                where: {
+                    OR: [
+                        { title: { contains: query, mode: 'insensitive' } },
+                        { content: { contains: query, mode: 'insensitive' } },
+                    ],
+                },
+                orderBy: { createdAt: 'desc' },
+                include: { photos: true, user: { select: { id: true, firstName: true, lastName: true } } },
+            });
+    }   
    
     
     async remove(id: number) {

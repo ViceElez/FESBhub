@@ -62,16 +62,15 @@ export async function fetchVerifiedPosts(token?: string | null) {
 }
 
 
-export async function searchPosts(query: string): Promise<Post[]> {
-  const q = query.trim();
-  if (!q) return [];
-
+export async function searchPosts(query: string, token?: string | null) {
   try {
-    const response = await axios.get(`${route}/posts/search`, { params: { q } });
-    const posts = response.data;
-    return Array.isArray(posts) ? posts : [];
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message ?? error.message ?? "Failed to search posts");
+    return await axios.get(`${route}/posts/search`, {
+      params: { q: query },
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    });
+  } catch (e) {
+    console.log(e);
+    return;
   }
 }
 
