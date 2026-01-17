@@ -4,5 +4,4 @@ export interface UpdateCommentPopupProperties {
     onClose: () => void
     id: number
     onSuccess?: (updated: CommentSubject) => void
-
 }

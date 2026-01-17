@@ -16,6 +16,11 @@
 @import url('styles/SubjectPageStyle.css');
 @import url('styles/MaterialsPageStyle.css');
 @import url('./styles/NewsPageStyle.css');
+@import url('./styles/ProfessorCardStyle.css');
+@import url('./styles/ProfessorDetailsPageStyle.css');
+@import url('./styles/ProfessorPageStyle.css');
+@import url('./styles/UserSettingsPageStyle.css');
+
 
 
 :root {

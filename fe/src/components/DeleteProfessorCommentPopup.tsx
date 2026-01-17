@@ -22,6 +22,14 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess}: Po
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        if(!isOpen) return;
+        const fetchComment=async()=>{
+            token = await updateToken(token!, login, logout, navigate, []);
+            // Additional fetching logic can be added here if needed
+        }
+    }, [isOpen,id,userId]);
+
     if (!isOpen) return null;
 
     const handleCommentDelete = async () => {
@@ -36,12 +44,11 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess}: Po
         if (response?.status === 200) {
             alert("Deleted successfully");
             onSuccess?.();
-            onClose();
         } else {
             alert("Error");
             console.log(response);
-            onClose();
         }
+        onClose();
     };
 
     return createPortal(

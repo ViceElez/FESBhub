@@ -207,4 +207,5 @@ export const ProfessorPage = () => {
         </div>
     )
 }
+//triba stavit da se kad delete prikaze sta se tocno brise,isto tako za update, isto tako da kad delete ili update da tise odma updatea ocjena, popravit horizontalni scroll
 

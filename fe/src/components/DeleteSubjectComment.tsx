@@ -14,8 +14,6 @@ export const DeleteSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Po
     const userId = decode?.sub;
     const navigate = useNavigate();
 
-
-
     useEffect(() => {
         if (!isOpen) return;
         const fetchComment = async () => {

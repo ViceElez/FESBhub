@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
-import type { PopupProperties } from "../constants";
 import { jwtDecode } from "jwt-decode";
+import {type UpdateProfCommentPopup} from "../constants";
 import { useAuth } from "../hooks";
 import { editProfessorComments, updateToken } from "../services";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import "../index.css";
 
-export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperties) => {
+export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: UpdateProfCommentPopup) => {
     const [content, setContent] = useState("");
     const [rating, setRating] = useState(0);
 
@@ -29,7 +29,6 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperti
 
     const handleCommentUpdate = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);
-
         const response = await editProfessorComments(
             id,
             rating,
@@ -40,6 +39,15 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id}: PopupProperti
 
         if (response?.status === 200) {
             alert("Updated successfully");
+            const updatedComment = {
+                id: id,
+                userId: Number(userId),
+                profId: id,
+                rating: rating,
+                content,
+                verified: true,
+            };
+            onSuccess?.(updatedComment);
         } else {
             alert("Error");
             console.log(response);

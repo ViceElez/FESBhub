@@ -6,6 +6,7 @@
     margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: transform 0.2s;
+    text-align: center;
 }
 
 .subject-card:hover {
@@ -28,6 +29,7 @@
     display: flex;
     gap: 10px;
     margin-top: 15px;
+    justify-content: center;
 }
 
 .subject-card-buttons button {
@@ -109,8 +111,8 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     flex-shrink: 0;
     word-wrap: break-word;
-    overflow-wrap: break-word;
     white-space: normal;
+    overflow-wrap: anywhere;
 }
 
 .card-scroll-horizontally h2,

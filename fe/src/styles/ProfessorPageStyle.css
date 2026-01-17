@@ -1,4 +1,4 @@
-.professor-page{
+.professor-page {
     padding: 20px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #F0EBD8;
@@ -7,7 +7,9 @@
 .professor-nav {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
+    justify-content: center;
 }
 
 .professor-nav button {
@@ -17,6 +19,8 @@
     color: white;
     cursor: pointer;
     font-weight: bold;
+    background-color: #3E5C76;
+    transition: background 0.2s;
 }
 
 .professor-nav button:hover {
@@ -34,6 +38,7 @@
     display: flex;
     justify-content: center;
     gap: 13px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
@@ -73,13 +78,15 @@
     border: none;
     color: white;
     cursor: pointer;
+    background-color: #3E5C76;
+    transition: background 0.2s;
 }
 
 .sort-button:hover {
     background-color: #1D2D44;
 }
 
-.professor-grid{
+.professor-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
@@ -92,6 +99,7 @@
     gap: 10px;
     margin-top: 20px;
     font-weight: bold;
+    flex-wrap: wrap;
 }
 
 .pagination button {
@@ -100,6 +108,12 @@
     border: 1px solid #ccc;
     background-color: #3E5C76;
     cursor: pointer;
+    transition: background 0.2s;
+    color: white;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #1D2D44;
 }
 
 .pagination button:disabled {
@@ -109,4 +123,13 @@
 
 .pagination span {
     padding: 0 8px;
+}
+
+@media (max-width: 600px) {
+    .search-input {
+        width: 200px;
+    }
+    .page-title {
+        font-size: 1.5rem;
+    }
 }

@@ -1,4 +1,8 @@
-.card {
+/* =========================
+   Professor Card
+========================= */
+
+.professor-card {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -10,46 +14,98 @@
     margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     transition: transform 0.2s;
-    overflow: hidden;
-    flex: 0 0 auto;
-    /* max-height: 450px; */
+    width: 100%;
 }
 
-.card:hover {
+.professor-card:hover {
     transform: translateY(-3px);
 }
-  
-.card img {
+
+/* =========================
+   Image
+========================= */
+
+.professor-card__image {
     display: block;
-    margin: 0 auto 12px;   
-    width: 140px;           
+    margin: 0 auto 12px;
+    width: 140px;
     height: 140px;
     object-fit: cover;
     border-radius: 50%;
 }
 
+/* =========================
+   Name & Text
+========================= */
 
-.card h2 {
+.professor-card__name {
     margin: 0;
     font-size: 1.6rem;
-    color: rgb(230, 192, 1);
+    color: #F0EBD8; /* Changed color */
     text-decoration: underline;
     cursor: pointer;
 }
 
-.card p {
+.professor-card p {
     margin: 5px 0;
-    color: white;
+    color: white; /* All text under name white */
     font-size: 0.95rem;
 }
 
-.buttons {
+/* =========================
+   Rating
+========================= */
+
+.professor-card__rating-stars {
+    color: #FFD700;
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.professor-card__rating-number {
+    color: white; /* text under name is white */
+    font-size: 1rem;
+    margin-left: 6px;
+}
+
+/* =========================
+   Subjects
+========================= */
+
+.professor-card__subjects-title {
+    margin: 10px 0 5px 0;
+    color: white; /* text under name */
+}
+
+.professor-card__subjects-list {
+    margin: 5px 0 0;
+    max-height: 100px;
+    list-style-type: square;
+    overflow-y: auto;
+    padding-left: 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2A3A52, #1D2D44);
+}
+
+.professor-card__subject-item {
+    margin-bottom: 4px;
+    color: white; /* text under name */
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* =========================
+   Actions / Buttons
+========================= */
+
+.professor-card__actions {
     display: flex;
     gap: 10px;
     margin-top: 15px;
+    flex-wrap: wrap;
 }
 
-.buttons button {
+.professor-card__btn {
     padding: 8px 12px;
     border: none;
     border-radius: 6px;
@@ -57,32 +113,37 @@
     cursor: pointer;
     font-weight: 500;
     transition: background 0.2s, transform 0.2s;
-} 
+}
 
-.btn-add {
+.professor-card__btn--add {
     background-color: #4caf50;
     color: white;
 }
 
-.btn-delete {
-    background-color: #dc2626;  
+.professor-card__btn--delete {
+    background-color: #dc2626;
+    color: white;
 }
 
-
-.btn-update {
-    background-color: #3b82f6;  
+.professor-card__btn--update {
+    background-color: #3b82f6;
+    color: white;
 }
 
-.buttons button:hover {
+.professor-card__btn:hover {
     opacity: 0.9;
     transform: scale(1.05);
 }
 
-.professor-card-comments-toggle {
+/* =========================
+   Comments Toggle
+========================= */
+
+.professor-card__comments-toggle {
     margin-top: 15px;
 }
 
-.professor-card-comments-toggle button {
+.professor-card__comments-toggle button {
     background-color: #3E5C76;
     color: white;
     border: none;
@@ -92,194 +153,118 @@
     transition: opacity 0.2s, transform 0.2s;
 }
 
-.professor-card-comments-toggle button:hover {
+.professor-card__comments-toggle button:hover {
     opacity: 0.9;
     transform: scale(1.05);
 }
 
-.professor-card-comments{
-    display: flex; 
-    overflow-x: auto; 
-    gap: 15px; 
-    padding-top: 15px; 
-    align-items: flex-start;
-}
+/* =========================
+   Comments List (horizontal scroll)
+========================= */
 
-.professor-card-comments > * {
-    min-width: 250px;          
-    max-width: 250px;
-    flex-shrink: 0;            
-}
-
-.professor-card-comments::-webkit-scrollbar {
-    height: 8px;
-}
-
-.professor-card-comments::-webkit-scrollbar-thumb {
-    background-color: #3E5C76;
-    border-radius: 4px;
-}
-
-.subject-card-comments::-webkit-scrollbar-track {
-    background-color: transparent;
-}
-
-/* .cards-container-scroll-horizontally {
+.professor-card__comments-list {
     display: flex;
     overflow-x: auto;
     gap: 15px;
     padding-top: 15px;
     align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+    scroll-snap-type: x mandatory;
 }
 
-.cards-container-scroll-horizontally::-webkit-scrollbar {
+.professor-card__comments-list > * {
+    min-width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    hyphens: auto;
+}
+
+/* Scrollbar style */
+.professor-card__comments-list::-webkit-scrollbar {
     height: 8px;
 }
-
-.cards-container-scroll-horizontally::-webkit-scrollbar-thumb {
+.professor-card__comments-list::-webkit-scrollbar-thumb {
     background-color: #3E5C76;
     border-radius: 4px;
 }
 
-.cards-container-scroll-horizontally::-webkit-scrollbar-track {
-    background-color: transparent;
-} */
+/* =========================
+   Professor Comment Card
+========================= */
+
+.professor-comment-card {
+    background-color: #748CAB;
+    border-radius: 10px;
+    padding: 15px;
+    min-width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    hyphens: auto;
+}
+
+.professor-comment-card__author {
+    margin: 0 0 6px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #c9c9c9;
+}
+
+.professor-comment-card__rating {
+    margin: 0 0 6px 0;
+    font-size: 0.9rem;
+    color: #F0EBD8;
+}
+
+.professor-comment-card__rating span {
+    font-weight: 600;
+}
+
+.professor-comment-card__content {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #F0EBD8;
+    line-height: 1.4;
+}
 
 @media (max-width: 600px) {
-    /* .card {
-        padding: 15px;
-        max-height: 400px;
-    } */
-    .buttons {
+    .professor-card__actions {
         flex-direction: column;
         gap: 8px;
     }
 
-    .buttons button {
+    .professor-card__btn {
         width: 100%;
         font-size: 0.9rem;
     }
 
-    .cards-container-scroll-horizontally {
-        gap: 10px;
-        padding-top: 10px;
-    }
-
-    .card-scroll-horizontally {
-        min-width: 200px;
-        max-width: 220px;
-        padding: 12px;
-        font-size: 0.85rem;
-    }
-
-    .card img {
+    .professor-card__image {
         width: 100px;
         height: 100px;
     }
 
-    .card h2 {
+    .professor-card__name {
         font-size: 1.3rem;
     }
 
-    .card p {
-        font-size: 0.85rem;
-    }
-}
-
-.rating-stars {
-    color: #FFD700; /* zlatne zvjezdice */
-    font-size: 1.1rem;
-    margin-left: 4px;
-}
-
-.card p .rating-stars{
-    color: #FFD700;
-}
-
-.rating-number {
-    color: #F0EBD8;
-    font-size: 1rem;
-    margin-left: 6px;
-}
-
-.card ul {
-    padding: 0;
-    margin: 5px 0 0 0;
-    max-height: 25px;
-    list-style-type: square;
-    overflow-y: auto;
-    padding-left: 20px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    background: linear-gradient(135deg, #2A3A52, #1D2D44);
-}
-
-.card ul li {
-    margin-bottom: 4px;
-    color: #D1D5DB;
-    font-size: 0. nine5rem;
-    transition: color 0.2s;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-
-
-.card h4 {
-    margin: 10px 0 5px 0;
-    color: #F0EBD8;
-}
-
-
-.card-scroll-horizontally{
-    min-width: 250px;
-    max-width: 250px;
-    padding: 15px;
-    background-color: #748CAB;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    flex-shrink: 0;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    white-space: normal;
-    overflow-x: auto;
-}
-
-.card-scroll-horizontally h2,
-.card-scroll-horizontally h4 {
-    margin: 4px 0;
-    font-size: 0.95rem;
-    color: #F0EBD8;
-    text-decoration: none;
-}
-
-.card-scroll-horizontally h2 {
-    font-weight: 500;
-}
-
-.card-scroll-horizontally h4 {
-    font-weight: 400;
-    color: #c9c9c9;
-}
-
-.card-scroll-horizontally ul{
-    max-height: 10px;
-    overflow-y: auto;
-    width: 100%;
-    margin-top: 5px;
-    text-align: left;
-}
-
-@media (max-width: 600px) {
-    .professor-card-comments {
+    .professor-card__comments-list {
         gap: 10px;
         padding-top: 10px;
     }
-    .card-scroll-horizontally {
+
+    .professor-card__comments-list > * {
         min-width: 200px;
-        max-width: 220px;
-        padding: 12px;
+        max-width: 200px;
     }
 }
-

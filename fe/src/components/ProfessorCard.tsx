@@ -1,166 +1,210 @@
-import type {CardProperties, CommentProfessor} from "../constants";
-import {useState, useEffect} from "react";
-import {AddProfessorCommentPopup, DeleteProfessorCommentPopup, UpdateProfessorCommentPopup} from "./index";
-import {jwtDecode} from "jwt-decode";
-import {useAuth} from "../hooks";
-import {useNavigate} from "react-router-dom";
-import {updateToken,getVerifiedProfessorComments,getProfessorComments} from "../services";
-import { CPCardNormal } from "./index";
+import type { CardProperties, CommentProfessor } from "../constants";
+import { useState, useEffect, useMemo } from "react";
+import {
+    AddProfessorCommentPopup,
+    DeleteProfessorCommentPopup,
+    UpdateProfessorCommentPopup,
+    CPCardNormal,
+} from "./index";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "../hooks";
+import { useNavigate } from "react-router-dom";
+import {
+    updateToken,
+    getVerifiedProfessorComments,
+    getProfessorComments,
+} from "../services";
+import "../index.css"
 
 const calculateAverageRating = (comments: CommentProfessor[]): number => {
     if (comments.length === 0) return 0;
-    const total = comments.reduce((sum, comment) => sum + comment.rating, 0);
+    const total = comments.reduce((sum, c) => sum + c.rating, 0);
     return total / comments.length;
 };
 
-export const ProfessorCard = ({prof, profId, showDetails}: CardProperties) => {
+export const ProfessorCard = ({ prof, profId, showDetails }: CardProperties) => {
+    const [isOpenAdd, setIsOpenAdd] = useState(false);
+    const [isOpenDelete, setIsOpenDelete] = useState(false);
+    const [isOpenUpdate, setIsOpenUpdate] = useState(false);
 
-    const [isOpenAdd, setIsOpenAdd] = useState(false)
-    const [isOpenDelete, setIsOpenDelete] = useState(false)
-    const [isOpenUpdate, setIsOpenUpdate] = useState(false)
-    let {token,login,logout} = useAuth()
-    const decode = token ? jwtDecode(token) : null;
+    const { token: rawToken, login, logout } = useAuth();
+    const navigate = useNavigate();
+    const decode = rawToken ? jwtDecode(rawToken) : null;
     const userId = decode?.sub;
-    const navigate = useNavigate()
+
     const [existingComment, setExistingComment] = useState(false);
     const [verifiedComments, setVerifiedComments] = useState<CommentProfessor[]>([]);
     const [showVerifiedComments, setShowVerifiedComments] = useState(false);
 
     useEffect(() => {
         const fetchProfessorComments = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            const response=await getProfessorComments(profId,token,userId)
-            if(response?.status===200)
-                setExistingComment(response.data)
-            else
-                alert('Error')
-        }
-        void fetchProfessorComments()
-    },[]);
+            const token = await updateToken(rawToken!, login, logout, navigate, []);
+            const res = await getProfessorComments(profId, token, userId);
+            if (res?.status === 200) {
+                setExistingComment(!!res.data);
+            }
+        };
+        void fetchProfessorComments();
+    }, [profId]);
 
     useEffect(() => {
         const fetchVerifiedComments = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            const response = await getVerifiedProfessorComments(profId, token);
-            if (response?.status === 200) {
-                setVerifiedComments(response.data);
-            } else {
-                alert('Error fetching verified comments');
+            const token = await updateToken(rawToken!, login, logout, navigate, []);
+            const res = await getVerifiedProfessorComments(profId, token);
+            if (res?.status === 200) {
+                setVerifiedComments(res.data);
             }
         };
         void fetchVerifiedComments();
     }, [profId]);
 
-    const renderRatingStars = (rating: number) => {
-        const fullStars = Math.round(rating);
-        const emptyStars = 5 - fullStars;
+    const averageRating = useMemo(
+        () => calculateAverageRating(verifiedComments),
+        [verifiedComments]
+    );
 
+    const renderRatingStars = (rating: number) => {
+        const full = Math.round(rating);
         return (
             <>
-                {'★'.repeat(fullStars)}
-                {'☆'.repeat(emptyStars)}
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
             </>
         );
     };
 
-    const averageRating = calculateAverageRating(verifiedComments);
+    const handleDelete = () => {
+        setExistingComment(false);
+        setVerifiedComments(prev =>
+            prev.filter(c => c.userId !== Number(userId))
+        );
+    };
 
+    const handleUpdate = (updated: CommentProfessor) => {
+        setVerifiedComments(prev =>
+            prev.map(c => (c.userId === updated.userId ? updated : c))
+        );
+    };
 
     return (
-        <div className="card">
-          <img src={prof.imageUrl ? prof.imageUrl : '/default-profile-image.png'} />
-          <h2
-            onClick={() => navigate(`/professor/${profId}`)}
-          >
-            {prof.firstName} {prof.lastName}
-          </h2>
-      
-          <p className="rating-stars">
-            Ocjena: {verifiedComments.length > 0
-              ? <>{renderRatingStars(averageRating)} ({averageRating.toFixed(2)})</>
-              : "Nema ocjena"}
-          </p>
-      
-          {showDetails && (
-            <>
-              <p>Uže područje interesa: {prof.specialization}</p>
-              <p>Obrazovanje: {prof.education}</p>
-              <p>Email: {prof.email}</p>
-              <h4>Predmeti:</h4>
-              <ul>
-                {prof.subjects && prof.subjects.length > 0
-                  ? prof.subjects.map(subject => (
-                      <li
-                        key={subject.id}
-                        onClick={() => navigate(`/subject/${subject.id}`)}
-                      >
-                        {subject.title}
-                      </li>
-                    ))
-                  : <li>Nema dodanih predmeta</li>}
-              </ul>
-            </>
-          )}
-      
-          <div className="buttons">
-              {!existingComment &&(
-                  <button className="btn-add"
-                          disabled={!token || !userId || existingComment}
-                          onClick={() => { setIsOpenAdd(true); setIsOpenDelete(false); setIsOpenUpdate(false); }}
-                  >
-                      Dodaj komentar
-                  </button>
-              )}
-              {existingComment && (
-                  <>
-                      <button className="btn-delete"
-                              disabled={!token || !userId || !existingComment}
-                              onClick={() => { setIsOpenDelete(true); setIsOpenAdd(false); setIsOpenUpdate(false); }}
-                      >
-                          Izbriši komentar
-                      </button>
+        <div className="professor-card">
+            <img
+                className="professor-card__image"
+                src={prof.imageUrl || "/default-profile-image.png"}
+            />
 
-                      <button className="btn-update"
-                              disabled={!token || !userId || !existingComment}
-                              onClick={() => { setIsOpenUpdate(true); setIsOpenAdd(false); setIsOpenDelete(false); }}
-                      >
-                          Izmjeni komentar
-                      </button>
-                  </>
-              )}
-          </div>
-      
-          <AddProfessorCommentPopup
-            isOpen={isOpenAdd}
-            onClose={() => setIsOpenAdd(false)}
-            id={profId}
-            onSuccess={() => setExistingComment(true)}
-          />
-      
-          <DeleteProfessorCommentPopup
-            isOpen={isOpenDelete}
-            onClose={() => setIsOpenDelete(false)}
-            id={profId}
-            onSuccess={() => setExistingComment(false)}
-          />
-      
-          <UpdateProfessorCommentPopup
-            isOpen={isOpenUpdate}
-            onClose={() => setIsOpenUpdate(false)}
-            id={profId}
-          />
-      
-          <div className="professor-card-comments-toggle">
-            <button onClick={() => setShowVerifiedComments(!showVerifiedComments)}>
-              {showVerifiedComments ? 'Sakrij komentare' : 'Prikaži komentare'}
-            </button>
-          </div>
-      
-          <div className="professor-card-comments">
-            {verifiedComments.map(comment => (
-              <CPCardNormal key={comment.id} comment={comment} show={showVerifiedComments}/>
-              ))}
-          </div>
+            <h2
+                className="professor-card__name"
+                onClick={() => navigate(`/professor/${profId}`)}
+            >
+                {prof.firstName} {prof.lastName}
+            </h2>
+
+            <p className="professor-card__rating">
+                Ocjena:{" "}
+                {verifiedComments.length > 0 ? (
+                    <>
+                        <span className="professor-card__rating-stars">
+                            {renderRatingStars(averageRating)}
+                        </span>
+                        <span className="professor-card__rating-number">
+                            ({averageRating.toFixed(2)})
+                        </span>
+                    </>
+                ) : (
+                    "Nema ocjena"
+                )}
+            </p>
+
+            {showDetails && (
+                <div className="professor-card__details">
+                    <p>Uže područje interesa: {prof.specialization}</p>
+                    <p>Obrazovanje: {prof.education}</p>
+                    <p>Email: {prof.email}</p>
+
+                    <h4 className="professor-card__subjects-title">Predmeti:</h4>
+                    <ul className="professor-card__subjects-list">
+                        {prof.subjects?.length ? (
+                            prof.subjects.map(s => (
+                                <li
+                                    key={s.id}
+                                    className="professor-card__subject-item"
+                                    onClick={() => navigate(`/subject/${s.id}`)}
+                                >
+                                    {s.title}
+                                </li>
+                            ))
+                        ) : (
+                            <li>Nema dodanih predmeta</li>
+                        )}
+                    </ul>
+                </div>
+            )}
+
+            <div className="professor-card__actions">
+                {!existingComment && (
+                    <button
+                        className="professor-card__btn professor-card__btn--add"
+                        disabled={!rawToken || !userId}
+                        onClick={() => setIsOpenAdd(true)}
+                    >
+                        Dodaj komentar
+                    </button>
+                )}
+
+                {existingComment && (
+                    <>
+                        <button
+                            className="professor-card__btn professor-card__btn--delete"
+                            onClick={() => setIsOpenDelete(true)}
+                        >
+                            Izbriši komentar
+                        </button>
+
+                        <button
+                            className="professor-card__btn professor-card__btn--update"
+                            onClick={() => setIsOpenUpdate(true)}
+                        >
+                            Izmjeni komentar
+                        </button>
+                    </>
+                )}
+            </div>
+
+            <AddProfessorCommentPopup
+                isOpen={isOpenAdd}
+                onClose={() => setIsOpenAdd(false)}
+                id={profId}
+                onSuccess={() => setExistingComment(true)}
+            />
+
+            <DeleteProfessorCommentPopup
+                isOpen={isOpenDelete}
+                onClose={() => setIsOpenDelete(false)}
+                id={profId}
+                onSuccess={handleDelete}
+            />
+
+            <UpdateProfessorCommentPopup
+                isOpen={isOpenUpdate}
+                onClose={() => setIsOpenUpdate(false)}
+                id={profId}
+                onSuccess={handleUpdate}
+            />
+
+            <div className="professor-card__comments-toggle">
+                <button onClick={() => setShowVerifiedComments(p => !p)}>
+                    {showVerifiedComments ? "Sakrij komentare" : "Prikaži komentare"}
+                </button>
+            </div>
+
+            {showVerifiedComments && (
+                <div className="professor-card__comments-list">
+                    {verifiedComments.map(c => (
+                        <CPCardNormal key={c.id} comment={c} show />
+                    ))}
+                </div>
+            )}
         </div>
-      );
-    }      
+    );
+};
