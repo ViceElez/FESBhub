@@ -156,7 +156,7 @@ export class SubjService {
           }
       })
         if(subjects.length===0){
-            throw new NotFoundException('No subjects found with the given name');
+            return;
         }
       return subjects;
     }

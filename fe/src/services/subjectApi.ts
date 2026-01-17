@@ -24,7 +24,6 @@ export async function getAllSubjects(token?: string | null) {
             }
         });
     } catch (e){
-        console.log(e)
         return
     }
 }
@@ -50,7 +49,6 @@ export async function getSubjByName(subjName: string, token?: string | null) {
             }
         });
     } catch (e){
-        console.log(e)
         return
     }
 }
