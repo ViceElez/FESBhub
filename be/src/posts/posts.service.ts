@@ -52,38 +52,6 @@ export class PostsService {
         if (!existing) return null;
         return this.prisma.post.delete({ where: { id } });
     }
-
-    async updateMine(postId: number, userId: number, isAdmin: boolean, dto: Partial<{ title: string; content: string; photos: string[] }>) {
-        const existing = await this.prisma.post.findUnique({ where: { id: postId } });
-        if (!existing) return null;
-        if (existing.userId !== userId) return null;
-
-        const data: any = {};
-
-        if (dto.title !== undefined) {
-            if (dto.title.trim() === '') throw new BadRequestException('Title cannot be empty');
-            data.title = dto.title;
-        }
-
-        if (dto.content !== undefined) {
-            if (dto.content.trim() === '') throw new BadRequestException('Content cannot be empty');
-            data.content = dto.content;
-        }
-
-        if (Object.keys(data).length === 0) {
-            throw new BadRequestException('No fields provided for update');
-        }
-        if (!isAdmin) {
-            data.verified = false;
-        }
-
-        return this.prisma.post.update({
-            where: { id: postId },
-            data,
-            include: { photos: true, user: { select: { id: true, firstName: true, lastName: true } } },
-        });
-    }
-
     async update(id: number, dto: Partial<{ title: string; content: string; photos: string[] }>) {
         const existing = await this.prisma.post.findUnique({ where: { id } });
         if (!existing) return null;
@@ -101,7 +69,7 @@ export class PostsService {
         }
 
         if (dto.photos !== undefined) {
-            // Delete existing photos and create new ones
+          
             data.photos = {
                 deleteMany: {},
                 create: dto.photos.map(url => ({ url })),

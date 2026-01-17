@@ -21,7 +21,7 @@ import { AdminGuard, UserGuard } from '../guards';
 export class PostsController {
     constructor(private readonly postsService: PostsService) { }
 
-    //@UseGuards(UserGuard)
+  
     @Get()
     async getAll() {
         return this.postsService.findAll();
@@ -52,7 +52,6 @@ export class PostsController {
     @UseGuards(UserGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number) {
-         console.log("prvi je runnan");
         const deleted = await this.postsService.remove(id);
         if (!deleted) throw new NotFoundException('Post not found');
         return deleted;
@@ -63,24 +62,25 @@ export class PostsController {
    @UseGuards(UserGuard)
     @Patch(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
-       
+       console.log("ovaj je runnan");
         const updated = await this.postsService.update(id, dto);
         if (!updated) throw new NotFoundException('Post not found');
         return updated;
     }
 
-    // Update one of current user's posts
-    @UseGuards(UserGuard)
-    @Patch(':id')
-    async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
-        const userId = Number(req.user?.sub);
-        const isAdmin = Boolean(req.user?.isAdmin);
-        const updated = await this.postsService.updateMine(id, userId, isAdmin, dto);
-        if (!updated) throw new NotFoundException('Post not found');
-        return updated;
-    }
+   
+    // @UseGuards(UserGuard)
+    // @Patch(':id')
+    // async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
+    //     console.log("ovaj je runnan2");
+    //     const userId = Number(req.user?.sub);
+    //     const isAdmin = Boolean(req.user?.isAdmin);
+    //     const updated = await this.postsService.updateMine(id, userId, isAdmin, dto);
+    //     if (!updated) throw new NotFoundException('Post not found');
+    //     return updated;
+    // }
 
-    // admin-only: verify a post (set verified=true)
+    
     @UseGuards(UserGuard, AdminGuard)
     @Patch(':id/verify')
     async verify(@Param('id', ParseIntPipe) id: number) {
