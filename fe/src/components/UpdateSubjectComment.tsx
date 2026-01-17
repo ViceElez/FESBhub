@@ -78,25 +78,21 @@ export const UpdateSubjectCommentPopup = ({ isOpen, onClose, id, onSuccess }: Up
                     <input
                         type="text"
                         placeholder="Novi komentar"
-                        value={content}
                         onChange={e => setContent(e.target.value)}
                     />
                     <input
                         type="number"
                         placeholder="Nova ocjena praktičnosti"
-                        value={ratingPract || ""}
                         onChange={e => setRatingPract(Number(e.target.value))}
                     />
                     <input
                         type="number"
                         placeholder="Nova ocjena težine"
-                        value={ratingDiff || ""}
                         onChange={e => setRatingDiff(Number(e.target.value))}
                     />
                     <input
                         type="number"
                         placeholder="Nova ocjena očekivanja"
-                        value={ratingExpect || ""}
                         onChange={e => setRatingExpect(Number(e.target.value))}
                     />
                 </div>

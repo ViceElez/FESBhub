@@ -183,13 +183,20 @@ export const ProfessorCard = ({ prof, profId, showDetails }: CardProperties) => 
                 onClose={() => setIsOpenDelete(false)}
                 id={profId}
                 onSuccess={handleDelete}
+                comment={verifiedComments.find(
+                    c => c.userId === Number(userId)
+                )}
             />
 
             <UpdateProfessorCommentPopup
                 isOpen={isOpenUpdate}
                 onClose={() => setIsOpenUpdate(false)}
                 id={profId}
+                comment={verifiedComments.find(
+                    c => c.userId === Number(userId)
+                )}
                 onSuccess={handleUpdate}
+
             />
 
             <div className="professor-card__comments-toggle">

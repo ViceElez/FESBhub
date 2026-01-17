@@ -1,20 +1,31 @@
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import {type UpdateProfCommentPopup} from "../constants";
+import type { UpdateProfCommentPopup, CommentProfessor } from "../constants";
 import { useAuth } from "../hooks";
 import { editProfessorComments, updateToken } from "../services";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import "../index.css";
 
-export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: UpdateProfCommentPopup) => {
+type UpdateProfessorCommentPopupProps = UpdateProfCommentPopup & {
+    comment?: CommentProfessor;
+};
+
+export const UpdateProfessorCommentPopup = ({isOpen, onClose, id, onSuccess, comment}: UpdateProfessorCommentPopupProps) => {
     const [content, setContent] = useState("");
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState<number>(0);
 
     let { token, login, logout } = useAuth();
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isOpen && comment) {
+            setContent(comment.content);
+            setRating(comment.rating);
+        }
+    }, [isOpen, comment]);
 
     useEffect(() => {
         if (isOpen) {
@@ -27,8 +38,19 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: Upd
 
     if (!isOpen) return null;
 
+    const renderStars = (rating: number) => {
+        const full = Math.round(rating);
+        return (
+            <>
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
+            </>
+        );
+    };
+
     const handleCommentUpdate = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);
+
         const response = await editProfessorComments(
             id,
             rating,
@@ -39,19 +61,19 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: Upd
 
         if (response?.status === 200) {
             alert("Updated successfully");
-            const updatedComment = {
-                id: id,
-                userId: Number(userId),
-                profId: id,
-                rating: rating,
+
+            const updatedComment: CommentProfessor = {
+                ...comment!,
+                rating,
                 content,
-                verified: true,
             };
+
             onSuccess?.(updatedComment);
         } else {
             alert("Error");
             console.log(response);
         }
+
         onClose();
     };
 
@@ -62,18 +84,35 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: Upd
                     Izmijeni komentar
                 </h2>
 
+                {comment && (
+                    <div className="update-comment-preview">
+                        <p className="update-comment-preview__rating">
+                            Trenutna ocjena:
+                            <span className="update-comment-preview__stars">
+                                {renderStars(comment.rating)}
+                            </span>
+                            <span className="update-comment-preview__number">
+                                ({comment.rating.toFixed(2)})
+                            </span>
+                        </p>
+
+                        <p className="update-comment-preview__content">
+                            Trenutni komentar: {comment.content}
+                        </p>
+                    </div>
+                )}
+
                 <div className="subject-update-comment-modal-inputs">
                     <input
-                        type="text"
                         placeholder="Novi komentar"
-                        value={content}
                         onChange={(e) => setContent(e.target.value)}
                     />
 
                     <input
                         type="number"
-                        placeholder="Nova ocjena profesora (1–5)"
-                        value={rating || ""}
+                        min={1}
+                        max={5}
+                        placeholder="Nova ocjena (1–5)"
                         onChange={(e) => setRating(Number(e.target.value))}
                     />
                 </div>
@@ -89,7 +128,7 @@ export const UpdateProfessorCommentPopup = ({isOpen, onClose, id,onSuccess}: Upd
                     <button
                         onClick={handleCommentUpdate}
                         disabled={
-                            content.length === 0 ||
+                            !content.trim() ||
                             rating < 1 ||
                             rating > 5
                         }

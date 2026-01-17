@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import type { PopupProperties } from "../constants";
+import type { PopupProperties, CommentProfessor } from "../constants";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../hooks";
 import { deleteProfessorComment, updateToken } from "../services";
@@ -7,7 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import "../index.css";
 
-export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess}: PopupProperties) => {
+type DeleteProfessorCommentPopupProps = PopupProperties & {
+    comment?: CommentProfessor;
+};
+
+export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess, comment}: DeleteProfessorCommentPopupProps) => {
     let { token, login, logout } = useAuth();
     const decode = token ? jwtDecode(token) : null;
     const userId = decode?.sub;
@@ -22,15 +26,17 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess}: Po
         };
     }, [isOpen]);
 
-    useEffect(() => {
-        if(!isOpen) return;
-        const fetchComment=async()=>{
-            token = await updateToken(token!, login, logout, navigate, []);
-            // Additional fetching logic can be added here if needed
-        }
-    }, [isOpen,id,userId]);
-
     if (!isOpen) return null;
+
+    const renderStars = (rating: number) => {
+        const full = Math.round(rating);
+        return (
+            <>
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
+            </>
+        );
+    };
 
     const handleCommentDelete = async () => {
         token = await updateToken(token!, login, logout, navigate, [onClose]);
@@ -60,6 +66,24 @@ export const DeleteProfessorCommentPopup = ({isOpen, onClose, id, onSuccess}: Po
 
                 <div className="subject-delete-comment-modal-content">
                     <p>Ova radnja je nepovratna.</p>
+
+                    {comment && (
+                        <div className="delete-comment-preview">
+                            <p className="delete-comment-preview__rating">
+                                Ocjena:
+                                <span className="delete-comment-preview__stars">
+                                    {renderStars(comment.rating)}
+                                </span>
+                                <span className="delete-comment-preview__number">
+                                    ({comment.rating.toFixed(2)})
+                                </span>
+                            </p>
+
+                            <p className="delete-comment-preview__content">
+                                Komentar: {comment.content}
+                            </p>
+                        </div>
+                    )}
                 </div>
 
                 <div className="subject-delete-comment-modal-actions">

@@ -1,7 +1,3 @@
-/* =========================
-   Professor Card
-========================= */
-
 .professor-card {
     display: flex;
     flex-direction: column;
@@ -21,10 +17,6 @@
     transform: translateY(-3px);
 }
 
-/* =========================
-   Image
-========================= */
-
 .professor-card__image {
     display: block;
     margin: 0 auto 12px;
@@ -34,27 +26,19 @@
     border-radius: 50%;
 }
 
-/* =========================
-   Name & Text
-========================= */
-
 .professor-card__name {
     margin: 0;
     font-size: 1.6rem;
-    color: #F0EBD8; /* Changed color */
+    color: #F0EBD8;
     text-decoration: underline;
     cursor: pointer;
 }
 
 .professor-card p {
     margin: 5px 0;
-    color: white; /* All text under name white */
+    color: white;
     font-size: 0.95rem;
 }
-
-/* =========================
-   Rating
-========================= */
 
 .professor-card__rating-stars {
     color: #FFD700;
@@ -63,18 +47,14 @@
 }
 
 .professor-card__rating-number {
-    color: white; /* text under name is white */
+    color: white;
     font-size: 1rem;
     margin-left: 6px;
 }
 
-/* =========================
-   Subjects
-========================= */
-
 .professor-card__subjects-title {
     margin: 10px 0 5px 0;
-    color: white; /* text under name */
+    color: white;
 }
 
 .professor-card__subjects-list {
@@ -89,14 +69,10 @@
 
 .professor-card__subject-item {
     margin-bottom: 4px;
-    color: white; /* text under name */
+    color: white;
     cursor: pointer;
     text-decoration: underline;
 }
-
-/* =========================
-   Actions / Buttons
-========================= */
 
 .professor-card__actions {
     display: flex;
@@ -135,10 +111,6 @@
     transform: scale(1.05);
 }
 
-/* =========================
-   Comments Toggle
-========================= */
-
 .professor-card__comments-toggle {
     margin-top: 15px;
 }
@@ -157,10 +129,6 @@
     opacity: 0.9;
     transform: scale(1.05);
 }
-
-/* =========================
-   Comments List (horizontal scroll)
-========================= */
 
 .professor-card__comments-list {
     display: flex;
@@ -185,7 +153,6 @@
     hyphens: auto;
 }
 
-/* Scrollbar style */
 .professor-card__comments-list::-webkit-scrollbar {
     height: 8px;
 }
@@ -194,10 +161,6 @@
     border-radius: 4px;
 }
 
-/* =========================
-   Professor Comment Card
-========================= */
-
 .professor-comment-card {
     background-color: #748CAB;
     border-radius: 10px;
@@ -205,13 +168,13 @@
     min-width: 250px;
     max-width: 250px;
     flex-shrink: 0;
-
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: pre-wrap;
     hyphens: auto;
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .professor-comment-card__author {
@@ -267,4 +230,9 @@
         min-width: 200px;
         max-width: 200px;
     }
+}
+.update-comment-preview{
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
 }
