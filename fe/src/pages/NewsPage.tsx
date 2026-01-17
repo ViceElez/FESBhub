@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { tokenIsAdmin, updateToken } from "../services";
+import { tokenIsAdmin } from "../services";
 import { useAuth, useDebounce } from "../hooks";
 import type { Post } from "../services/PostAdminApi.ts";
 import { createPost, fetchAllPosts, searchPosts } from "../services/PostAdminApi.ts";
 import "../styles/NewsPageStyle.css";
-import { Link,useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { routes } from "../constants";
 type MainView = "userPosts" | "fesbnews";
 
@@ -18,8 +18,8 @@ export const NewsPage = () => {
   const [content, setContent] = useState("");
 
   const [allPosts, setAllPosts] = useState<Post[]>([]);
-  let { token, login, logout } = useAuth();
-  const navigate = useNavigate();
+  let { token } = useAuth();
+  
   const [loadingPosts, setLoadingPosts] = useState(false);
   const [message, setMessage] = useState<string>("");
   const [isAdmin, setIsAdmin] = useState<boolean>(false);

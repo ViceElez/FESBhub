@@ -111,7 +111,7 @@ export class PostsService {
         return this.prisma.post.findMany({
             where:{verified:true},
             orderBy:{createdAt:'desc'},
-            include:{user:{select:{id:true,firstName:true,lastName:true,email:true}}}
+            include:{photos:true,user:{select:{id:true,firstName:true,lastName:true,email:true}}}
         });
     }
 
