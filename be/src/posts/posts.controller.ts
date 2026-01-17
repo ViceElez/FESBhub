@@ -62,24 +62,13 @@ export class PostsController {
    @UseGuards(UserGuard)
     @Patch(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
-       console.log("ovaj je runnan");
         const updated = await this.postsService.update(id, dto);
         if (!updated) throw new NotFoundException('Post not found');
         return updated;
     }
 
    
-    // @UseGuards(UserGuard)
-    // @Patch(':id')
-    // async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
-    //     console.log("ovaj je runnan2");
-    //     const userId = Number(req.user?.sub);
-    //     const isAdmin = Boolean(req.user?.isAdmin);
-    //     const updated = await this.postsService.updateMine(id, userId, isAdmin, dto);
-    //     if (!updated) throw new NotFoundException('Post not found');
-    //     return updated;
-    // }
-
+    
     
     @UseGuards(UserGuard, AdminGuard)
     @Patch(':id/verify')
