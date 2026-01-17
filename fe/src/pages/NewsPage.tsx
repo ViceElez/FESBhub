@@ -342,15 +342,13 @@ export const NewsPage = () => {
            <Link to={routes.MATERIALSPAGE}>
                     <button>MATERIALS</button>
                 </Link>
-                <Link to={routes.NEWSPAGE}>
-                    <button>NEWS</button>
+                <Link to={routes.SUBJECTPAGE}>
+                  <button>SUBJECTS</button>
                 </Link>
                 <Link to={routes.PROFESSORPAGE}>
                     <button>PROFESSORS</button>
                 </Link>
-                <Link to={routes.ADMINSETTINGSPAGE}>
-                    <button>ADMIN</button>
-                </Link>
+               
         </div>
       </div>
     

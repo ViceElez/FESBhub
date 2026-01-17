@@ -32,14 +32,14 @@ export async function fetchMyPosts(token: string): Promise<MyPost[]> {
     return Array.isArray(res.data) ? res.data : [];
 }
 
-export async function deleteMyPost(token: string, postId: number) {
-    return axios.delete(`${route}/posts/me/${postId}`, {
+export async function deleteMyPost(token: string, Id: number) {
+    return axios.delete(`${route}/posts/${Id}`, {
         headers: { Authorization: `Bearer ${token}` },
     });
 }
 
 export async function updateMyPost(token: string, postId: number, data: { title: string; content: string }) {
-    return axios.patch(`${route}/posts/me/${postId}`, data, {
+    return axios.patch(`${route}/posts/${postId}`, data, {
         headers: { Authorization: `Bearer ${token}` },
     });
 }

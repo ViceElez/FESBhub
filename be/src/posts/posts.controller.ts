@@ -32,7 +32,7 @@ export class PostsController {
         return this.postsService.search(q || '');
     }
 
-    // Get current user's posts
+  
     @UseGuards(UserGuard)
     @Get('me')
     async getMine(@Request() req) {
@@ -40,7 +40,7 @@ export class PostsController {
         return this.postsService.findMine(userId);
     }
 
-    // Authenticated users can create posts (admins auto-verify)
+  
     @UseGuards(UserGuard)
     @Post()
     async create(@Body() dto: CreatePostDto, @Request() req) {
@@ -52,6 +52,7 @@ export class PostsController {
     @UseGuards(UserGuard)
     @Delete(':id')
     async remove(@Param('id', ParseIntPipe) id: number) {
+         console.log("prvi je runnan");
         const deleted = await this.postsService.remove(id);
         if (!deleted) throw new NotFoundException('Post not found');
         return deleted;
@@ -62,25 +63,15 @@ export class PostsController {
    @UseGuards(UserGuard)
     @Patch(':id')
     async update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto) {
+       
         const updated = await this.postsService.update(id, dto);
         if (!updated) throw new NotFoundException('Post not found');
         return updated;
     }
 
-    // Delete one of current user's posts (admins can delete any)
-    @UseGuards(UserGuard)
-    @Delete('me/:id')
-    async removeMine(@Param('id', ParseIntPipe) id: number, @Request() req) {
-        const userId = Number(req.user?.sub);
-        const isAdmin = Boolean(req.user?.isAdmin);
-        const deleted = await this.postsService.remove(id);
-        if (!deleted) throw new NotFoundException('Post not found');
-        return deleted;
-    }
-
     // Update one of current user's posts
     @UseGuards(UserGuard)
-    @Patch('me/:id')
+    @Patch(':id')
     async updateMine(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePostDto, @Request() req) {
         const userId = Number(req.user?.sub);
         const isAdmin = Boolean(req.user?.isAdmin);

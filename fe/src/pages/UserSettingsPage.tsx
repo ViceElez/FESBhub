@@ -178,7 +178,6 @@ export const UserSettingsPage = () => {
       );
       handleCancelEdit();
       
-      // Show message if post needs re-approval
       if (!response.data.verified) {
         setMyPostsErr("Post updated successfully. It will need admin approval before being published.");
         setTimeout(() => setMyPostsErr(null), 3000);
@@ -293,15 +292,6 @@ export const UserSettingsPage = () => {
             <h2 className="settings-section-title" style={{ margin: 0 }}>
               Moji postovi
             </h2>
-
-            <button
-              type="button"
-              onClick={loadMyPosts}
-              disabled={myPostsLoading}
-              className="settings-secondary-btn"
-            >
-              {myPostsLoading ? "Učitavam..." : "Refresh"}
-            </button>
           </div>
 
           {myPostsErr && <div className="settings-msg error">{myPostsErr}</div>}

@@ -1,6 +1,6 @@
 import {logoutApi, tokenIsAdmin,updateToken} from "../services";
 import {routes} from "../constants";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import '../index.css'
 import logo from '../assets/images/FESBhubLogo.png'
@@ -35,7 +35,11 @@ export const Header = () => {
             <div className="spacer">
                 <button>Light/Dark</button>
             </div>
-            <img src={logo} alt="FesbHub Logo"/>
+            <img src={logo} alt="FesbHub Logo"
+            onClick={()=> 
+                navigate(routes.NEWSPAGE)
+            }
+            style={{cursor:"grab"}}/>
             <div>
                 <button
                     id="logout-button"

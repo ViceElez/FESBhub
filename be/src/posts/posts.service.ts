@@ -46,24 +46,16 @@ export class PostsService {
         });
     }
    
-    //dovoljno razlicite ig
+    
     async remove(id: number) {
         const existing = await this.prisma.post.findUnique({ where: { id } });
         if (!existing) return null;
         return this.prisma.post.delete({ where: { id } });
     }
 
-    async removeMine(postId: number, userId: number, isAdmin: boolean) {
-        const existing = await this.prisma.post.findUnique({ where: { id: postId } });
-        if (!existing) return null;
-
-        return this.prisma.post.delete({ where: { id: postId } });
-    }
-
     async updateMine(postId: number, userId: number, isAdmin: boolean, dto: Partial<{ title: string; content: string; photos: string[] }>) {
         const existing = await this.prisma.post.findUnique({ where: { id: postId } });
         if (!existing) return null;
-        // Only allow user to update their own posts
         if (existing.userId !== userId) return null;
 
         const data: any = {};
@@ -78,19 +70,9 @@ export class PostsService {
             data.content = dto.content;
         }
 
-        if (dto.photos !== undefined) {
-            // Delete existing photos and create new ones
-            data.photos = {
-                deleteMany: {},
-                create: dto.photos.map(url => ({ url })),
-            };
-        }
-
         if (Object.keys(data).length === 0) {
             throw new BadRequestException('No fields provided for update');
         }
-
-        // Set verified to false for non-admin users when they edit
         if (!isAdmin) {
             data.verified = false;
         }
