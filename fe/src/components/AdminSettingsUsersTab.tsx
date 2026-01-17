@@ -3,7 +3,7 @@ import {
     updateToken,
     getAllUsersApi, unverifyUserApi, verifyUserApi, deleteUserApi
 } from "../services";
-import { useAuth } from "../hooks";
+import { useAuth, useDebounce } from "../hooks";
 import { useNavigate } from "react-router-dom";
 import '../index.css';
 import {AdminUserViewProfile} from "../components";
@@ -23,9 +23,12 @@ export const AdminSettingsUsersTab = () => {
     const navigate = useNavigate();
     let { token, login, logout } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
+    const [shownUsers, setShownUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [isVisible, setIsVisible] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -34,11 +37,26 @@ export const AdminSettingsUsersTab = () => {
             if(res?.status===200){
                 const allUsers: User[] = res.data;
                 setUsers(allUsers);
+                setShownUsers(allUsers);
             }
         };
         setLoading(true);
         void fetchUsers().then(() => setLoading(false));
     },[]);
+
+    useEffect(() => {
+            const handleSearch = () => {
+                if (debouncedSearchTerm.trim() === "") {
+                    setShownUsers(users);
+                } else {
+                    const filteredUsers = users.filter(user =>
+                        `${user.firstName} ${user.lastName}`.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
+                    );
+                    setShownUsers(filteredUsers);
+                }
+            }
+            handleSearch();
+        }, [debouncedSearchTerm, users]);
 
 
     const handleToggleVerify = async (userId: number) => {
@@ -47,6 +65,7 @@ export const AdminSettingsUsersTab = () => {
         if (!user) return;
         if(user.isVerified){
             const res=await unverifyUserApi(userId, token);
+            console.log(res);
             if(res?.status===200){
                 setUsers(prevUsers =>
                     prevUsers.map(u =>
@@ -87,51 +106,69 @@ export const AdminSettingsUsersTab = () => {
     if (loading) return <p>Loading users...</p>;
 
     return (
-        <div className="admin-users-container">
-            {users.map(user => (
-                <div key={user.id} className="admin-card">
-                    <h2 className="admin-card-name">
-                        {user.firstName} {user.lastName}
-                    </h2>
-                    <p className="admin-card-email">Email: {user.email}</p>
-                    <p className="admin-card-studij">
-                        Study Program: {user.studij ?? "None"}
-                    </p>
-                    <p className="admin-card-year">
-                        Current Study Year: {user.currentStudyYear ?? "None"}
-                    </p>
-                    <p className="admin-card-created">Account Created At: {new Date(user.createdAt).toLocaleDateString()}</p>
+        <div>
+            <div className = "search-wrapper">
+                <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className = "search-input"
+                />
+                <button 
+                    className = "search-button"
+                    aria-label = "Search"
+                >
+                    🔍
+                </button>
+            </div>
+            <div className="admin-users-container">
+            
+                {shownUsers.map(user => (
+                    <div key={user.id} className="admin-card">
+                        <h2 className="admin-card-name">
+                            {user.firstName} {user.lastName}
+                        </h2>
+                        <p className="admin-card-email">Email: {user.email}</p>
+                        <p className="admin-card-studij">
+                            Study Program: {user.studij ?? "None"}
+                        </p>
+                        <p className="admin-card-year">
+                            Current Study Year: {user.currentStudyYear ?? "None"}
+                        </p>
+                        <p className="admin-card-created">Account Created At: {new Date(user.createdAt).toLocaleDateString()}</p>
 
-                    <button
-                        className={user.isVerified ? 'unverify-btn' : 'verify-btn'}
-                        onClick={() => handleToggleVerify(user.id)}
-                    >
-                        {user.isVerified ? 'Unverify' : 'Verify'}
-                    </button>
+                        <button
+                            className={user.isVerified ? 'unverify-btn' : 'verify-btn'}
+                            onClick={() => handleToggleVerify(user.id)}
+                        >
+                            {user.isVerified ? 'Unverify' : 'Verify'}
+                        </button>
 
-                    <button
-                        className="delete-btn"
-                        onClick={() => handleDelete(user.id)}
-                    >
-                        Delete
-                    </button>
+                        <button
+                            className="delete-btn"
+                            onClick={() => handleDelete(user.id)}
+                        >
+                            Delete
+                        </button>
 
-                    <button
-                        className="view-profile-btn"
-                        onClick={() => handleViewProfile(user)}
-                    >
-                        View Profile
-                    </button>
-                </div>
-            ))}
-            <AdminUserViewProfile
-                open={isVisible}
-                user={selectedUser}
-                close={() => {
-                    setIsVisible(false);
-                    setSelectedUser(null);
-                }}/>
-            {users.length === 0 && <p>No users to display.</p>}
+                        <button
+                            className="view-profile-btn"
+                            onClick={() => handleViewProfile(user)}
+                        >
+                            View Profile
+                        </button>
+                    </div>
+                ))}
+                <AdminUserViewProfile
+                    open={isVisible}
+                    user={selectedUser}
+                    close={() => {
+                        setIsVisible(false);
+                        setSelectedUser(null);
+                    }}/>
+                {users.length === 0 && <p>No users to display.</p>}
+            </div>
         </div>
     );
 

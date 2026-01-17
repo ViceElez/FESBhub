@@ -66,3 +66,16 @@ export async function deleteUserApi(userId:number, accessToken:string | null){
         return;
     }
 }
+
+export async function getUsersByName(name:string, accessToken:string | null){
+    try{
+        return await axios.get(`${route}/user/search/${name}`, {
+            headers: {
+                Authorization: `Bearer ${accessToken}`,
+            }
+        });
+    }catch (e){
+        alert('Error fetching users by name');
+        return;
+    }
+}

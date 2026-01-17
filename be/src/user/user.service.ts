@@ -145,4 +145,34 @@ export class UserService {
             }
         });
     }
+
+    async getUsersByName(name:string){
+        console.log("Searching users by name:", name);
+        return this.prisma.user.findMany({
+            where:{
+                OR:[
+                    {
+                        firstName:{
+                            contains:name,
+                            mode:'insensitive'
+                        }
+                    },
+                    {
+                        lastName:{
+                            contains:name,
+                            mode:'insensitive'
+                        }
+                    }
+                ]
+            },
+            select:{
+                id:true,
+                firstName:true,
+                lastName:true,
+                email:true,
+                createdAt:true,
+                isVerified:true,
+            }
+        });
+    }
 }
