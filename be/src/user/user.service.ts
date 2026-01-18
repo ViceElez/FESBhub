@@ -6,7 +6,7 @@ export class UserService {
     constructor(
         private readonly prisma:PrismaService,
     ) {}
-     async getMyProfile(userId: number) {
+    async getMyProfile(userId: number) {
         return this.prisma.user.findUnique({
             where: { id: userId },
             select: {
@@ -23,7 +23,7 @@ export class UserService {
         });
     }
 
-     async updateMyProfile(userId: number, dto: UpdateProfileDto) {
+    async updateMyProfile(userId: number, dto: UpdateProfileDto) {
         return this.prisma.user.update({
             where: { id: userId },
             data: {
@@ -44,6 +44,7 @@ export class UserService {
             },
         });
     }
+
     async getUserById(userId:string){
         if(!userId){
           throw new UnauthorizedException('User ID is required');
@@ -147,7 +148,6 @@ export class UserService {
     }
 
     async getUsersByName(name:string){
-        console.log("Searching users by name:", name);
         return this.prisma.user.findMany({
             where:{
                 OR:[

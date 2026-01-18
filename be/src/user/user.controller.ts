@@ -50,14 +50,13 @@ export class UserController {
         return this.UserService.updateMyProfile(userId, dto);
     }
 
+    @Get('search/:name')
+    async getUsersByName(@Param('name') name: string) {
+        return this.UserService.getUsersByName(name);
+    }
+
     @Get(':id')
     async getUserById(@Param('id') id: string) {
         return this.UserService.getUserById(id);
-    }
-
-    @Get('search/:name')
-    async getUsersByName(@Param('name') name: string) {
-        console.log("Searching users by name:", name);
-        return this.UserService.getUsersByName(name);
     }
 }

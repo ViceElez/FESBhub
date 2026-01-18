@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     updateToken,
-    getAllUsersApi, unverifyUserApi, verifyUserApi, deleteUserApi
+    getAllUsersApi, unverifyUserApi, verifyUserApi, deleteUserApi, getUsersByName
 } from "../services";
 import { useAuth, useDebounce } from "../hooks";
 import { useNavigate } from "react-router-dom";
@@ -31,33 +31,45 @@ export const AdminSettingsUsersTab = () => {
     const debouncedSearchTerm = useDebounce(searchTerm);
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            token = await updateToken(token!, login, logout, navigate, []);
-            const res=await getAllUsersApi(token);
-            if(res?.status===200){
-                const allUsers: User[] = res.data;
-                setUsers(allUsers);
-                setShownUsers(allUsers);
-            }
-        };
-        setLoading(true);
-        void fetchUsers().then(() => setLoading(false));
-    },[]);
-
-    useEffect(() => {
-            const handleSearch = () => {
-                if (debouncedSearchTerm.trim() === "") {
-                    setShownUsers(users);
-                } else {
-                    const filteredUsers = users.filter(user =>
-                        `${user.firstName} ${user.lastName}`.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
-                    );
-                    setShownUsers(filteredUsers);
+        const fetchSearchedUsers = async () => {
+            if (!debouncedSearchTerm) {
+                setLoading(true)
+                try{
+                    token=await updateToken(token!, login, logout, navigate, []);
+                    const res=await getAllUsersApi(token);
+                    if(res?.status===200){
+                        const allUsers: User[] = res.data;
+                        setUsers(allUsers);
+                        setShownUsers(allUsers);
+                    }
+                }catch (e){
+                    console.log(e)
+                    return
+                }finally {
+                    setLoading(false)
                 }
+                return;
             }
-            handleSearch();
-        }, [debouncedSearchTerm, users]);
 
+            setLoading(true);
+            try {
+                token = await updateToken(token!, login, logout, navigate, []);
+                const res = await getUsersByName(debouncedSearchTerm,token);
+                if (res?.status === 200) {
+                    const searchedUsers: User[] = res.data;
+                    setShownUsers(searchedUsers);
+                } else {
+                    setShownUsers([]);
+                }
+            } catch (err) {
+                console.error(err);
+                setShownUsers([]);
+            } finally {
+                setLoading(false);
+            }
+        }
+        void fetchSearchedUsers();
+    }, [debouncedSearchTerm]);
 
     const handleToggleVerify = async (userId: number) => {
         token = await updateToken(token!, login, logout, navigate, []);
@@ -103,32 +115,26 @@ export const AdminSettingsUsersTab = () => {
         setSelectedUser(user);
     }
 
-    if (loading) return <p>Loading users...</p>;
-
     return (
         <div>
-            <div className = "search-wrapper">
+            <div className="user-search-wrapper">
                 <input
                     type="text"
                     placeholder="Search users..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className = "search-input"
+                    className="user-search-input"
                 />
-                <button 
-                    className = "search-button"
-                    aria-label = "Search"
-                >
-                    🔍
-                </button>
             </div>
+
             <div className="admin-users-container">
-            
-                {shownUsers.map(user => (
+                {loading && <p className="loading-text">Loading users...</p>}
+                {!loading && shownUsers.map(user => (
                     <div key={user.id} className="admin-card">
                         <h2 className="admin-card-name">
                             {user.firstName} {user.lastName}
                         </h2>
+
                         <p className="admin-card-email">Email: {user.email}</p>
                         <p className="admin-card-studij">
                             Study Program: {user.studij ?? "None"}
@@ -136,13 +142,16 @@ export const AdminSettingsUsersTab = () => {
                         <p className="admin-card-year">
                             Current Study Year: {user.currentStudyYear ?? "None"}
                         </p>
-                        <p className="admin-card-created">Account Created At: {new Date(user.createdAt).toLocaleDateString()}</p>
+                        <p className="admin-card-created">
+                            Account Created At:{" "}
+                            {new Date(user.createdAt).toLocaleDateString()}
+                        </p>
 
                         <button
-                            className={user.isVerified ? 'unverify-btn' : 'verify-btn'}
+                            className={user.isVerified ? "unverify-btn" : "verify-btn"}
                             onClick={() => handleToggleVerify(user.id)}
                         >
-                            {user.isVerified ? 'Unverify' : 'Verify'}
+                            {user.isVerified ? "Unverify" : "Verify"}
                         </button>
 
                         <button
@@ -160,16 +169,22 @@ export const AdminSettingsUsersTab = () => {
                         </button>
                     </div>
                 ))}
-                <AdminUserViewProfile
-                    open={isVisible}
-                    user={selectedUser}
-                    close={() => {
-                        setIsVisible(false);
-                        setSelectedUser(null);
-                    }}/>
-                {users.length === 0 && <p>No users to display.</p>}
+
+                {!loading && shownUsers.length === 0 && (
+                    <p>No users to display.</p>
+                )}
             </div>
+
+            <AdminUserViewProfile
+                open={isVisible}
+                user={selectedUser}
+                close={() => {
+                    setIsVisible(false);
+                    setSelectedUser(null);
+                }}
+            />
         </div>
+
     );
 
 };
