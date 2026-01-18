@@ -1,9 +1,14 @@
-import {useNavigate} from "react-router-dom";
-import {useAuth} from "../hooks";
-import {useEffect, useState} from "react";
-import {deleteSubjectById, getAllSubjects, updateToken} from "../services";
-import '../index.css'
-import {AdminSettingSubjectTabComments} from "../components";
+import { useNavigate } from "react-router-dom";
+import { useAuth, useDebounce } from "../hooks";
+import { useEffect, useState } from "react";
+import {
+    deleteSubjectById,
+    getAllSubjects,
+    getSubjByName,
+    updateToken,
+} from "../services";
+import "../index.css";
+import { AdminSettingSubjectTabComments } from "../components";
 
 type Subject = {
     id: number;
@@ -13,89 +18,137 @@ type Subject = {
     ratingDifficulty: number;
     nositelj: number;
     audtiorne: number;
-    comments:[];
-}
+    comments: [];
+};
 
 export const AdminSettingsSubjectTab = () => {
-
     const navigate = useNavigate();
-    let { token,login,logout } = useAuth();
-    const [subj, setSubj] = useState<Subject[]>([]);
+    let { token, login, logout } = useAuth();
+    const [shownSubjects, setShownSubjects] = useState<Subject[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isVisible, setIsVisible] = useState<boolean>(false);
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const debouncedSearchTerm = useDebounce(searchTerm);
+
+    const [isVisible, setIsVisible] = useState(false);
     const [selectedSubj, setSelectedSubj] = useState<Subject | null>(null);
 
     useEffect(() => {
-        async function fetchProfessors() {
+        const fetchSubjects = async () => {
+            setLoading(true);
             try {
                 token = await updateToken(token!, login, logout, navigate, []);
-                const response = await getAllSubjects(token);
-                if (response?.status === 200) {
-                    const subj: Subject[] = response.data;
-                    setSubj(subj);
+                if (!debouncedSearchTerm) {
+                    const res = await getAllSubjects(token);
+                    if (res?.status === 200 && Array.isArray(res.data)) {
+                        setShownSubjects(res.data);
+                    } else {
+                        setShownSubjects([]);
+                    }
+                    return;
                 }
+                const res = await getSubjByName(debouncedSearchTerm, token);
+
+                if (res?.status === 200 && Array.isArray(res.data)) {
+                    setShownSubjects(res.data);
+                } else {
+                    setShownSubjects([]);
+                }
+            } catch {
+                setShownSubjects([]);
             } finally {
                 setLoading(false);
             }
-        }
-        void fetchProfessors();
-    }, []);
+        };
+
+        void fetchSubjects();
+    }, [debouncedSearchTerm]);
+
 
     const handleDelete = async (subId: number) => {
-        token= await updateToken(token!, login, logout, navigate, []);
-        if(!confirm('Are you sure you want to delete this subject? This action cannot be undone.')) return;
-        const res=await deleteSubjectById(subId,token)
-        if(res?.status===200){
-            setSubj(prevSubj =>
-                prevSubj.filter(s => s.id !== subId)
-            );
-            alert('Subject deleted successfully.');
-        }
-    }
+        token = await updateToken(token!, login, logout, navigate, []);
 
-    const handleViewComments = async (subj:Subject) => {
-        token= await updateToken(token!, login, logout, navigate, []);
+        if (!confirm("Are you sure you want to delete this subject? This action cannot be undone."))
+            return;
+
+        const res = await deleteSubjectById(subId, token);
+        if (res?.status === 200) {
+            setShownSubjects(prev => prev.filter(s => s.id !== subId));
+            alert("Subject deleted successfully.");
+        }
+    };
+
+    const handleViewComments = async (subj: Subject) => {
+        token = await updateToken(token!, login, logout, navigate, []);
         setSelectedSubj(subj);
         setIsVisible(true);
-    }
-
-    if (loading) return <p>Loading professors...</p>;
+    };
 
     return (
-        <div className="admin-subjects-container">
-            {subj.map(s => (
-                <div key={s.id} className="admin-subject-card">
-                    <h2 className="admin-subject-title">{s.title}</h2>
-                    <p className="admin-subject-meta">Rating Expectation: {s.ratingExpectations.toFixed(2)}</p>
-                    <p className="admin-subject-meta">Rating Practical: {s.ratingPracticality.toFixed(2)}</p>
-                    <p className="admin-subject-meta">Rating Difficulty: {s.ratingDifficulty.toFixed(2)}</p>
+        <div>
+            <div className="user-search-wrapper">
+                <input
+                    type="text"
+                    placeholder="Search subjects..."
+                    value={searchTerm}
+                    onChange={e => setSearchTerm(e.target.value)}
+                    className="user-search-input"
+                />
+            </div>
 
-                    <button
-                        className="admin-subject-delete-btn"
-                        onClick={() => handleDelete(s.id)}
-                    >
-                        Delete
-                    </button>
+            <div className="admin-subjects-container">
+                {loading && <p className="loading-text">Loading subjects...</p>}
+                {!loading &&
+                    shownSubjects.map(s => (
+                        <div key={s.id} className="admin-subject-card">
+                            <h2 className="admin-subject-title">
+                                {s.title}
+                            </h2>
 
-                    <button
-                        className="admin-subject-comments-btn"
-                        onClick={() => handleViewComments(s)}
-                    >
-                        View Comments
-                    </button>
-                </div>
-            ))}
+                            <p className="admin-subject-meta">
+                                Rating Expectation:{" "}
+                                {s.ratingExpectations.toFixed(2)}
+                            </p>
+                            <p className="admin-subject-meta">
+                                Rating Practical:{" "}
+                                {s.ratingPracticality.toFixed(2)}
+                            </p>
+                            <p className="admin-subject-meta">
+                                Rating Difficulty:{" "}
+                                {s.ratingDifficulty.toFixed(2)}
+                            </p>
+
+                            <button
+                                className="admin-subject-delete-btn"
+                                onClick={() => handleDelete(s.id)}
+                            >
+                                Delete
+                            </button>
+
+                            <button
+                                className="admin-subject-comments-btn"
+                                onClick={() => handleViewComments(s)}
+                            >
+                                View Comments
+                            </button>
+                        </div>
+                    ))}
+
+                {!loading && shownSubjects.length === 0 && (
+                    <p>No subjects found.</p>
+                )}
+            </div>
+
             {selectedSubj && (
                 <AdminSettingSubjectTabComments
                     open={isVisible}
                     subj={selectedSubj}
-                    close={() =>{
+                    close={() => {
                         setIsVisible(false);
                         setSelectedSubj(null);
                     }}
                 />
             )}
-            {subj.length === 0 && <p>No subjects found.</p>}
         </div>
     );
-}
+};

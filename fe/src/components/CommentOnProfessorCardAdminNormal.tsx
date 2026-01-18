@@ -20,24 +20,12 @@ export const CommentProfessorCardAdminSettings = ({comment,onRemove}:CommentProf
     useEffect(() => {
         const fetchUser = async () => {
             const response = await getUserById(comment.userId, token!);
-
-            /*
-            ko god da je radia stvari za usere nek popravi ovo kad stigne
-            jer trenutno nepostoji response.status jer response nema data
-            ni nista pa se svi atributi iz date samo nalaze u response
-            npr: response.firstName izbaci Vatroslav
-            potencijalni problem je sta response nemora bit dobar pa sve crasha
-            ispod je primjer kako bi kod triba izgledat da response ima status i data
-            */
-
-            /* if (response.status === 200) {
-                console.log("Fetched user successfully");
-                setUserFirstName(response.data.firstName);
-                setUserLastName(response.data.lastName);
-            } */
-
-            setUserFirstName(response.firstName);
-            setUserLastName(response.lastName);
+            if(response?.status===200){
+                const userData = response.data;
+                setUserFirstName(userData.firstName);
+                setUserLastName(userData.lastName);
+                return;
+            }
         };
         void fetchUser();
     }, [comment.userId, token]);

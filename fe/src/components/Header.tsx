@@ -1,6 +1,6 @@
 import {logoutApi, tokenIsAdmin,updateToken} from "../services";
 import {routes} from "../constants";
-import {Link, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useAuth} from "../hooks";
 import '../index.css'
 import logo from '../assets/images/FESBhubLogo.png'
