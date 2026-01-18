@@ -44,6 +44,19 @@ export const PostCardForValidation = ({post,onRemove}:PostCardForValidationProps
                 <h2>Content: {post.content}</h2>
                 <p>Author ID: {post.userId}</p>
                 <p>Created At:{post.createdAt}</p>
+                {post.photos && post.photos.length > 0 && (
+                    <div className="news-post-photos">
+                        {post.photos.map((photo, index) => 
+                            <img
+                                    key={photo.id}
+                                    className="news-photo-thumb"
+                                    src={photo.url}
+                                    alt={`Post image ${index + 1}`}
+                                 
+                                  />
+                        )}
+                    </div>
+                )}
             </div>
             <div className="comment-actions">
                 <button className="verify-btn" onClick={handleVerify}>Verify</button>
