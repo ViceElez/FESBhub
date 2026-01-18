@@ -1,4 +1,4 @@
-import {Controller, Get, Req, UseGuards, Param, Patch, Delete} from '@nestjs/common';
+import {Controller, Get, Req, UseGuards, Param, Patch, Delete,Body} from '@nestjs/common';
 import { UserGuard } from '../guards';
 import { UserService } from './user.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -12,6 +12,7 @@ export class UserController {
     async getAllUsers() {
         return this.UserService.getAllUsers();
     }
+
     @Get('byName')
     async getUserByName(@Req() req:any) {
         const username=req.username;
@@ -39,13 +40,15 @@ export class UserController {
     async deleteUser(@Param('id') id: string) {
         return this.UserService.deleteUser(id);
     }
+
      @Get('me')
     async me(@Req() req) {
         const userId = Number(req.user?.sub);
         return this.UserService.getMyProfile(userId);
     }
+
      @Patch('me')
-    async updateMe(@Req() req,   dto: UpdateProfileDto) {
+    async updateMe(@Req() req, @Body() dto: UpdateProfileDto) {
         const userId = Number(req.user?.sub);
         return this.UserService.updateMyProfile(userId, dto);
     }

@@ -3,20 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { routes } from "../constants";
 import { useAuth } from "../hooks";
 import {
-  tokenIsExpired,
-  getMyProfile,
-  updateMyProfile,
-  type MyProfile,
-  fetchMyPosts,
-  deleteMyPost,
-  updateMyPost,
-  type MyPost,
+    tokenIsExpired,
+    getMyProfile,
+    updateMyProfile,
+    type MyProfile,
+    fetchMyPosts,
+    deleteMyPost,
+    updateMyPost,
+    type MyPost, updateToken,
 } from "../services";
 import "../styles/UserSettingsPageStyle.css";
 
 export const UserSettingsPage = () => {
   const navigate = useNavigate();
-  const { token } = useAuth();
+  let { token,login,logout } = useAuth();
   
   const expired = token ? tokenIsExpired(token) : true;
 
@@ -106,6 +106,7 @@ export const UserSettingsPage = () => {
 
     setSaving(true);
     try {
+        token=await updateToken(token, login, logout, navigate, []);
       const res = await updateMyProfile(token, {
         firstName: fn,
         lastName: ln ? ln : null,
@@ -130,6 +131,11 @@ export const UserSettingsPage = () => {
     setMyPostsErr(null);
 
     try {
+        token=await updateToken(token, login, logout, navigate, []);
+        if(!token) {
+            alert("Login expired, please login again.");
+            return;
+        }
       await deleteMyPost(token, id);
       setMyPosts((prev) => prev.filter((p) => p.id !== id));
     } catch {

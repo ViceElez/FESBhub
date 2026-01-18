@@ -51,8 +51,9 @@ export async function getMyProfile(token?: string) {
 }
 export async function updateMyProfile(
     token: string | null,
-    data: { firstName: string; lastName: string | null; }   
-){return axios.patch(`${route}/user/me`, data, {
+    data: { firstName: string; lastName: string | null; }
+){
+    return axios.patch(`${route}/user/me`, data, {
         headers: { Authorization: `Bearer ${token}` },
     });
 }
