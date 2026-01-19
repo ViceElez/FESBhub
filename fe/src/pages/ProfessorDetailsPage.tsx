@@ -1,0 +1,59 @@
+import { useEffect, useState} from 'react';
+import type {Professor, Subject } from '../constants';
+import {ProfessorCard} from '../components'
+import { useNavigate} from "react-router-dom";
+import { useAuth } from "../hooks";
+import {getAllProfessors, updateToken, getAllSubjects} from "../services";
+import { useParams } from 'react-router-dom';
+import '../index.css';
+import '../styles/ProfessorCardStyle.css';
+import '../styles/ProfessorDetailsPageStyle.css';
+
+export const ProfessorDetailsPage = () => {
+    const [professors, setProfessors] = useState<Professor[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    let {token, login, logout} = useAuth();
+    const navigate = useNavigate();
+
+    const {professorId} = useParams<{professorId: string}>();
+    useEffect(() => {
+        if (!professorId) return;
+        const fetchProfessor = async () => {
+            try{
+                token = await updateToken(token!, login, logout, navigate, []);
+                const response = await getAllProfessors(token)
+                const found = response?.data.find((prof: Professor) => prof.id === Number(professorId)); 
+                setProfessors(found ? [found] : []);
+
+                const subjectResponse = await getAllSubjects(token);
+                const mappedSubjects: Subject[] = subjectResponse?.data.map((subj: any) => ({
+                    id: subj.id,
+                    title: subj.title,
+                    lecturerId: subj.idNositelja,
+                    assistentId: subj.idAuditornih,
+                    ratingExpectations: subj.ratingExpectations,
+                    ratingPracticality: subj.ratingPracticality,
+                    ratingDifficulty: subj.ratingDifficulty,
+                }));
+
+                setSubjects(mappedSubjects.filter((subj) => subj.lecturerId === Number(professorId) || subj.assistentId === Number(professorId)));
+            }catch(error){
+                console.error("Error fetching professors:", error);
+            }
+        };
+        void fetchProfessor();
+    }, [professorId]);
+
+    return (
+        <div className ="professor-details-page">
+            <h1 className = "page-title">Professor Details Page</h1>
+            <div className = "professor-details-container">
+                {professors.map((prof) => (
+                    <div key={prof.id} className = "professor-details-card">
+                        <ProfessorCard prof={{...prof, subjects}} profId={prof.id} showDetails = {true} />
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+}

@@ -6,4 +6,7 @@ export * from './AdminSettingsPage'
 export * from './NoPageFound.tsx';
 export * from './LoginPage';
 export * from './RegisterPage'
-export * from './Layout';
+export * from './VerifyEmailPage';
+export * from './UserSettingsPage.tsx';
+export * from './Layout.tsx';
+export * from './ProfessorDetailsPage.tsx';

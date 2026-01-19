@@ -1,0 +1,238 @@
+.professor-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #1D2D44;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    width: 100%;
+}
+
+.professor-card:hover {
+    transform: translateY(-3px);
+}
+
+.professor-card__image {
+    display: block;
+    margin: 0 auto 12px;
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.professor-card__name {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #F0EBD8;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.professor-card p {
+    margin: 5px 0;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.professor-card__rating-stars {
+    color: #FFD700;
+    font-size: 1.1rem;
+    margin-left: 4px;
+}
+
+.professor-card__rating-number {
+    color: white;
+    font-size: 1rem;
+    margin-left: 6px;
+}
+
+.professor-card__subjects-title {
+    margin: 10px 0 5px 0;
+    color: white;
+}
+
+.professor-card__subjects-list {
+    margin: 5px 0 0;
+    max-height: 100px;
+    list-style-type: square;
+    overflow-y: auto;
+    padding-left: 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #2A3A52, #1D2D44);
+}
+
+.professor-card__subject-item {
+    margin-bottom: 4px;
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.professor-card__actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.professor-card__btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.professor-card__btn--add {
+    background-color: #4caf50;
+    color: white;
+}
+
+.professor-card__btn--delete {
+    background-color: #dc2626;
+    color: white;
+}
+
+.professor-card__btn--update {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.professor-card__btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.professor-card__comments-toggle {
+    margin-top: 15px;
+}
+
+.professor-card__comments-toggle button {
+    background-color: #3E5C76;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.professor-card__comments-toggle button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.professor-card__comments-list {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-top: 15px;
+    align-items: flex-start;
+    width: 100%;
+    box-sizing: border-box;
+    scroll-snap-type: x mandatory;
+}
+
+.professor-card__comments-list > * {
+    min-width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    hyphens: auto;
+}
+
+.professor-card__comments-list::-webkit-scrollbar {
+    height: 8px;
+}
+.professor-card__comments-list::-webkit-scrollbar-thumb {
+    background-color: #3E5C76;
+    border-radius: 4px;
+}
+
+.professor-comment-card {
+    background-color: #748CAB;
+    border-radius: 10px;
+    padding: 15px;
+    min-width: 250px;
+    max-width: 250px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    hyphens: auto;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.professor-comment-card__author {
+    margin: 0 0 6px 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #c9c9c9;
+}
+
+.professor-comment-card__rating {
+    margin: 0 0 6px 0;
+    font-size: 0.9rem;
+    color: #F0EBD8;
+}
+
+.professor-comment-card__rating span {
+    font-weight: 600;
+}
+
+.professor-comment-card__content {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #F0EBD8;
+    line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+    .professor-card__actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .professor-card__btn {
+        width: 100%;
+        font-size: 0.9rem;
+    }
+
+    .professor-card__image {
+        width: 100px;
+        height: 100px;
+    }
+
+    .professor-card__name {
+        font-size: 1.3rem;
+    }
+
+    .professor-card__comments-list {
+        gap: 10px;
+        padding-top: 10px;
+    }
+
+    .professor-card__comments-list > * {
+        min-width: 200px;
+        max-width: 200px;
+    }
+}
+.update-comment-preview{
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+}

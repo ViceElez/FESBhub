@@ -1,0 +1,19 @@
+export * from './userAuthApi.ts'
+export * from './userApi.ts'
+export * from './professorApi.ts'
+export * from './subjectApi.ts'
+export * from './newAccesTokenApi.ts'
+export * from './auth.ts'
+export * from './professorCommentsApi.ts'
+export * from './updateToken.ts'
+export * from './subjectCommentsApi.ts'
+export * from './PostAdminApi.ts'
+export * from './materialsApi.ts'
+
+
+
+export * from "./newAccesTokenApi";
+export * from "./auth";
+
+export * from "./professorCommentsApi";
+export * from "./myPostsApi";
