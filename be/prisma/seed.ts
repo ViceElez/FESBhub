@@ -3,10 +3,10 @@ import { PrismaClient,Folder } from '@prisma/client';
 const prisma = new PrismaClient();
 
 function randomUpdatedAt() {
-  const now = new Date();
-  const past = new Date();
-  past.setFullYear(now.getFullYear() - 2);
-  return new Date(past.getTime() + Math.random() * (now.getTime() - past.getTime()));
+    const now = new Date();
+    const past = new Date();
+    past.setFullYear(now.getFullYear() - 2);
+    return new Date(past.getTime() + Math.random() * (now.getTime() - past.getTime()));
 }
 
 async function main() {
@@ -337,34 +337,68 @@ async function main() {
     for (const subjectName of subjectsBySemester[i + 1]) {
       const subjectFolder = await prisma.folder.create({
         data: {
-          name: subjectName,
-          parentFolderId: semesters[i].id,
-          userId,
-          updatedAt: randomUpdatedAt(),
+            name: 'Racunarstvo',
+            userId,
+            updatedAt: randomUpdatedAt(),
         },
-      });
-      subjectFolders.push(subjectFolder);
-    }
-  }
-
-  for (const subject of subjectFolders) {
-    await prisma.folder.createMany({
-      data: [
-        { name: 'Video', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
-        { name: 'Skripta', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
-        { name: 'Ostalo', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
-      ],
     });
-  }
 
-  console.log('✅ Database seeded successfully');
+    const semesters = await Promise.all(
+        Array.from({ length: 6 }, (_, i) =>
+            prisma.folder.create({
+                data: {
+                    name: `Semestar ${i + 1}`,
+                    parentFolderId: root.id,
+                    userId,
+                    updatedAt: randomUpdatedAt(),
+                },
+            }),
+        ),
+    );
+
+    const subjectsBySemester: Record<number, string[]> = {
+        1: ['Uvod u racunarstvo', 'Matematika 1', 'Fizika 1', 'Engleski jezik 1', 'Osnove elektrotehnike'],
+        2: ['Programiranje', 'Matematika 2', 'Fizika 2', 'Engleski jezik 2', 'Elektronika'],
+        3: ['Strukture podataka', 'Diskretna matematika', 'Diskretni sustavi i strukture', 'Praktikum', 'Komunikacijske vještine', 'Objektno orijentirano programiranje'],
+        4: ['Algoritmi', 'Arhitektura digitalnih računala', 'Baze podataka', 'Signali i sustavi', 'Vjerojatnost i statistika'],
+        5: ['Operacijski sustavi', 'Programsko inženjerstvo', 'Programiranje za Internet', 'Računalne mreže', 'Programiranje u Pythonu', 'Programiranje za UNIX'],
+        6: ['Projektiranje informacijskih sustava', 'Uvod u distribuirane informacijske sustave', 'Poslovna informatika', 'Obrada signala', 'Osnove ugradbenih računalnih sustava', 'Završni rad'],
+    };
+
+    const subjectFolders: Folder[] = [];
+
+    for (let i = 0; i < semesters.length; i++) {
+        for (const subjectName of subjectsBySemester[i + 1]) {
+            const subjectFolder = await prisma.folder.create({
+                data: {
+                    name: subjectName,
+                    parentFolderId: semesters[i].id,
+                    userId,
+                    updatedAt: randomUpdatedAt(),
+                },
+            });
+            subjectFolders.push(subjectFolder);
+        }
+    }
+
+    for (const subject of subjectFolders) {
+        await prisma.folder.createMany({
+            data: [
+                { name: 'Video', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
+                { name: 'Skripta', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
+                { name: 'Ostalo', parentFolderId: subject.id, userId, updatedAt: randomUpdatedAt() },
+            ],
+        });
+    }
+
+    console.log('✅ Database seeded successfully');
 }
 
 main()
-  .catch(e => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+    .catch(e => {
+        console.error(e);
+        process.exit(1);
+    })
+    .finally(async () => {
+        await prisma.$disconnect();
+    });
