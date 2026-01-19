@@ -90,7 +90,6 @@ export const SubjectCard = (subject: Subject) => {
             const updated = prev.filter(
                 comment => comment.userId !== Number(userId)
             );
-
             setDisplayRatings(calculateAverages(updated));
             return updated;
         });
