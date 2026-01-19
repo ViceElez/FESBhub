@@ -12,12 +12,6 @@ export class SubjController {
         return this.subjService.getSubjByName(subjName);
     }
 
-  @Get(':id')
-    async getSubjById(@Param('id') id: string) {
-      console.log('hita sa id')
-        return this.subjService.getSubjById(id);
-    }
-
   @Get()
   async findAll(){
       return this.subjService.findAll();
@@ -27,4 +21,10 @@ export class SubjController {
     async deleteSubjById(@Param('id') id: string) {
       return this.subjService.deleteSubjById(id);
   }
+
+    @Get(':id')
+    async getSubjById(@Param('id') id: string) {
+        console.log('hita sa id')
+        return this.subjService.getSubjById(id);
+    }
 }

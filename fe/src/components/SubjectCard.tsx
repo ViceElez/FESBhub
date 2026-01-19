@@ -1,11 +1,11 @@
-import type { Subject } from "../constants"
+import type { Subject } from "../constants";
 import { useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useAuth } from "../hooks";
 import { useNavigate } from "react-router-dom";
 import { getSubjectComments, getVerifiedSubjectComments, updateToken } from "../services";
-import { AddSubjectComments, DeleteSubjectCommentPopup, UpdateSubjectCommentPopup, CSCardNormal } from "./index";
 import type { CommentSubject } from "../constants";
+import { AddSubjectComments, DeleteSubjectCommentPopup, UpdateSubjectCommentPopup, CSCardNormal, SubjectDetails } from "./index";
 
 export const SubjectCard = (subject: Subject) => {
     const [isOpenAdd, setIsOpenAdd] = useState(false);
@@ -14,12 +14,13 @@ export const SubjectCard = (subject: Subject) => {
     const [existingComment, setExistingComment] = useState(false);
     const [verifiedComments, setVerifiedComments] = useState<CommentSubject[]>([]);
     const [showVerifiedComments, setShowVerifiedComments] = useState(false);
-
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const { token: rawToken, login, logout } = useAuth();
     const navigate = useNavigate();
     const decode = rawToken ? jwtDecode(rawToken) : null;
     const userId = decode?.sub;
     let token = rawToken;
+
     const [displayRatings, setDisplayRatings] = useState({
         expectation: subject.ratingExpectations,
         practicality: subject.ratingPracticality,
@@ -59,13 +60,8 @@ export const SubjectCard = (subject: Subject) => {
 
     const calculateAverages = (comments: CommentSubject[]) => {
         if (comments.length === 0) {
-            return {
-                expectation: 0,
-                practicality: 0,
-                difficulty: 0,
-            };
+            return { expectation: 0, practicality: 0, difficulty: 0 };
         }
-
         const totals = comments.reduce(
             (acc, c) => {
                 acc.expectation += c.ratingExpectation;
@@ -75,7 +71,6 @@ export const SubjectCard = (subject: Subject) => {
             },
             { expectation: 0, practicality: 0, difficulty: 0 }
         );
-
         return {
             expectation: totals.expectation / comments.length,
             practicality: totals.practicality / comments.length,
@@ -83,14 +78,10 @@ export const SubjectCard = (subject: Subject) => {
         };
     };
 
-
     const handleDelete = () => {
         setExistingComment(false);
         setVerifiedComments(prev => {
-            const updated = prev.filter(
-                comment => comment.userId !== Number(userId)
-            );
-
+            const updated = prev.filter(comment => comment.userId !== Number(userId));
             setDisplayRatings(calculateAverages(updated));
             return updated;
         });
@@ -99,25 +90,55 @@ export const SubjectCard = (subject: Subject) => {
     const handleUpdate = (updatedComment: CommentSubject) => {
         setVerifiedComments(prev => {
             const updated = prev.map(comment =>
-                comment.userId === updatedComment.userId
-                    ? updatedComment
-                    : comment
+                comment.userId === updatedComment.userId ? updatedComment : comment
             );
             setDisplayRatings(calculateAverages(updated));
             return updated;
         });
     };
 
-
+    const renderRatingStars = (rating: number) => {
+        const full = Math.round(rating);
+        return (
+            <>
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
+            </>
+        );
+    };
 
 
     return (
         <div className="subject-card">
             <div className="subject-card-header">
-                <h2>{subject.title}</h2>
-                <p>Ocjena očekivanja: {displayRatings.expectation.toFixed(2)}</p>
-                <p>Ocjena praktičnosti: {displayRatings.practicality.toFixed(2)}</p>
-                <p>Ocjena težine: {displayRatings.difficulty.toFixed(2)}</p>
+                <h2
+                    className="subject-card-title clickable"
+                    onClick={() => setIsDetailsOpen(true)}
+                >
+                    {subject.title}
+                </h2>
+                <p>
+                    Ocjena očekivanja:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.expectation)}
+    </span>{" "}
+                    ({displayRatings.expectation.toFixed(2)})
+                </p>
+                <p>
+                    Ocjena praktičnosti:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.practicality)}
+    </span>{" "}
+                    ({displayRatings.practicality.toFixed(2)})
+                </p>
+                <p>
+                    Ocjena težine:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.difficulty)}
+    </span>{" "}
+                    ({displayRatings.difficulty.toFixed(2)})
+                </p>
+
             </div>
 
             <div className="subject-card-buttons">
@@ -163,6 +184,13 @@ export const SubjectCard = (subject: Subject) => {
                         <CSCardNormal key={comment.id} comment={comment} show={showVerifiedComments} />
                     ))}
                 </div>
+            )}
+
+            {isDetailsOpen && (
+                <SubjectDetails
+                    subjectId={subject.id}
+                    onClose={() => setIsDetailsOpen(false)}
+                />
             )}
         </div>
     );

@@ -1,8 +1,7 @@
 import { useEffect, useState} from 'react';
 import type {Professor, Subject } from '../constants';
-import { routes } from '../constants';
 import {ProfessorCard} from '../components'
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { useAuth } from "../hooks";
 import {getAllProfessors, updateToken, getAllSubjects} from "../services";
 import { useParams } from 'react-router-dom';
@@ -47,23 +46,6 @@ export const ProfessorDetailsPage = () => {
 
     return (
         <div className ="professor-details-page">
-            <nav className = "professor-nav">
-                <Link to={routes.NEWSPAGE}>
-                    <button>NEWSPAGE</button>
-                </Link>
-                <Link to={routes.SUBJECTPAGE}>
-                    <button>SUBJECTPAGE</button>
-                </Link>
-                <Link to={routes.PROFESSORPAGE}>
-                    <button>PROFESSORPAGE</button>
-                </Link>
-                <Link to={routes.MATERIALSPAGE}>
-                    <button>MATERIALS</button>
-                </Link>
-                <Link to={routes.ADMINSETTINGSPAGE}>
-                    <button>ADMINSETTINGSPAGE</button>
-                </Link>
-            </nav>
             <h1 className = "page-title">Professor Details Page</h1>
             <div className = "professor-details-container">
                 {professors.map((prof) => (

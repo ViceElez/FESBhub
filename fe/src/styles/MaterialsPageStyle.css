@@ -1,5 +1,5 @@
 .materials-page {
-    min-height: 100vh;
+    min-height: calc(100vh - 165px);
     background-color: #0D1321;
     display: flex;
     justify-content: center;

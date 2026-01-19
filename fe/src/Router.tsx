@@ -1,5 +1,5 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import {routes} from './constants/routes';
+import {routes} from './constants';
 import {
     LoginPage,
     RegisterPage,
@@ -33,7 +33,6 @@ export const Router = () => {
                             <Route path={routes.NEWSPAGE} element={<NewsPage/>}/>
                             <Route path={routes.MATERIALSPAGE} element={<MaterialsPage/>}/>
                             <Route path={routes.SUBJECTPAGE} element={<SubjectPage/>}/>
-                            <Route path ={routes.SUBJECTPAGE + '/:subjectId'} element={<SubjectPage/>}/>
                             <Route path={routes.PROFESSORPAGE} element={<ProfessorPage/>}/>
                             <Route path ={routes.PROFESSORPAGE + '/:professorId'} element={<ProfessorDetailsPage/>}/>
                             <Route path={routes.ADMINSETTINGSPAGE} element={<AdminSettingsPage/>}/>

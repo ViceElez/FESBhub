@@ -141,3 +141,9 @@
         padding: 12px;
     }
 }
+.subject-card-title{
+    text-decoration: underline;
+}
+.subject-card-title:hover{
+    cursor: pointer;
+}

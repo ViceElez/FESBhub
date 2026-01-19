@@ -124,6 +124,27 @@ export class SubjService {
   async getSubjById(id: string) {
       const existingSubj = await this.prisma.subject.findUnique({
           where: { id: Number(id) },
+          select:{
+                id: true,
+                title: true,
+                ratingPracticality: true,
+                ratingDifficulty: true,
+                ratingExpectations: true,
+              nositelj: {
+                  select:{
+                      id:true,
+                      firstName:true,
+                      lastName:true,
+                  }
+              },
+              auditorne: {
+                  select:{
+                      id:true,
+                      firstName:true,
+                      lastName:true,
+                  }
+              }
+          }
       });
 
       if (!existingSubj) {

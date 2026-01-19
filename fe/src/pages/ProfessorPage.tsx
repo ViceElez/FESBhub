@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo} from 'react';
 import type { Professor, Subject } from '../constants';
-import { routes } from '../constants';
 import {ProfessorCard} from '../components'
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import {useAuth, useDebounce} from "../hooks";
 import {getAllProfessors, updateToken, getAllSubjects, getProfessorByName} from "../services";
 import '../index.css';
@@ -114,21 +113,6 @@ export const ProfessorPage = () => {
 
     return(
         <div className = "professor-page">
-            <nav className = "professor-nav">
-                <Link to={routes.NEWSPAGE}>
-                    <button>NEWSPAGE</button>
-                </Link>
-                <Link to={routes.SUBJECTPAGE}>
-                    <button>SUBJECTPAGE</button>
-                </Link>
-                <Link to={routes.MATERIALSPAGE}>
-                    <button>MATERIALS</button>
-                </Link>
-                <Link to={routes.ADMINSETTINGSPAGE}>
-                    <button>ADMINSETTINGSPAGE</button>
-                </Link>
-            </nav>
-            
             <h1 className = "page-title">Explore Professors</h1>
             <div className = "professor-controls">
                 <div className = "search-wrapper">
@@ -174,6 +158,7 @@ export const ProfessorPage = () => {
                             const professorSubjects = subjects.filter((subject : Subject)=>
                                 subject.lecturerId === professor.id);
                             return (
+                               
                                 <div className = "professor-grid" key={professor.id}>
                                     <ProfessorCard
                                         prof = {{...professor,
