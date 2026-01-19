@@ -86,7 +86,10 @@ export class ProfService {
   }
 
   async findAll() {
-    return this.prisma.professor.findMany();
+    
+    return this.prisma.professor.findMany({
+      orderBy: { rating: 'desc' },
+    });
   }
 
   async deleteProfById(id: string) {
@@ -103,6 +106,7 @@ export class ProfService {
   }
 
     async findByName(name: string) {
+    
         return this.prisma.professor.findMany({
             where: {
                 OR: [

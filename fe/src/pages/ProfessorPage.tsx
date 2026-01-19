@@ -174,6 +174,7 @@ export const ProfessorPage = () => {
                             const professorSubjects = subjects.filter((subject : Subject)=>
                                 subject.lecturerId === professor.id);
                             return (
+                               
                                 <div className = "professor-grid" key={professor.id}>
                                     <ProfessorCard
                                         prof = {{...professor,

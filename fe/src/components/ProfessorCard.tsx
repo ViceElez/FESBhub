@@ -90,7 +90,7 @@ export const ProfessorCard = ({ prof, profId, showDetails }: CardProperties) => 
         <div className="professor-card">
             <img
                 className="professor-card__image"
-                src={prof.imageUrl || "/default-profile-image.png"}
+                src={prof.professorImageUrl || "/default-profile-image.png"}
             />
 
             <h2
