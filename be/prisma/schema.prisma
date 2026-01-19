@@ -50,6 +50,7 @@ model Professor {
   education         String
   email             String
   rating            Float                 @default(0)
+  professorImageUrl String?
   comments          CommentOnProffessor[]
   SubjectsAsAuditor Subject[]             @relation("AuditorneRelation")
   SubjectAsNositelj Subject[]             @relation("NositeljRelation")
@@ -62,8 +63,8 @@ model CommentOnProffessor {
   professorId Int
   createdAt   DateTime  @default(now())
   rating      Float     @default(0)
-  professor   Professor @relation(fields: [professorId], references: [id])
-  user        User      @relation(fields: [userId], references: [id])
+  professor   Professor @relation(fields: [professorId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   verified    Boolean   @default(false)
 }
 
@@ -76,8 +77,8 @@ model CommentOnSubject {
   ratingExceptions  Float    @default(0)
   ratingPracicality Float    @default(0)
   ratingDiffuculty  Float    @default(0)
-  subject           Subject  @relation(fields: [subjectId], references: [id])
-  user              User     @relation(fields: [userId], references: [id])
+  subject           Subject  @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   verified          Boolean  @default(false)
 }
 
@@ -108,7 +109,7 @@ model Post {
   id        Int         @id @default(autoincrement())
   title     String
   content   String
-  user      User        @relation(fields: [userId], references: [id])
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   verified  Boolean     @default(false)
   createdAt DateTime    @default(now())
@@ -128,7 +129,7 @@ model RefreshToken {
 model PostImage {
   id     Int    @id @default(autoincrement())
   url    String
-  post   Post   @relation(fields: [postId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId Int
 }
 
