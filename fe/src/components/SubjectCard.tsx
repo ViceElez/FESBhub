@@ -97,6 +97,17 @@ export const SubjectCard = (subject: Subject) => {
         });
     };
 
+    const renderRatingStars = (rating: number) => {
+        const full = Math.round(rating);
+        return (
+            <>
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
+            </>
+        );
+    };
+
+
     return (
         <div className="subject-card">
             <div className="subject-card-header">
@@ -106,9 +117,28 @@ export const SubjectCard = (subject: Subject) => {
                 >
                     {subject.title}
                 </h2>
-                <p>Ocjena očekivanja: {displayRatings.expectation.toFixed(2)}</p>
-                <p>Ocjena praktičnosti: {displayRatings.practicality.toFixed(2)}</p>
-                <p>Ocjena težine: {displayRatings.difficulty.toFixed(2)}</p>
+                <p>
+                    Ocjena očekivanja:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.expectation)}
+    </span>{" "}
+                    ({displayRatings.expectation.toFixed(2)})
+                </p>
+                <p>
+                    Ocjena praktičnosti:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.practicality)}
+    </span>{" "}
+                    ({displayRatings.practicality.toFixed(2)})
+                </p>
+                <p>
+                    Ocjena težine:{" "}
+                    <span className="subject-card__rating-stars">
+        {renderRatingStars(displayRatings.difficulty)}
+    </span>{" "}
+                    ({displayRatings.difficulty.toFixed(2)})
+                </p>
+
             </div>
 
             <div className="subject-card-buttons">

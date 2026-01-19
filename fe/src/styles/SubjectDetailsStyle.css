@@ -1,11 +1,7 @@
-/* SubjectDetails.css */
-
-/* Prevent body scroll when modal is open */
 .subject-details-modal-body-open {
     overflow: hidden;
 }
 
-/* Overlay background */
 .subject-details-modal-overlay {
     position: fixed;
     inset: 0;
@@ -15,10 +11,8 @@
     align-items: center;
     z-index: 1000;
 }
-
-/* Modal container */
 .subject-details-modal-container {
-    background: #1e293b; /* dark card background */
+    background: #1e293b;
     color: #f8fafc;
     width: 500px;
     max-width: 95%;
@@ -34,7 +28,6 @@
     animation: subject-details-modal-pop 0.25s ease-out;
 }
 
-/* Close button */
 .subject-details-modal-close-button {
     position: absolute;
     top: 1rem;
@@ -51,7 +44,6 @@
     color: #e74c3c;
 }
 
-/* Modal title */
 .subject-details-modal-title {
     text-align: center;
     font-size: 1.8rem;
@@ -59,7 +51,6 @@
     margin: 0 0 12px 0;
 }
 
-/* Ratings section */
 .subject-details-modal-ratings {
     display: flex;
     flex-direction: column;
@@ -75,7 +66,6 @@
     font-weight: 500;
 }
 
-/* Personnel section */
 .subject-details-modal-personnel {
     display: flex;
     flex-direction: column;
@@ -97,7 +87,6 @@
     color: #f8fafc;
 }
 
-/* Animations */
 @keyframes subject-details-modal-pop {
     from {
         opacity: 0;
@@ -109,7 +98,6 @@
     }
 }
 
-/* Responsive adjustments */
 @media (max-width: 480px) {
     .subject-details-modal-container {
         padding: 16px;

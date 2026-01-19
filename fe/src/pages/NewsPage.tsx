@@ -4,8 +4,6 @@ import { useAuth, useDebounce } from "../hooks";
 import type { Post } from "../services/PostAdminApi.ts";
 import { createPost, fetchAllPosts, searchPosts } from "../services/PostAdminApi.ts";
 import "../styles/NewsPageStyle.css";
-import { Link } from "react-router-dom";
-import { routes } from "../constants";
 type MainView = "userPosts" | "fesbnews";
 
 export const NewsPage = () => {
@@ -348,23 +346,6 @@ export const NewsPage = () => {
           </p>
         </aside>
       )}
-      <div className="news-side-panel-spacer">
-        <div className="news-left-nav">
-          <p className="news-left-nav-title">Navigation</p>
-        
-           <Link to={routes.MATERIALSPAGE}>
-                    <button>MATERIALS</button>
-                </Link>
-                <Link to={routes.SUBJECTPAGE}>
-                  <button>SUBJECTS</button>
-                </Link>
-                <Link to={routes.PROFESSORPAGE}>
-                    <button>PROFESSORS</button>
-                </Link>
-               
-        </div>
-      </div>
-    
       {isNewPostOpen && (
         <div className="news-modal-overlay" onClick={closeNewPost}>
           <div className="news-modal" onClick={(e) => e.stopPropagation()}>

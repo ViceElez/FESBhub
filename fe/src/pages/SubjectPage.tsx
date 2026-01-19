@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "react-router-dom";
-import { routes, type Subject } from "../constants";
+import { useNavigate } from "react-router-dom";
+import { type Subject } from "../constants";
 import { useEffect, useState, useMemo } from "react";
 import { useAuth } from "../hooks";
 import {getAllSubjects, getSubjByName, updateToken} from "../services";
@@ -83,21 +83,6 @@ export const SubjectPage = () => {
 
     return (
         <div className="subject-page">
-            <nav className="subject-nav">
-                <Link to={routes.MATERIALSPAGE}>
-                    <button>MATERIALS</button>
-                </Link>
-                <Link to={routes.NEWSPAGE}>
-                    <button>NEWS</button>
-                </Link>
-                <Link to={routes.PROFESSORPAGE}>
-                    <button>PROFESSORS</button>
-                </Link>
-                <Link to={routes.ADMINSETTINGSPAGE}>
-                    <button>ADMIN</button>
-                </Link>
-            </nav>
-
             <h1 className="page-title">Explore Subjects</h1>
 
             <div className="subject-controls">

@@ -12,13 +12,11 @@ export const SubjectDetails = ({ subjectId, onClose }: SubjectDetailsProps) => {
     const [subject, setSubject] = useState<any | null>(null);
     let { token, login, logout } = useAuth();
 
-    // Lock body scroll when modal is open
     useEffect(() => {
         document.body.classList.add("subject-details-modal-body-open");
         return () => document.body.classList.remove("subject-details-modal-body-open");
     }, []);
 
-    // Fetch subject details
     useEffect(() => {
         const fetchSubject = async () => {
             try {
@@ -55,6 +53,17 @@ export const SubjectDetails = ({ subjectId, onClose }: SubjectDetailsProps) => {
         void fetchSubject();
     }, [subjectId]);
 
+    const renderRatingStars = (rating: number) => {
+        const full = Math.round(rating);
+        return (
+            <>
+                {"★".repeat(full)}
+                {"☆".repeat(5 - full)}
+            </>
+        );
+    };
+
+
     if (!subject) {
         return createPortal(
             <div className="subject-details-modal-overlay">
@@ -84,15 +93,28 @@ export const SubjectDetails = ({ subjectId, onClose }: SubjectDetailsProps) => {
 
                 <div className="subject-details-modal-ratings">
                     <p className="subject-details-modal-rating-expectations">
-                        Ocjena očekivanja: {subject.ratingExpectations}
+                        Ocjena očekivanja:{" "}
+                        <span className="subject-details-modal-rating-stars">
+            {renderRatingStars(subject.ratingExpectations)}
+        </span>{" "}
+                        ({subject.ratingExpectations.toFixed(2)})
                     </p>
                     <p className="subject-details-modal-rating-practicality">
-                        Ocjena praktičnosti: {subject.ratingPracticality}
+                        Ocjena praktičnosti:{" "}
+                        <span className="subject-details-modal-rating-stars">
+            {renderRatingStars(subject.ratingPracticality)}
+        </span>{" "}
+                        ({subject.ratingPracticality.toFixed(2)})
                     </p>
                     <p className="subject-details-modal-rating-difficulty">
-                        Ocjena težine: {subject.ratingDifficulty}
+                        Ocjena težine:{" "}
+                        <span className="subject-details-modal-rating-stars">
+            {renderRatingStars(subject.ratingDifficulty)}
+        </span>{" "}
+                        ({subject.ratingDifficulty.toFixed(2)})
                     </p>
                 </div>
+
 
                 <div className="subject-details-modal-personnel">
                     <p className="subject-details-modal-nositelj">

@@ -1,4 +1,4 @@
-import {Header} from "../components";
+import {Header,Footer} from "../components";
 import {Outlet} from "react-router-dom";
 
 export const Layout=()=>{
@@ -8,6 +8,7 @@ export const Layout=()=>{
             <main>
                 <Outlet />
             </main>
+            <Footer/>
         </div>
     );
 };
