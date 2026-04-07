@@ -1,0 +1,149 @@
+.subject-card {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #1D2D44;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    text-align: center;
+}
+
+.subject-card:hover {
+    transform: translateY(-3px);
+}
+
+.subject-card-header h2 {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #F0EBD8;
+}
+
+.subject-card-header p {
+    margin: 5px 0;
+    color: white;
+    font-size: 0.95rem;
+}
+
+.subject-card-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    justify-content: center;
+}
+
+.subject-card-buttons button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-add {
+    background-color: #4caf50;
+    color: white;
+}
+
+.btn-update {
+    background-color: #2196f3;
+    color: white;
+}
+
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+}
+
+.subject-card-buttons button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.subject-card-comments-toggle {
+    margin-top: 15px;
+}
+
+.subject-card-comments-toggle button {
+    background-color: #3E5C76;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.subject-card-comments-toggle button:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.subject-card-comments {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding-top: 15px;
+    align-items: flex-start;
+}
+
+.subject-card-comments::-webkit-scrollbar {
+    height: 8px;
+}
+
+.subject-card-comments::-webkit-scrollbar-thumb {
+    background-color: #3E5C76;
+    border-radius: 4px;
+}
+
+.subject-card-comments::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.card-scroll-horizontally {
+    min-width: 250px;
+    max-width: 300px;
+    padding: 15px;
+    background-color: #748CAB;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    flex-shrink: 0;
+    word-wrap: break-word;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.card-scroll-horizontally h2,
+.card-scroll-horizontally h4 {
+    margin: 4px 0;
+    font-size: 0.95rem;
+    color: #F0EBD8;
+}
+
+.card-scroll-horizontally h2 {
+    font-weight: 500;
+}
+
+.card-scroll-horizontally h4 {
+    font-weight: 400;
+    color: #c9c9c9;
+}
+
+@media (max-width: 600px) {
+    .subject-card-comments {
+        gap: 10px;
+    }
+    .card-scroll-horizontally {
+        min-width: 200px;
+        max-width: 220px;
+        padding: 12px;
+    }
+}
+.subject-card-title{
+    text-decoration: underline;
+}
+.subject-card-title:hover{
+    cursor: pointer;
+}

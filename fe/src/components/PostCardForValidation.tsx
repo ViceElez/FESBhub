@@ -1,0 +1,67 @@
+import {deletePost, type Post, verifyPost,updateToken} from "../services";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks";
+
+type PostCardForValidationProps ={
+    post: Post;
+    onRemove: (id: number) => void;
+}
+
+export const PostCardForValidation = ({post,onRemove}:PostCardForValidationProps) => {
+    let{ token, login, logout } = useAuth();
+    const navigate = useNavigate();
+
+    const handleVerify = async () => {
+        token = await updateToken(token!, login, logout, navigate, []);
+        const res=await verifyPost(post.id, token);
+        if(res?.status === 200){
+            alert("Successfully verified post");
+            onRemove(post.id)
+        }
+        else {
+            alert("Error verifying post");
+        }
+     }
+
+    const handleDelete = async () => {
+        token= await updateToken(token!, login, logout, navigate, []);
+        if(!confirm('Are you sure you want to delete this post?')){
+            return;
+        }
+        const res=await deletePost(post.id, token);
+        if(res?.status === 200){
+            alert("Successfully deleted post");
+            onRemove(post.id)
+        }else{
+            alert("Error deleting post");
+        }
+    }
+
+    return(
+        <div className="comment-card">
+            <div className="comment-content">
+                <h2>Title: {post.title}</h2>
+                <h2>Content: {post.content}</h2>
+                <p>Author ID: {post.userId}</p>
+                <p>Created At:{post.createdAt}</p>
+                {post.photos && post.photos.length > 0 && (
+                    <div className="news-post-photos">
+                        {post.photos.map((photo, index) => 
+                            <img
+                                    key={photo.id}
+                                    className="news-photo-thumb"
+                                    src={photo.url}
+                                    alt={`Post image ${index + 1}`}
+                                 
+                                  />
+                        )}
+                    </div>
+                )}
+            </div>
+            <div className="comment-actions">
+                <button className="verify-btn" onClick={handleVerify}>Verify</button>
+                <button className="delete-btn" onClick={handleDelete}>Delete</button>
+            </div>
+        </div>
+    )
+}

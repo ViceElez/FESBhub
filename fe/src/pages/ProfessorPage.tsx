@@ -1,8 +1,196 @@
-export const ProfessorPage=()=>{
+import { useEffect, useState, useMemo} from 'react';
+import type { Professor, Subject } from '../constants';
+import {ProfessorCard} from '../components'
+import { useNavigate} from "react-router-dom";
+import {useAuth, useDebounce} from "../hooks";
+import {getAllProfessors, updateToken, getAllSubjects, getProfessorByName} from "../services";
+import '../index.css';
+import '../styles/ProfessorCardStyle.css';
+import '../styles/ProfessorPageStyle.css';
+
+export const ProfessorPage = () => {
+    const [professors, setProfessors] = useState<Professor[]>([]);
+    const [subjects, setSubjects] = useState<Subject[]>([]);
+    let {token, login, logout} = useAuth();
+    const navigate = useNavigate();
+    const [searchTerm, setSearchTerm] = useState("");
+    const [ascending, setAscending] = useState(true);
+    const debouncedSearchTerm = useDebounce(searchTerm);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchSearchedProfessors = async () => {
+            setPage(1)
+            if (!debouncedSearchTerm) {
+                setLoading(true)
+                try{
+                    token= await updateToken(token!, login, logout, navigate, []);
+                    const response=await getAllProfessors(token)
+                    if(response?.data){
+                        setProfessors(response.data)
+                    }
+                    else {
+                        setProfessors([])
+                    }
+                }catch(error){
+                    console.error("Error fetching professors:", error);
+                }finally{
+                    setLoading(false)
+                }
+                setProfessors((list) =>
+                    [...list].sort((a, b) =>
+                        ascending ? a.rating - b.rating : b.rating - a.rating
+                    )
+                );
+                return;
+            }
+
+            setLoading(true)
+            try{
+                token= await updateToken(token!, login, logout, navigate, []);
+                const res=await getProfessorByName(debouncedSearchTerm, token)
+                if (res?.status === 200){
+                    setProfessors(res.data)
+                } else {
+                    setProfessors([])
+                }
+            }catch (e) {
+                console.log(e)
+                setProfessors([])
+            }finally {
+                setLoading(false)
+            }
+        }
+        void fetchSearchedProfessors();
+    }, [debouncedSearchTerm,ascending]);
+
+    useEffect(() => {
+        const fetchSubjects = async () => {
+            try{
+                token= await updateToken(token!, login, logout, navigate, []);
+                const response=await getAllSubjects(token)
+
+                interface SubjectFromAPI {
+                    id: number;
+                    title: string;
+                    idNositelja: number;
+                    idAuditornih: number;
+                    ratingExpectations: number;
+                    ratingPracticality: number;
+                    ratingDifficulty: number;
+                  }
+                  
+                  const mappedSubjects: Subject[] = response?.data.map((subj: SubjectFromAPI) => ({
+                      id: subj.id,
+                      title: subj.title,
+                      lecturerId: subj.idNositelja,
+                      assistentId: subj.idAuditornih,
+                      ratingExpectations: subj.ratingExpectations,
+                      ratingPracticality: subj.ratingPracticality,
+                      ratingDifficulty: subj.ratingDifficulty
+                  }));
+                setSubjects(mappedSubjects)
+            }catch(error){
+                console.error("Error fetching subjects:", error);
+            }
+        };
+        void fetchSubjects();
+    }, []);
+
+    const [page, setPage] = useState(1);
+    const pageCount = Math.max(1, Math.ceil(professors.filter(
+        (professor) => professor.firstName.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+        || professor.lastName.toLowerCase().includes(searchTerm.toLocaleLowerCase()))
+        .length / 4));
+
+    if (page > pageCount) setPage(pageCount);
+
+    const pageCards = useMemo(() => {
+        const start = (page - 1) * 4;
+        return professors.slice(start, start + 4);
+    }, [professors, page]);
+
+
     return(
-        <div>
-            <h1>Professor Page</h1>
-            <p>This is the professor page.</p>
+        <div className = "professor-page">
+            <h1 className = "page-title">Explore Professors</h1>
+            <div className = "professor-controls">
+                <div className = "search-wrapper">
+                    <input
+                        type="text"
+                        placeholder="Search professors..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className = "search-input"
+                    />
+                    <button 
+                        className = "search-button"
+                        aria-label = "Search"
+                    >
+                        🔍
+                    </button>
+                </div>
+                
+                <button className = "sort-button"
+                    onClick={() =>
+                        setAscending((prev) => {
+                            const newAsc = !prev;
+                            setProfessors((list) =>
+                                [...list].sort((a, b) =>
+                                    prev ? a.rating - b.rating : b.rating - a.rating
+                                )
+                            );
+                            return newAsc;
+                        })
+                    }
+                >
+                    {ascending ? "Ascending" : "Descending"}
+                </button>
+            </div>
+            {loading ?(
+                <p>Loading...</p>
+            ) : professors.length === 0 ? (
+                <p>No professors found.</p>
+            ) : (
+                <div
+                    style = {{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                    {pageCards.map(professor => {
+                            const professorSubjects = subjects.filter((subject : Subject)=>
+                                subject.lecturerId === professor.id);
+                            return (
+                               
+                                <div className = "professor-grid" key={professor.id}>
+                                    <ProfessorCard
+                                        prof = {{...professor,
+                                            subjects: professorSubjects
+                                        }}
+                                        profId = {professor.id}/>
+                                </div>
+                            );
+                        })}
+                </div>
+            )}
+            <div className="pagination" style={{ marginTop: "20px", textAlign: "center" }}>
+                <button onClick={() => setPage(1)} disabled={page === 1}>
+                « First
+                </button>
+                <button onClick={() => setPage((p) => p - 1)} disabled={page === 1}>
+                ‹ Prev
+                </button>
+
+                <span style={{ padding: "0 8px" }}>
+                Page {page} / {pageCount}
+                </span>
+
+                <button onClick={() => setPage((p) => p + 1)} disabled={page === pageCount}>
+                Next ›
+                </button>
+                <button onClick={() => setPage(pageCount)} disabled={page === pageCount}>
+                Last »
+                </button>
+            </div>
         </div>
     )
 }
+//triba stavit da se kad delete prikaze sta se tocno brise,isto tako za update, isto tako da kad delete ili update da tise odma updatea ocjena, popravit horizontalni scroll
+

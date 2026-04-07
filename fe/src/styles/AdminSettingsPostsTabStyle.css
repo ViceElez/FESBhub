@@ -1,0 +1,65 @@
+.admin-posts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px 0 160px 0;
+    gap: 20px;
+    color: #F0EBD8;
+}
+
+.admin-post-card {
+    width: 75%;
+    background-color: #1D2D44;
+    border-radius: 10px;
+    padding: 22px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.admin-post-content {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    line-height: 1.5;
+}
+
+.admin-post-title {
+    font-size: 19px;
+    width: 100%;
+}
+
+.admin-post-text {
+    font-size: 15.5px;
+    width: 100%;
+}
+
+.admin-post-meta {
+    font-size: 13.5px;
+    opacity: 0.85;
+    width: 100%;
+}
+
+.admin-post-delete-btn {
+    width: 85%;
+    padding: 10px;
+    font-size: 15px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: #dc3545;
+    color: #F0EBD8;
+    transition: background-color 0.2s ease;
+    align-self: center;
+}
+
+.admin-post-delete-btn:hover {
+    background-color: #c82333;
+}

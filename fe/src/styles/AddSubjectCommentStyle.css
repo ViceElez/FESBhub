@@ -1,0 +1,84 @@
+.subject-add-comment-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.subject-add-comment-modal {
+    background: #1e293b;
+    color: #f8fafc;
+    width: 420px;
+    max-width: 92%;
+    padding: 24px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+    animation: subject-add-comment-modal-pop 0.25s ease-out;
+}
+
+.subject-add-comment-modal-title {
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.subject-add-comment-modal-input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background: #0f172a;
+    color: #f8fafc;
+}
+
+.subject-add-comment-modal-input::placeholder {
+    color: #94a3b8;
+}
+
+.subject-add-comment-modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.subject-add-comment-modal-cancel-btn {
+    background: transparent;
+    border: 1px solid #64748b;
+    color: #cbd5f5;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.subject-add-comment-modal-cancel-btn:hover {
+    background: #334155;
+}
+
+.subject-add-comment-modal-confirm-btn {
+    background: #2563eb;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.subject-add-comment-modal-confirm-btn:disabled {
+    background: #475569;
+    cursor: not-allowed;
+}
+
+@keyframes subject-add-comment-modal-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

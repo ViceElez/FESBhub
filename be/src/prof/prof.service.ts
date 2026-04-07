@@ -1,0 +1,119 @@
+import { Injectable } from '@nestjs/common';
+import { CreateProfDto } from './dto/create-prof.dto';
+import { UpdateProfDto } from './dto/update-prof.dto';
+import { PrismaService } from '../prisma/prisma.service';
+
+@Injectable()
+export class ProfService {
+  constructor(private prisma: PrismaService) {}
+
+  async updateNormal(profId: number, oldRating: number, newRating: number) {
+
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: profId },
+    });
+
+    if(!prof){
+      throw new Error('Professor not found');
+    }
+
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: profId, verified: true }
+    });
+
+    return this.prisma.professor.update({
+      where: { id: profId },
+      data: { rating: ((prof.rating * numberOfVerifiedComments) - oldRating + newRating) / numberOfVerifiedComments},
+      });
+  }
+
+  async updateAfterAdminVerification(idAdmin: number, idProf: number, updateProfDto: UpdateProfDto) {
+
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: idProf },
+    });
+
+    if (!prof) {
+      throw new Error('Professor not found');
+    }
+
+    const { rating } = updateProfDto;
+    if (rating === undefined || rating === null) {
+      throw new Error('Rating is required');
+    }
+    
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: idProf, verified: true }
+    });
+
+    return this.prisma.professor.update({
+      where: { id: idProf },
+      data: { rating: ((prof.rating * (numberOfVerifiedComments - 1)) + rating) / numberOfVerifiedComments },
+      });
+  }
+
+  async updateAfterCommentDeletion(idProf: number, oldRating: number) {
+    const prof = await this.prisma.professor.findUnique({
+      where: { id: idProf },
+    });
+
+    if (!prof) {
+      throw new Error('Professor not found');
+    }
+
+    const numberOfVerifiedComments = await this.prisma.commentOnProffessor.count({
+        where: { professorId: idProf, verified: true }
+    });
+
+    if (numberOfVerifiedComments === 0) {
+      return this.prisma.professor.update({
+        where: { id: idProf },
+        data: { rating: 0 },
+      });
+    }
+
+    return this.prisma.professor.update({
+      where: { id: idProf },
+      data: { rating: ((prof.rating * (numberOfVerifiedComments + 1)) - oldRating) / numberOfVerifiedComments },
+      });
+  }
+
+  async updateTest(id: number) {
+    return this.prisma.professor.update({
+        where: {id: id},
+        data: {rating: 0},
+    });
+  }
+
+  async findAll() {
+    
+    return this.prisma.professor.findMany({
+      orderBy: { rating: 'desc' },
+    });
+  }
+
+  async deleteProfById(id: string) {
+      const existingProf = await this.prisma.professor.findUnique({
+          where: {id: parseInt(id)},
+      });
+
+      if (!existingProf) {
+          throw new Error('Professor not found');
+      }
+    return this.prisma.professor.delete({
+        where: {id: parseInt(id)},
+    });
+  }
+
+    async findByName(name: string) {
+    
+        return this.prisma.professor.findMany({
+            where: {
+                OR: [
+                    { firstName: { contains: name, mode: 'insensitive' } },
+                    { lastName: { contains: name, mode: 'insensitive' } },
+                ],
+            },
+        })
+    }
+}
